@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+using PingenApiNet.Interfaces;
+
+namespace PingenApiNet.Services;
 
 /// <summary>
-///
+/// Connection handler to call pingen REST API
 /// </summary>
-public class Tests
+public class PingenConnectionHandler : IPingenConnectionHandler
 {
     /// <summary>
-    ///
+    /// Constructor, generates a new http client and configures the pingen base url
     /// </summary>
-    [SetUp]
-    public void Setup()
+    public PingenConnectionHandler(IPingenConfiguration pingenConfiguration)
     {
+        var baseUri = pingenConfiguration.BaseUri;
+
+        if (!baseUri.EndsWith("/"))
+            baseUri += "/";
+
+        Client = new()
+        {
+            BaseAddress = new(baseUri)
+        };
+
+        // TODO: Use bearer
+        Client.DefaultRequestHeaders.Add("api_key", pingenConfiguration.ApiKey);
     }
 
     /// <summary>
-    ///
+    /// Holds the http client with some basic settings, to be used for all connectors
     /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
+    public HttpClient Client { get; }
 }

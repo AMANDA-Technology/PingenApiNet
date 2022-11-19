@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+using PingenApiNet.Interfaces;
+using PingenApiNet.Interfaces.Connectors;
+
+namespace PingenApiNet.Services.Connectors;
 
 /// <summary>
-///
+/// Pingen case service endpoint
 /// </summary>
-public class Tests
+public class LetterService : ILetterService
 {
     /// <summary>
-    ///
+    /// Pingen connection handler
     /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-    }
+    private readonly IPingenConnectionHandler _pingenConnectionHandler;
 
     /// <summary>
-    ///
+    /// Inject connection handler at construction
     /// </summary>
-    [Test]
-    public void Test1()
+    /// <param name="pingenConnectionHandler"></param>
+    public LetterService(IPingenConnectionHandler pingenConnectionHandler)
     {
-        Assert.Pass();
+        _pingenConnectionHandler = pingenConnectionHandler;
     }
 }

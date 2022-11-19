@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+using Microsoft.Extensions.DependencyInjection;
+using PingenApiNet.Interfaces;
+using PingenApiNet.Services;
+
+namespace PingenApiNet.AspNetCore;
 
 /// <summary>
-///
+/// Pingen service collection extension for dependency injection
 /// </summary>
-public class Tests
+public static class PingenServiceCollection
 {
     /// <summary>
-    ///
+    /// Adds the configuration, handler and rest service to the services
     /// </summary>
-    [SetUp]
-    public void Setup()
+    /// <param name="services"></param>
+    /// <param name="apiKey"></param>
+    /// <param name="baseUri"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddPingenServices(this IServiceCollection services, string apiKey, string baseUri)
     {
-    }
+        services.AddSingleton<IPingenConfiguration>(new PingenConfiguration(apiKey, baseUri));
+        services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
+        services.AddScoped<IPingenApiClient, PingenApiClient>();
 
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
+        return services;
     }
 }

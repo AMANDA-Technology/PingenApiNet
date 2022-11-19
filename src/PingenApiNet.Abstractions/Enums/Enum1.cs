@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Abstractions.Enums;
 
 /// <summary>
 ///
 /// </summary>
-public class Tests
+public enum Enum1
 {
-    /// <summary>
-    ///
-    /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
 }

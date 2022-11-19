@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Interfaces;
 
 /// <summary>
-///
+/// Configuration for accessing pingen API
 /// </summary>
-public class Tests
+public interface IPingenConfiguration
 {
     /// <summary>
-    ///
+    /// API key for accessing the service
     /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-    }
+    public string ApiKey { get; set; }
 
     /// <summary>
-    ///
+    /// Base URI for accessing the service
     /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
+    public string BaseUri { get; set; }
 }

@@ -4,6 +4,17 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
+        <Title>PingenApiNet</Title>
+        <Authors>AMANDA Technology GmbH</Authors>
+        <Description>Pingen API Service</Description>
+        <Copyright>AMANDA Technology GmbH</Copyright>
+        <PackageProjectUrl>https://github.com/AMANDA-Technology/PingenApiNet</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/AMANDA-Technology/PingenApiNet</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
 </Project>

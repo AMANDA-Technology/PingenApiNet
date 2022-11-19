@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+using PingenApiNet.Interfaces.Connectors;
+
+namespace PingenApiNet.Interfaces;
 
 /// <summary>
-///
+/// Connector service to call pingen REST API
 /// </summary>
-public class Tests
+public interface IPingenApiClient
 {
     /// <summary>
-    ///
+    /// Pingen letters connector
     /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
+    public ILetterService LetterService { get; set; }
 }
