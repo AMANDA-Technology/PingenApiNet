@@ -17,4 +17,8 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PingenApiNet.Abstractions\PingenApiNet.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

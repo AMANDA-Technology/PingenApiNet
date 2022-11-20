@@ -30,26 +30,17 @@ namespace PingenApiNet.Services;
 /// <summary>
 /// Configuration for accessing pingen API
 /// </summary>
-public class PingenConfiguration : IPingenConfiguration
+public sealed class PingenConfiguration : IPingenConfiguration
 {
-    /// <summary>
-    /// Constructor for creating the configuration
-    /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="baseUri"></param>
-    public PingenConfiguration(string apiKey, string baseUri)
-    {
-        ApiKey = apiKey;
-        BaseUri = baseUri;
-    }
+    /// <inheritdoc />
+    public required string BaseUri { get; set; }
 
-    /// <summary>
-    /// API key for accessing the service
-    /// </summary>
-    public string ApiKey { get; set; }
+    /// <inheritdoc />
+    public required string IdentityUri { get; set; }
 
-    /// <summary>
-    /// Base URI for accessing the service
-    /// </summary>
-    public string BaseUri { get; set; }
+    /// <inheritdoc />
+    public required string ClientId { get; set; }
+
+    /// <inheritdoc />
+    public required string ClientSecret { get; set; }
 }

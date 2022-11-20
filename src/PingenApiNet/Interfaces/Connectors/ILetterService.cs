@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Records.Letter;
+
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
@@ -30,4 +32,10 @@ namespace PingenApiNet.Interfaces.Connectors;
 /// </summary>
 public interface ILetterService
 {
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="organisationId"></param>
+    /// <returns></returns>
+    public Task<LetterGetAllResult> GetAllLettersByOrganisation(string organisationId);
 }

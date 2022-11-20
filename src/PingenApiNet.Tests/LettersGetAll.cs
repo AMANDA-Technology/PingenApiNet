@@ -23,38 +23,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
-using PingenApiNet.Interfaces;
-using PingenApiNet.Services;
+namespace PingenApiNet.Tests;
 
-namespace PingenApiNet.AspNetCore;
-
-/// <summary>
-/// Pingen service collection extension for dependency injection
-/// </summary>
-public static class PingenServiceCollection
+public class TestLetters
 {
-    /// <summary>
-    /// Adds the configuration, handler and rest service to the services
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="baseUri"></param>
-    /// <param name="identityUri"></param>
-    /// <param name="clientId"></param>
-    /// <param name="clientSecret"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddPingenServices(this IServiceCollection services, string baseUri, string identityUri, string clientId, string clientSecret)
+    private readonly IPingenApiClient _pingenApiClient;
+
+    public TestLetters()
     {
-        services.AddSingleton<IPingenConfiguration>(new PingenConfiguration
+        var baseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new("Missing PingenApiNet__BaseUri");
+        var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new("Missing PingenApiNet__IdentityUri");
+        var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new("Missing PingenApiNet__ClientId");
+        var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new("Missing PingenApiNet__ClientSecret");
+
+        _pingenApiClient = new PingenApiClient(new PingenConnectionHandler(new PingenConfiguration
         {
             BaseUri = baseUri,
             IdentityUri = identityUri,
             ClientId = clientId,
             ClientSecret = clientSecret
-        });
-        services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
-        services.AddScoped<IPingenApiClient, PingenApiClient>();
+        }));
+    }
 
-        return services;
+    [SetUp]
+    public void Setup()
+    {
+        // Nothing to do yet
+    }
+
+    [Test]
+    public async Task GetAllLetters()
+    {
+        Assert.That(_pingenApiClient, Is.Not.Null);
+
+        var res = await _pingenApiClient.LetterService.GetAllLettersByOrganisation(Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId"));
+
+        Assert.That(res, Is.Not.Null);
     }
 }

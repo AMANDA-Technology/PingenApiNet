@@ -34,4 +34,10 @@ public interface IPingenConnectionHandler
     /// Holds the http client with some basic settings, to be used for all connectors
     /// </summary>
     public HttpClient Client { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    public Task SetOrUpdateAccessToken();
 }

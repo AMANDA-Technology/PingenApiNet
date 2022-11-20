@@ -32,7 +32,7 @@ namespace PingenApiNet.Services;
 /// <summary>
 /// Connector service to call pingen REST API
 /// </summary>
-public class PingenApiClient : IPingenApiClient
+public sealed class PingenApiClient : IPingenApiClient
 {
     /// <summary>
     /// Pingen REST service that holds a manager for calling the API

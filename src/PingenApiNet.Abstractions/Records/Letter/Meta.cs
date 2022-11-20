@@ -23,30 +23,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Interfaces;
+using System.Text.Json.Serialization;
+
+namespace PingenApiNet.Abstractions.Records.Letter;
 
 /// <summary>
-/// Configuration for accessing pingen API
+///
 /// </summary>
-public interface IPingenConfiguration
-{
-    /// <summary>
-    /// Base URI for accessing the service
-    /// </summary>
-    public string BaseUri { get; set; }
-
-    /// <summary>
-    /// Identity URI to obtain access token
-    /// </summary>
-    public string IdentityUri { get; set; }
-
-    /// <summary>
-    /// Generated client id
-    /// </summary>
-    public string ClientId { get; set; }
-
-    /// <summary>
-    /// Generated client secret
-    /// </summary>
-    public string ClientSecret { get; set; }
-}
+/// <param name="Count"></param>
+/// <param name="CurrentPage"></param>
+/// <param name="LastPage"></param>
+/// <param name="PerPage"></param>
+/// <param name="From"></param>
+/// <param name="To"></param>
+/// <param name="Total"></param>
+public sealed record Meta(
+    [property: JsonPropertyName("count")] int? Count,
+    [property: JsonPropertyName("current_page")] int? CurrentPage,
+    [property: JsonPropertyName("last_page")] int? LastPage,
+    [property: JsonPropertyName("per_page")] int? PerPage,
+    [property: JsonPropertyName("from")] int? From,
+    [property: JsonPropertyName("to")] int? To,
+    [property: JsonPropertyName("total")] int? Total
+);

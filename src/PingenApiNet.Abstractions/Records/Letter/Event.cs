@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Tests;
+using System.Text.Json.Serialization;
+
+namespace PingenApiNet.Abstractions.Records.Letter;
 
 /// <summary>
 ///
 /// </summary>
-public class Tests
-{
-    /// <summary>
-    ///
-    /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
-}
+/// <param name="Links"></param>
+public sealed record Event(
+    [property: JsonPropertyName("links")] Link Links
+);

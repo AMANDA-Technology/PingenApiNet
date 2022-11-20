@@ -23,36 +23,99 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text.Json;
 using PingenApiNet.Interfaces;
+using PingenApiNet.Records;
 
 namespace PingenApiNet.Services;
 
 /// <summary>
 /// Connection handler to call pingen REST API
 /// </summary>
-public class PingenConnectionHandler : IPingenConnectionHandler
+public sealed class PingenConnectionHandler : IPingenConnectionHandler
 {
-    /// <summary>
-    /// Constructor, generates a new http client and configures the pingen base url
-    /// </summary>
-    public PingenConnectionHandler(IPingenConfiguration pingenConfiguration)
-    {
-        var baseUri = pingenConfiguration.BaseUri;
-
-        if (!baseUri.EndsWith("/"))
-            baseUri += "/";
-
-        Client = new()
-        {
-            BaseAddress = new(baseUri)
-        };
-
-        // TODO: Use bearer
-        Client.DefaultRequestHeaders.Add("api_key", pingenConfiguration.ApiKey);
-    }
-
     /// <summary>
     /// Holds the http client with some basic settings, to be used for all connectors
     /// </summary>
     public HttpClient Client { get; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    private AccessToken? _accessToken;
+
+    /// <summary>
+    ///
+    /// </summary>
+    private readonly IPingenConfiguration _configuration;
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="configuration"></param>
+    public PingenConnectionHandler(IPingenConfiguration configuration)
+    {
+        _configuration = configuration;
+
+        if (!_configuration.BaseUri.EndsWith("/"))
+            _configuration.BaseUri += "/";
+
+        if (!_configuration.IdentityUri.EndsWith("/"))
+            _configuration.IdentityUri += "/";
+
+        Client = new()
+        {
+            BaseAddress = new(_configuration.BaseUri)
+        };
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    public async Task SetOrUpdateAccessToken()
+    {
+        // Only update if needed
+        if (_accessToken?.ExpiresAt.AddSeconds(-60) > DateTime.Now)
+        {
+            return;
+        }
+
+        // Create client and set header
+        using var identityClient = new HttpClient();
+        identityClient.DefaultRequestHeaders.Accept.Clear();
+        identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
+
+        // Set content
+        var content = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            new KeyValuePair<string, string>("client_id", _configuration.ClientId),
+            new KeyValuePair<string, string>("client_secret", _configuration.ClientSecret),
+            //new KeyValuePair<string, string>("scope", "client-id-source"),
+        });
+
+        // Send request and validate
+        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var authenticationError = await JsonSerializer
+                .DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync());
+
+            if (authenticationError is null)
+            {
+                throw new("Invalid authentication error received");
+            }
+
+            throw new ($"Failed to obtain token with error: {authenticationError.Message}");
+        }
+
+        // Try to get token
+        _accessToken = await JsonSerializer.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync());
+        if (_accessToken == null) throw new("Invalid access token object received");
+
+        // Set to base client
+        Client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
+    }
 }

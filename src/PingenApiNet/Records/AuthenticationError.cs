@@ -23,30 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Interfaces;
+using System.Text.Json.Serialization;
+
+namespace PingenApiNet.Records;
 
 /// <summary>
-/// Configuration for accessing pingen API
+///
 /// </summary>
-public interface IPingenConfiguration
-{
-    /// <summary>
-    /// Base URI for accessing the service
-    /// </summary>
-    public string BaseUri { get; set; }
-
-    /// <summary>
-    /// Identity URI to obtain access token
-    /// </summary>
-    public string IdentityUri { get; set; }
-
-    /// <summary>
-    /// Generated client id
-    /// </summary>
-    public string ClientId { get; set; }
-
-    /// <summary>
-    /// Generated client secret
-    /// </summary>
-    public string ClientSecret { get; set; }
-}
+/// <param name="Error"></param>
+/// <param name="ErrorDescription"></param>
+/// <param name="Message"></param>
+public sealed record AuthenticationError(
+    [property: JsonPropertyName("error")] string Error,
+    [property: JsonPropertyName("error_description")] string ErrorDescription,
+    [property: JsonPropertyName("message")] string Message
+);

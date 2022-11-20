@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text.Json;
+using PingenApiNet.Abstractions.Records.Letter;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 
@@ -31,7 +33,7 @@ namespace PingenApiNet.Services.Connectors;
 /// <summary>
 /// Pingen case service endpoint
 /// </summary>
-public class LetterService : ILetterService
+public sealed class LetterService : ILetterService
 {
     /// <summary>
     /// Pingen connection handler
@@ -45,5 +47,24 @@ public class LetterService : ILetterService
     public LetterService(IPingenConnectionHandler pingenConnectionHandler)
     {
         _pingenConnectionHandler = pingenConnectionHandler;
+    }
+
+    /// <inheritdoc />
+    public async Task<LetterGetAllResult> GetAllLettersByOrganisation(string organisationId)
+    {
+        await _pingenConnectionHandler.SetOrUpdateAccessToken();
+
+        var response = await _pingenConnectionHandler.Client.GetAsync($"organisations/{organisationId}/letters");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            // do something
+            throw new();
+        }
+
+        var res = await JsonSerializer.DeserializeAsync<LetterGetAllResult>(await response.Content.ReadAsStreamAsync());
+        if (res is null) throw new();
+
+        return res;
     }
 }
