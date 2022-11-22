@@ -35,14 +35,18 @@ public class TestLetters
         var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new("Missing PingenApiNet__IdentityUri");
         var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new("Missing PingenApiNet__ClientId");
         var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new("Missing PingenApiNet__ClientSecret");
+        var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId");
 
-        _pingenApiClient = new PingenApiClient(new PingenConnectionHandler(new PingenConfiguration
-        {
-            BaseUri = baseUri,
-            IdentityUri = identityUri,
-            ClientId = clientId,
-            ClientSecret = clientSecret
-        }));
+        _pingenApiClient = new PingenApiClient(
+            new PingenConnectionHandler(
+                new PingenConfiguration
+                {
+                    BaseUri = baseUri,
+                    IdentityUri = identityUri,
+                    ClientId = clientId,
+                    ClientSecret = clientSecret,
+                    DefaultOrganisationId = organisationId
+                }));
     }
 
     [SetUp]
@@ -56,7 +60,7 @@ public class TestLetters
     {
         Assert.That(_pingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.LetterService.GetAllLettersByOrganisation(Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId"));
+        var res = await _pingenApiClient.Letters.GetAll();
 
         Assert.That(res, Is.Not.Null);
     }

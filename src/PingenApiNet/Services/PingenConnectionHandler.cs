@@ -23,39 +23,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Records;
 
 namespace PingenApiNet.Services;
 
-/// <summary>
-/// Connection handler to call pingen REST API
-/// </summary>
+/// <inheritdoc />
 public sealed class PingenConnectionHandler : IPingenConnectionHandler
 {
     /// <summary>
-    /// Holds the http client with some basic settings, to be used for all connectors
-    /// </summary>
-    public HttpClient Client { get; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    private AccessToken? _accessToken;
-
-    /// <summary>
-    ///
+    /// Pingen configuration for connection handler
     /// </summary>
     private readonly IPingenConfiguration _configuration;
 
     /// <summary>
-    ///
+    /// Holds the http client with some basic settings, to be used for all connectors
+    /// </summary>
+    private readonly HttpClient _client;
+
+    /// <summary>
+    /// Access token for authenticated requests
+    /// </summary>
+    private AccessToken? _accessToken;
+
+    /// <summary>
+    /// The organisation ID to use for all request at /organisations/{organisationId}/*
+    /// </summary>
+    private string _organisationId;
+
+    /// <summary>
+    /// Create a new connection handler to call pingen REST API
     /// </summary>
     /// <param name="configuration"></param>
     public PingenConnectionHandler(IPingenConfiguration configuration)
     {
         _configuration = configuration;
+        _organisationId = configuration.DefaultOrganisationId;
 
         if (!_configuration.BaseUri.EndsWith("/"))
             _configuration.BaseUri += "/";
@@ -63,16 +68,13 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (!_configuration.IdentityUri.EndsWith("/"))
             _configuration.IdentityUri += "/";
 
-        Client = new()
+        _client = new()
         {
             BaseAddress = new(_configuration.BaseUri)
         };
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc />
     public async Task SetOrUpdateAccessToken()
     {
         // Only update if needed
@@ -116,6 +118,36 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (_accessToken == null) throw new("Invalid access token object received");
 
         // Set to base client
-        Client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
+    }
+
+    /// <inheritdoc />
+    public void SetOrganisationId(string organisationId)
+    {
+        _organisationId = organisationId;
+    }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> GetAsync(string requestPath, [Optional] CancellationToken cancellationToken)
+    {
+        return await _client.GetAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> PostAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken)
+    {
+        return await _client.PostAsync($"organisations/{_organisationId}/{requestPath}", content, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken)
+    {
+        return await _client.DeleteAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> PatchAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken)
+    {
+        return await _client.PatchAsync($"organisations/{_organisationId}/{requestPath}", content, cancellationToken);
     }
 }

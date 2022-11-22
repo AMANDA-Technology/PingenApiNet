@@ -25,22 +25,22 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Models.Pagination;
 
 /// <summary>
-/// Access token
+/// List meta
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
-{
-    /// <summary>
-    /// Expires at
-    /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
-}
+/// <param name="CurrentPage"></param>
+/// <param name="LastPage"></param>
+/// <param name="PerPage"></param>
+/// <param name="From"></param>
+/// <param name="To"></param>
+/// <param name="Total"></param>
+public sealed record ListMeta(
+    [property: JsonPropertyName("current_page")] int? CurrentPage,
+    [property: JsonPropertyName("last_page")] int? LastPage,
+    [property: JsonPropertyName("per_page")] int? PerPage,
+    [property: JsonPropertyName("from")] int? From,
+    [property: JsonPropertyName("to")] int? To,
+    [property: JsonPropertyName("total")] int? Total
+);

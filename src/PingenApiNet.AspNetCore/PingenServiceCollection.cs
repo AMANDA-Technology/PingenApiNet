@@ -42,16 +42,30 @@ public static class PingenServiceCollection
     /// <param name="identityUri"></param>
     /// <param name="clientId"></param>
     /// <param name="clientSecret"></param>
+    /// <param name="defaultOrganisationId"></param>
     /// <returns></returns>
-    public static IServiceCollection AddPingenServices(this IServiceCollection services, string baseUri, string identityUri, string clientId, string clientSecret)
+    public static IServiceCollection AddPingenServices(this IServiceCollection services, string baseUri, string identityUri, string clientId, string clientSecret, string defaultOrganisationId)
     {
-        services.AddSingleton<IPingenConfiguration>(new PingenConfiguration
+        return services.AddPingenServices(new PingenConfiguration
         {
             BaseUri = baseUri,
             IdentityUri = identityUri,
             ClientId = clientId,
-            ClientSecret = clientSecret
+            ClientSecret = clientSecret,
+            DefaultOrganisationId = defaultOrganisationId
         });
+    }
+
+    /// <summary>
+    /// Adds the configuration, handler and rest service to the services
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="pingenConfiguration"></param>
+    /// <returns></returns>
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static IServiceCollection AddPingenServices(this IServiceCollection services, IPingenConfiguration pingenConfiguration)
+    {
+        services.AddSingleton(pingenConfiguration);
         services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
         services.AddScoped<IPingenApiClient, PingenApiClient>();
 

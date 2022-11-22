@@ -17,9 +17,4 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Models" />
-      <Folder Include="Records" />
-    </ItemGroup>
-
 </Project>

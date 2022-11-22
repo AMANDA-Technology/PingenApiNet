@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Runtime.InteropServices;
+
 namespace PingenApiNet.Interfaces;
 
 /// <summary>
@@ -31,13 +33,48 @@ namespace PingenApiNet.Interfaces;
 public interface IPingenConnectionHandler
 {
     /// <summary>
-    /// Holds the http client with some basic settings, to be used for all connectors
-    /// </summary>
-    public HttpClient Client { get; }
-
-    /// <summary>
-    ///
+    /// Set or update access token to use for authenticated requests
     /// </summary>
     /// <returns></returns>
     public Task SetOrUpdateAccessToken();
+
+    /// <summary>
+    /// Change the organisation ID to use for upcoming requests
+    /// </summary>
+    /// <param name="organisationId">Id to use for all requests at /organisations/{organisationId}/*</param>
+    public void SetOrganisationId(string organisationId);
+
+    /// <summary>
+    /// Base GET request
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<HttpResponseMessage> GetAsync(string requestPath, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base POST request
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="content">The HTTP request content sent to the server</param>
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<HttpResponseMessage> PostAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base DELETE request
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<HttpResponseMessage> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base PATCH request
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="content">The HTTP request content sent to the server</param>
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<HttpResponseMessage> PatchAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken);
 }

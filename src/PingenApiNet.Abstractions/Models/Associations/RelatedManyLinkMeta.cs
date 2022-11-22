@@ -25,12 +25,12 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Associations;
 
 /// <summary>
-///
+/// Related many link meta
 /// </summary>
-/// <param name="Links"></param>
-public sealed record Event(
-    [property: JsonPropertyName("links")] Link Links
+/// <param name="Count"></param>
+public record RelatedManyLinkMeta(
+    [property: JsonPropertyName("count")] int Count
 );

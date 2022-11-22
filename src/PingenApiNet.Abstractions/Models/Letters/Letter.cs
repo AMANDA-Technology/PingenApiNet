@@ -24,11 +24,12 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Letters;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-///
+/// Letter
 /// </summary>
 /// <param name="Status"></param>
 /// <param name="FileOriginalName"></param>
@@ -52,11 +53,11 @@ public sealed record Letter(
     [property: JsonPropertyName("file_original_name")] string FileOriginalName,
     [property: JsonPropertyName("file_pages")] int? FilePages,
     [property: JsonPropertyName("address")] string Address,
-    [property: JsonPropertyName("address_position")] string AddressPosition,
+    [property: JsonPropertyName("address_position")] LetterAddressPosition AddressPosition,
     [property: JsonPropertyName("country")] string Country,
-    [property: JsonPropertyName("delivery_product")] string DeliveryProduct,
-    [property: JsonPropertyName("print_mode")] string PrintMode,
-    [property: JsonPropertyName("print_spectrum")] string PrintSpectrum,
+    [property: JsonPropertyName("delivery_product")] LetterDeliveryProduct DeliveryProduct,
+    [property: JsonPropertyName("print_mode")] LetterPrintMode PrintMode,
+    [property: JsonPropertyName("print_spectrum")] LetterPrintSpectrum PrintSpectrum,
     [property: JsonPropertyName("price_currency")] string PriceCurrency,
     [property: JsonPropertyName("price_value")] double? PriceValue,
     [property: JsonPropertyName("paper_types")] IReadOnlyList<string> PaperTypes,

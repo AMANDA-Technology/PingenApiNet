@@ -24,23 +24,16 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Models.Pagination;
 
 /// <summary>
-/// Access token
+/// Generic response of single object endpoint
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
-{
-    /// <summary>
-    /// Expires at
-    /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
-}
+/// <param name="Data"></param>
+/// <typeparam name="TData"></typeparam>
+public sealed record GetSingleResult<TData>(
+    [property: JsonPropertyName("data")] TData Data
+    // [property: JsonPropertyName("included")] TIncluded Included,
+) where TData : IData;

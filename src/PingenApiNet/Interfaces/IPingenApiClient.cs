@@ -28,12 +28,18 @@ using PingenApiNet.Interfaces.Connectors;
 namespace PingenApiNet.Interfaces;
 
 /// <summary>
-/// Connector service to call pingen REST API
+/// Connector service to call pingen REST API. <see href="https://api.v2.pingen.com/documentation">API Doc</see>
 /// </summary>
 public interface IPingenApiClient
 {
     /// <summary>
-    /// Pingen letters connector
+    /// Change the organisation ID to use for upcoming requests
     /// </summary>
-    public ILetterService LetterService { get; set; }
+    /// <param name="organisationId">Id to use for all requests at /organisations/{organisationId}/*</param>
+    public void SetOrganisationId(string organisationId);
+
+    /// <summary>
+    /// Pingen letters connector. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+    /// </summary>
+    public ILetterService Letters { get; set; }
 }

@@ -29,21 +29,29 @@ using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.Services;
 
-/// <summary>
-/// Connector service to call pingen REST API
-/// </summary>
+/// <inheritdoc />
 public sealed class PingenApiClient : IPingenApiClient
 {
     /// <summary>
-    /// Pingen REST service that holds a manager for calling the API
+    /// Private instance of connection handler used for all Services
+    /// </summary>
+    private readonly IPingenConnectionHandler _pingenConnectionHandler;
+
+    /// <summary>
+    /// Pingen REST API client that holds a handler for calling the API
     /// </summary>
     public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler)
     {
-        LetterService = new LetterService(pingenConnectionHandler);
+        _pingenConnectionHandler = pingenConnectionHandler;
+        Letters = new LetterService(_pingenConnectionHandler);
     }
 
-    /// <summary>
-    /// Pingen cases service endpoint
-    /// </summary>
-    public ILetterService LetterService { get; set; }
+    /// <inheritdoc />
+    public void SetOrganisationId(string organisationId)
+    {
+        _pingenConnectionHandler.SetOrganisationId(organisationId);
+    }
+
+    /// <inheritdoc />
+    public ILetterService Letters { get; set; }
 }

@@ -24,23 +24,19 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Models.Data;
 
-/// <summary>
-/// Access token
-/// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+/// <inheritdoc />
+public record DataIdentity : IDataIdentity
 {
-    /// <summary>
-    /// Expires at
-    /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    /// <inheritdoc />
+    [JsonPropertyName("id")]
+    public required string Id { get; init; }
+
+    /// <inheritdoc />
+    [JsonPropertyName("type")]
+    public required PingenApiDataType Type { get; init; }
 }

@@ -25,22 +25,22 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-///
+/// Meta data for <see cref="LetterCreate"/>
 /// </summary>
-/// <param name="Related"></param>
-/// <param name="Self"></param>
-/// <param name="First"></param>
-/// <param name="Last"></param>
-/// <param name="Prev"></param>
-/// <param name="Next"></param>
-public sealed record Link(
-    [property: JsonPropertyName("related")] string Related,
-    [property: JsonPropertyName("self")] string Self,
-    [property: JsonPropertyName("first")] string First,
-    [property: JsonPropertyName("last")] string Last,
-    [property: JsonPropertyName("prev")] string Prev,
-    [property: JsonPropertyName("next")] string Next
-);
+public record LetterCreateMetaData
+{
+    /// <summary>
+    /// Recipient
+    /// </summary>
+    [JsonPropertyName("recipient")]
+    public required LetterCreateMetaDataContact Recipient { get; init; }
+
+    /// <summary>
+    /// Sender
+    /// </summary>
+    [JsonPropertyName("sender")]
+    public required LetterCreateMetaDataContact Sender { get; init; }
+}

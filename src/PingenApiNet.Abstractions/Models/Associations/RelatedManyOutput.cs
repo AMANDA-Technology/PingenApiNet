@@ -25,17 +25,12 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Associations;
 
 /// <summary>
-///
+/// Related many output. NOTE: Not sure how this works, the documentation mentions 'to many' relationships, but there is always an object and never a list.
 /// </summary>
-/// <param name="data"></param>
 /// <param name="Links"></param>
-/// <param name="Meta"></param>
-public sealed record LetterGetAllResult(
-    [property: JsonPropertyName("data")] IReadOnlyList<Letter> Letters,
-    //[property: JsonPropertyName("included")] IReadOnlyList<Included> included,
-    [property: JsonPropertyName("links")] Link Links,
-    [property: JsonPropertyName("meta")] Meta Meta
+public record RelatedManyOutput(
+    [property: JsonPropertyName("links")] RelatedManyLinks Links
 );

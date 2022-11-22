@@ -24,25 +24,23 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-///
+/// Letter print mode. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// </summary>
-/// <param name="Count"></param>
-/// <param name="CurrentPage"></param>
-/// <param name="LastPage"></param>
-/// <param name="PerPage"></param>
-/// <param name="From"></param>
-/// <param name="To"></param>
-/// <param name="Total"></param>
-public sealed record Meta(
-    [property: JsonPropertyName("count")] int? Count,
-    [property: JsonPropertyName("current_page")] int? CurrentPage,
-    [property: JsonPropertyName("last_page")] int? LastPage,
-    [property: JsonPropertyName("per_page")] int? PerPage,
-    [property: JsonPropertyName("from")] int? From,
-    [property: JsonPropertyName("to")] int? To,
-    [property: JsonPropertyName("total")] int? Total
-);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LetterPrintMode
+{
+    /// <summary>
+    /// Print mode simplex
+    /// </summary>
+    simplex,
+
+    /// <summary>
+    /// Print mode duplex
+    /// </summary>
+    duplex
+}

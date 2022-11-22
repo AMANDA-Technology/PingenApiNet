@@ -27,10 +27,8 @@ using PingenApiNet.Interfaces;
 
 namespace PingenApiNet.Services;
 
-/// <summary>
-/// Configuration for accessing pingen API
-/// </summary>
-public sealed class PingenConfiguration : IPingenConfiguration
+/// <inheritdoc />
+public sealed record PingenConfiguration : IPingenConfiguration
 {
     /// <inheritdoc />
     public required string BaseUri { get; set; }
@@ -43,4 +41,7 @@ public sealed class PingenConfiguration : IPingenConfiguration
 
     /// <inheritdoc />
     public required string ClientSecret { get; set; }
+
+    /// <inheritdoc />
+    public required string DefaultOrganisationId { get; set; }
 }

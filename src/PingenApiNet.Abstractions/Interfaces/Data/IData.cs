@@ -23,24 +23,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Access token
+/// Base data object interface without the actual data, but can be used to ensure an object is a data object
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+public interface IData
 {
     /// <summary>
-    /// Expires at
+    /// Data links object
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    public DataLinks Links { get; init; }
+}
+
+/// <summary>
+/// Base data object including type based data
+/// </summary>
+/// <typeparam name="TAttributes"></typeparam>
+/// <typeparam name="TRelationships"></typeparam>
+public interface IData<TAttributes, TRelationships> : IData
+{
+    /// <summary>
+    /// Object data attributes based on type
+    /// </summary>
+    public TAttributes Attributes { get; init; }
+
+    /// <summary>
+    /// Relationships based on type
+    /// </summary>
+    public TRelationships Relationships { get; init; }
 }

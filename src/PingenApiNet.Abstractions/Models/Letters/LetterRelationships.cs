@@ -24,23 +24,17 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Models.Associations;
+using PingenApiNet.Abstractions.Models.Organisations;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Access token
+/// Letter relationships
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
-{
-    /// <summary>
-    /// Expires at
-    /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
-}
+/// <param name="OrganisationRelatedSingleOutput"></param>
+/// <param name="Events"></param>
+public sealed record LetterRelationships(
+    [property: JsonPropertyName("organisation")] OrganisationRelatedSingleOutput OrganisationRelatedSingleOutput,
+    [property: JsonPropertyName("events")] RelatedManyOutput Events
+);

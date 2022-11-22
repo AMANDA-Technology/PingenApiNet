@@ -25,14 +25,12 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Data;
 
 /// <summary>
-///
+/// Relation links
 /// </summary>
-/// <param name="Name"></param>
-/// <param name="IsEmbedded"></param>
-public sealed record Font(
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("is_embedded")] bool? IsEmbedded
+/// <param name="Related"></param>
+public sealed record RelationLinks(
+    [property: JsonPropertyName("related")] string Related
 );

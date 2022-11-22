@@ -23,24 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Access token
+/// Base data identity, identifies an object by type and ID
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+public interface IDataIdentity
 {
     /// <summary>
-    /// Expires at
+    /// ID of the object
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    public string Id { get; init; }
+
+    /// <summary>
+    /// Type of the object
+    /// </summary>
+    public PingenApiDataType Type { get; init; }
 }

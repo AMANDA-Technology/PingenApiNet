@@ -25,22 +25,46 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Access token
+/// Contact address for <see cref="LetterCreateMetaData.Recipient"/> and  <see cref="LetterCreateMetaData.Sender"/>
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+public record LetterCreateMetaDataContact
 {
     /// <summary>
-    /// Expires at
+    /// Name
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    /// <summary>
+    /// Street
+    /// </summary>
+    [JsonPropertyName("street")]
+    public required string Street { get; init; }
+
+    /// <summary>
+    /// Number
+    /// </summary>
+    [JsonPropertyName("number")]
+    public required string Number { get; init; }
+
+    /// <summary>
+    /// Zip code
+    /// </summary>
+    [JsonPropertyName("zip")]
+    public required string Zip { get; init; }
+
+    /// <summary>
+    /// City
+    /// </summary>
+    [JsonPropertyName("city")]
+    public required string City { get; init; }
+
+    /// <summary>
+    /// Country
+    /// </summary>
+    [JsonPropertyName("country")]
+    public required string Country { get; init; }
 }

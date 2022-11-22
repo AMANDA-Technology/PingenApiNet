@@ -25,16 +25,14 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Views;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-///
+/// Font
 /// </summary>
-public class View1
-{
-    /// <summary>
-    ///
-    /// </summary>
-    [JsonPropertyName("property1")]
-    public string Property1 { get; set; }
-}
+/// <param name="Name"></param>
+/// <param name="IsEmbedded"></param>
+public sealed record Font(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("is_embedded")] bool? IsEmbedded
+);

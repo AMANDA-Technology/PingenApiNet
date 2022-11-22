@@ -25,20 +25,14 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Associations;
 
 /// <summary>
-///
+/// Related many link info
 /// </summary>
-/// <param name="Id"></param>
-/// <param name="Type"></param>
-/// <param name="Letters"></param>
-/// <param name="Relationships"></param>
-/// <param name="Links"></param>
-public sealed record Data(
-    [property: JsonPropertyName("id")] string Id,
-    [property: JsonPropertyName("type")] string Type,
-    [property: JsonPropertyName("attributes")] Letter Letters,
-    [property: JsonPropertyName("relationships")] Relationship Relationships,
-    [property: JsonPropertyName("links")] Link Links
+/// <param name="Href"></param>
+/// <param name="Meta"></param>
+public record RelatedManyLinkInfo(
+    [property: JsonPropertyName("href")] string Href,
+    [property: JsonPropertyName("meta")] RelatedManyLinkMeta Meta
 );

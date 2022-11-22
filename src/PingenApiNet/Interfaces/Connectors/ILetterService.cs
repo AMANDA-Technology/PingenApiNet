@@ -23,19 +23,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Records.Letter;
+using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Pagination;
 
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen letter service endpoint
+/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
 /// </summary>
 public interface ILetterService
 {
     /// <summary>
-    ///
+    /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
     /// </summary>
-    /// <param name="organisationId"></param>
     /// <returns></returns>
-    public Task<LetterGetAllResult> GetAllLettersByOrganisation(string organisationId);
+    public Task<GetListResult<LetterData>> GetAll();
+
+    /// <summary>
+    /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
+    /// </summary>
+    /// <returns></returns>
+    public Task<GetSingleResult<LetterData>> Create(DataPost<LetterCreate> data);
 }

@@ -23,11 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Enums;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Models.Associations;
+
+namespace PingenApiNet.Abstractions.Models.Organisations;
 
 /// <summary>
-///
+/// Organisation relationships
 /// </summary>
-public enum Enum1
-{
-}
+/// <param name="Associations"></param>
+public sealed record OrganisationRelationships(
+    [property: JsonPropertyName("associations")] RelatedManyOutput Associations
+);

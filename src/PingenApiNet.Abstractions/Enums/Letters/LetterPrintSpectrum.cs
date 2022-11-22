@@ -24,23 +24,23 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-/// Access token
+/// Letter print spectrum. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LetterPrintSpectrum
 {
     /// <summary>
-    /// Expires at
+    /// Print spectrum grayscale
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    grayscale,
+
+    /// <summary>
+    /// Print spectrum color
+    /// </summary>
+    color
 }

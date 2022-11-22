@@ -24,15 +24,19 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Models.Pagination;
 
 /// <summary>
-///
+/// Generic response of collection endpoint
 /// </summary>
-/// <param name="Organisation"></param>
-/// <param name="Events"></param>
-public sealed record Relationship(
-    [property: JsonPropertyName("organisation")] Organisation Organisation,
-    [property: JsonPropertyName("events")] Event Events
-);
+/// <param name="Data">Collection of data objects requested from endpoint</param>
+/// <param name="Links"></param>
+/// <param name="Meta"></param>
+public sealed record GetListResult<TData>(
+    [property: JsonPropertyName("data")] IReadOnlyList<TData> Data,
+    // [property: JsonPropertyName("included")] IReadOnlyList<TIncluded> Included,
+    [property: JsonPropertyName("links")] ListLinks Links,
+    [property: JsonPropertyName("meta")] ListMeta Meta
+) where TData : IData;

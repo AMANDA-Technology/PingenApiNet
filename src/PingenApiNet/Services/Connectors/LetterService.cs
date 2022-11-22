@@ -23,8 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text;
 using System.Text.Json;
-using PingenApiNet.Abstractions.Records.Letter;
+using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Pagination;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 
@@ -50,11 +53,11 @@ public sealed class LetterService : ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<LetterGetAllResult> GetAllLettersByOrganisation(string organisationId)
+    public async Task<GetListResult<LetterData>> GetAll()
     {
         await _pingenConnectionHandler.SetOrUpdateAccessToken();
 
-        var response = await _pingenConnectionHandler.Client.GetAsync($"organisations/{organisationId}/letters");
+        var response = await _pingenConnectionHandler.GetAsync("letters");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -62,7 +65,26 @@ public sealed class LetterService : ILetterService
             throw new();
         }
 
-        var res = await JsonSerializer.DeserializeAsync<LetterGetAllResult>(await response.Content.ReadAsStreamAsync());
+        var res = await JsonSerializer.DeserializeAsync<GetListResult<LetterData>>(await response.Content.ReadAsStreamAsync());
+        if (res is null) throw new();
+
+        return res;
+    }
+
+    /// <inheritdoc />
+    public async Task<GetSingleResult<LetterData>> Create(DataPost<LetterCreate> data)
+    {
+        await _pingenConnectionHandler.SetOrUpdateAccessToken();
+
+        var response = await _pingenConnectionHandler.PostAsync("letters", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+
+        if (!response.IsSuccessStatusCode)
+        {
+            // do something
+            throw new();
+        }
+
+        var res = await JsonSerializer.DeserializeAsync<GetSingleResult<LetterData>>(await response.Content.ReadAsStreamAsync());
         if (res is null) throw new();
 
         return res;

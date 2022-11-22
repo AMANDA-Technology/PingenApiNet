@@ -24,23 +24,68 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Enums;
 
 /// <summary>
-/// Access token
+/// Pingen API data type to identify the kind of data transported in requests
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PingenApiDataType
 {
     /// <summary>
-    /// Expires at
+    /// Data type letters
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    letters,
+
+    /// <summary>
+    /// Data type organisations
+    /// </summary>
+    organisations,
+
+    /// <summary>
+    /// Data type letter_price_calculator
+    /// </summary>
+    letter_price_calculator,
+
+    /// <summary>
+    /// Data type letters_events
+    /// </summary>
+    letters_events,
+
+    /// <summary>
+    /// Data type users
+    /// </summary>
+    users,
+
+    /// <summary>
+    /// Data type associations
+    /// </summary>
+    associations,
+
+    /// <summary>
+    /// Data type webhooks
+    /// </summary>
+    webhooks,
+
+    /// <summary>
+    /// Data type file_uploads
+    /// </summary>
+    file_uploads,
+
+    /// <summary>
+    /// Data type webhook_issues
+    /// </summary>
+    webhook_issues,
+
+    /// <summary>
+    /// Data type webhook_sent
+    /// </summary>
+    webhook_sent,
+
+    /// <summary>
+    /// Data type webhook_undeliverable
+    /// </summary>
+    webhook_undeliverable
 }

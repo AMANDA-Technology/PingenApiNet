@@ -24,15 +24,23 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Records.Letter;
+namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-///
+/// Letter address position. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// </summary>
-/// <param name="Links"></param>
-/// <param name="Data"></param>
-public sealed record Organisation(
-    [property: JsonPropertyName("links")] Link Links,
-    [property: JsonPropertyName("data")] Data Data
-);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LetterAddressPosition
+{
+    /// <summary>
+    /// Address position left
+    /// </summary>
+    left,
+
+    /// <summary>
+    /// Address position right
+    /// </summary>
+    right
+}
