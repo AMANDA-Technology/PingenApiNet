@@ -31,6 +31,6 @@ namespace PingenApiNet.Abstractions.Models.Associations;
 /// Related many output. NOTE: Not sure how this works, the documentation mentions 'to many' relationships, but there is always an object and never a list.
 /// </summary>
 /// <param name="Links"></param>
-public record RelatedManyOutput(
+public sealed record RelatedManyOutput(
     [property: JsonPropertyName("links")] RelatedManyLinks Links
 );

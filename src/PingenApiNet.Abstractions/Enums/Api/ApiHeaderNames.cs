@@ -65,4 +65,9 @@ public static class ApiHeaderNames
     /// Header name for idempotent replayed
     /// </summary>
     public const string IdempotentReplayed = "Idempotent-Replayed";
+
+    /// <summary>
+    /// Header name for location
+    /// </summary>
+    public const string Location = "Location";
 }

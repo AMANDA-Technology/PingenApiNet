@@ -36,13 +36,17 @@ public abstract record Data : DataIdentity, IData
     public required DataLinks Links { get; init; }
 }
 
-/// <inheritdoc cref="IData{TAttributes,TRelationships}" />
-public abstract record Data<TAttributes, TRelationships> : Data, IData<TAttributes, TRelationships>
+/// <inheritdoc cref="IData{TAttributes}" />
+public abstract record Data<TAttributes> : Data, IData<TAttributes>
 {
     /// <inheritdoc />
     [JsonPropertyName("attributes")]
     public required TAttributes Attributes { get; init; }
+}
 
+/// <inheritdoc cref="IData{TAttributes,TRelationships}" />
+public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships>
+{
     /// <inheritdoc />
     [JsonPropertyName("relationships")]
     public required TRelationships Relationships { get; init; }

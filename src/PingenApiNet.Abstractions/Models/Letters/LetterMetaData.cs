@@ -25,12 +25,22 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Related many link meta
+/// Meta data for <see cref="LetterCreate"/>
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+public sealed record LetterMetaData
+{
+    /// <summary>
+    /// Recipient
+    /// </summary>
+    [JsonPropertyName("recipient")]
+    public required LetterMetaDataContact Recipient { get; init; }
+
+    /// <summary>
+    /// Sender
+    /// </summary>
+    [JsonPropertyName("sender")]
+    public required LetterMetaDataContact Sender { get; init; }
+}

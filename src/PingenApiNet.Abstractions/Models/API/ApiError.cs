@@ -34,7 +34,7 @@ namespace PingenApiNet.Abstractions.Models.API;
 /// <param name="Title">A short, human-readable summary of the problem</param>
 /// <param name="Detail">Default: "null". A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized</param>
 /// <param name="Source">An object containing references to the source of the error</param>
-public record ApiError(
+public sealed record ApiError(
     [property: JsonPropertyName("code")] string Code,
     [property: JsonPropertyName("title")] string Title,
     [property: JsonPropertyName("detail")] string Detail,

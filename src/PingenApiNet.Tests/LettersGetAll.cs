@@ -71,11 +71,11 @@ public class TestLetters
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
-        var res2 = await _pingenApiClient.Letters.GetPageAndHandleResult();
+        var res2 = await _pingenApiClient.Letters.GetPageResult();
         Assert.That(res2, Is.Not.Null);
 
         List<LetterData>? letters = null;
-        await foreach (var page in _pingenApiClient.Letters.GetAllAutoPaging())
+        await foreach (var page in _pingenApiClient.Letters.GetPageResultsAsync())
         {
             letters ??= new();
             letters.AddRange(page);

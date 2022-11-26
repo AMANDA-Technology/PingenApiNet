@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
@@ -67,11 +66,7 @@ public abstract class ConnectorService : IConnectorService
     /// <returns></returns>
     protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(Func<ApiRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
     {
-        var apiReRequest = new ApiRequest
-        {
-            IdempotencyKey = Guid.NewGuid(),
-            PageNumber = 1
-        };
+        var apiReRequest = new ApiRequest { PageNumber = 1 };
 
         ApiResult<CollectionResult<TData>> result;
         do
@@ -80,11 +75,8 @@ public abstract class ConnectorService : IConnectorService
             HandleResult(result);
             yield return result.Data?.Data ?? Enumerable.Empty<TData>();
 
-            apiReRequest = apiReRequest with
-            {
-                IdempotencyKey = Guid.NewGuid(),
-                PageNumber = apiReRequest.PageNumber + 1
-            };
-        } while (result.Data?.Meta is not null && result.Data.Meta.CurrentPage < result.Data.Meta.LastPage);
+            apiReRequest = apiReRequest with { PageNumber = apiReRequest.PageNumber + 1 };
+        } while (result.Data?.Meta is not null
+                 && result.Data.Meta.CurrentPage < result.Data.Meta.LastPage);
     }
 }

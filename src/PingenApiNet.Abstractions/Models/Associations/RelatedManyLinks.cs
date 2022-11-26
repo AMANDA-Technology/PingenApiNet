@@ -31,6 +31,6 @@ namespace PingenApiNet.Abstractions.Models.Associations;
 /// Related many links
 /// </summary>
 /// <param name="Related"></param>
-public record RelatedManyLinks(
+public sealed record RelatedManyLinks(
     [property: JsonPropertyName("related")] RelatedManyLinkInfo Related
 );

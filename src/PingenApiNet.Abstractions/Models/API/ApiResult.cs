@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.API;
 
@@ -77,13 +77,18 @@ public record ApiResult
     /// API error, set when failed. <see cref="Data"/> might be empty in that case.
     /// </summary>
     public ApiError? ApiError { get; init; }
+
+    /// <summary>
+    /// Location Url, for result 302 Found
+    /// </summary>
+    public Uri? Location { get; init; }
 }
 
 /// <summary>
 /// An API result with meta information and data received from the Pingen API
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public record ApiResult<T> : ApiResult where T : IDataResult
+public sealed record ApiResult<T> : ApiResult where T : IDataResult
 {
     /// <summary>
     /// Data received from the API. Check <see cref="ApiResult.IsSuccess"/> and <see cref="ApiResult.ApiError"/>, especially when Data is null.

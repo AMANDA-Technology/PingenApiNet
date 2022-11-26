@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Enums;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.Data;

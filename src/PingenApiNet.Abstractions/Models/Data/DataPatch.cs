@@ -24,13 +24,16 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Data;
 
 /// <summary>
-/// Related many link meta
+/// Generic data PATCH object with attributes based on type to send to the API
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+public sealed record DataPatch<TAttributes> : DataPost<TAttributes>, IDataPatch
+{
+    /// <inheritdoc />
+    [JsonPropertyName("id")]
+    public required string Id { get; init; }
+}

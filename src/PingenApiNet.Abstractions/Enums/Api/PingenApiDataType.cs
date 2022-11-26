@@ -24,13 +24,68 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Related many link meta
+/// Pingen API data type to identify the kind of data transported in requests
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PingenApiDataType
+{
+    /// <summary>
+    /// Data type letters
+    /// </summary>
+    letters,
+
+    /// <summary>
+    /// Data type organisations
+    /// </summary>
+    organisations,
+
+    /// <summary>
+    /// Data type letter_price_calculator
+    /// </summary>
+    letter_price_calculator,
+
+    /// <summary>
+    /// Data type letters_events
+    /// </summary>
+    letters_events,
+
+    /// <summary>
+    /// Data type users
+    /// </summary>
+    users,
+
+    /// <summary>
+    /// Data type associations
+    /// </summary>
+    associations,
+
+    /// <summary>
+    /// Data type webhooks
+    /// </summary>
+    webhooks,
+
+    /// <summary>
+    /// Data type file_uploads
+    /// </summary>
+    file_uploads,
+
+    /// <summary>
+    /// Data type webhook_issues
+    /// </summary>
+    webhook_issues,
+
+    /// <summary>
+    /// Data type webhook_sent
+    /// </summary>
+    webhook_sent,
+
+    /// <summary>
+    /// Data type webhook_undeliverable
+    /// </summary>
+    webhook_undeliverable
+}

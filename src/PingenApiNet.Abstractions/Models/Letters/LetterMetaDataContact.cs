@@ -28,9 +28,9 @@ using System.Text.Json.Serialization;
 namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Contact address for <see cref="LetterCreateMetaData.Recipient"/> and  <see cref="LetterCreateMetaData.Sender"/>
+/// Contact address for <see cref="LetterMetaData.Recipient"/> and  <see cref="LetterMetaData.Sender"/>
 /// </summary>
-public record LetterCreateMetaDataContact
+public sealed record LetterMetaDataContact
 {
     /// <summary>
     /// Name

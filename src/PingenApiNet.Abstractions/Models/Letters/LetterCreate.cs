@@ -32,7 +32,7 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <summary>
 /// Letter create object to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public record LetterCreate
+public sealed record LetterCreate
 {
     /// <summary>
     /// Filename [ 5 .. 255 ] characters
@@ -86,5 +86,5 @@ public record LetterCreate
     /// Meta data
     /// </summary>
     [JsonPropertyName("meta_data")]
-    public required LetterCreateMetaData MetaData { get; init; }
+    public required LetterMetaData MetaData { get; init; }
 }

@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.API;
 
@@ -33,12 +33,6 @@ namespace PingenApiNet.Abstractions.Models.API;
 /// </summary>
 public record ApiRequest
 {
-    /// <summary>
-    /// To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see>
-    /// </summary>
-    public Guid? IdempotencyKey { get; init; }
-
     /// <summary>
     /// Enumerable of sort instructions with property name and sort direction, where the order is relevant.
     /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Sorting-collections">API Doc - Sorting</see>
@@ -82,7 +76,7 @@ public record ApiRequest
 /// An API request object to sent to the API with meta information to send as headers or query parameters and data (with type T) to send in body
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public record ApiRequest<T> : ApiRequest where T : IDataPost
+public sealed record ApiRequest<T> : ApiRequest where T : IDataPost
 {
     /// <summary>
     /// Data to send to the API

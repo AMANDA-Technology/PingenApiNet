@@ -24,13 +24,37 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Related many link meta
+/// Letter send object to send via <see cref="DataPatch{TAttributes}"/> to the API
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+public sealed record LetterSend
+{
+    /// <summary>
+    /// Delivery product
+    /// </summary>
+    [JsonPropertyName("delivery_product")]
+    public required LetterDeliveryProduct DeliveryProduct { get; init; }
+
+    /// <summary>
+    /// Print mode
+    /// </summary>
+    [JsonPropertyName("print_mode")]
+    public required LetterPrintMode PrintMode { get; init; }
+
+    /// <summary>
+    /// Print spectrum
+    /// </summary>
+    [JsonPropertyName("print_spectrum")]
+    public required LetterPrintSpectrum PrintSpectrum { get; init; }
+
+    /// <summary>
+    /// Meta data
+    /// </summary>
+    [JsonPropertyName("meta_data")]
+    public LetterMetaData? MetaData { get; init; }
+}

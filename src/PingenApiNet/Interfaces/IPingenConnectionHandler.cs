@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.API;
 
 namespace PingenApiNet.Interfaces;
@@ -51,15 +51,25 @@ public interface IPingenConnectionHandler
     public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
-    /// Base POST request
+    /// Base GET request
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult> GetAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base POST request with payload
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="apiRequest">Request object to send to the API</param>
+    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
     /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
+    public Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
 
     /// <summary>
     /// Base DELETE request
@@ -67,18 +77,28 @@ public interface IPingenConnectionHandler
     /// <param name="requestPath">Relative request path</param>
     /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
+    public Task<ApiResult> DeleteAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Base PATCH request
+    /// Base PATCH request without payload
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="apiRequest">Request object to send to the API</param>
+    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult> PatchAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base PATCH request with payload
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="apiRequest">Request object to send to the API</param>
+    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
-    /// <typeparam name="TPost"></typeparam>
+    /// <typeparam name="TPatch"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> PatchAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
+    public Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, ApiRequest<TPatch> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch;
 }

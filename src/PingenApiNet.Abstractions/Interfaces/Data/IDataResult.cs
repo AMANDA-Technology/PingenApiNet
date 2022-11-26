@@ -23,24 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Meta data for <see cref="LetterCreate"/>
+/// Empty interface to require an IDataResult{T} without type specification
 /// </summary>
-public record LetterCreateMetaData
+public interface IDataResult
+{
+}
+
+/// <summary>
+/// Interface for all API data results
+/// </summary>
+public interface IDataResult<T> : IDataResult
 {
     /// <summary>
-    /// Recipient
+    /// Data received from API
     /// </summary>
-    [JsonPropertyName("recipient")]
-    public required LetterCreateMetaDataContact Recipient { get; init; }
-
-    /// <summary>
-    /// Sender
-    /// </summary>
-    [JsonPropertyName("sender")]
-    public required LetterCreateMetaDataContact Sender { get; init; }
+    public T Data { get; init; }
 }

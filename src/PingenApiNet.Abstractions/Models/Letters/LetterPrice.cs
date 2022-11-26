@@ -23,22 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Interfaces.Api;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Api;
+
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Empty interface to require an IDataResult{T} without type specification
+/// Letter price
 /// </summary>
-public interface IDataResult
-{
-}
-
-/// <summary>
-/// Interface for all API data results
-/// </summary>
-public interface IDataResult<T> : IDataResult
-{
-    /// <summary>
-    /// Data received from API
-    /// </summary>
-    public T Data { get; init; }
-}
+/// <param name="Currency"></param>
+/// <param name="Price"></param>
+public sealed record LetterPrice(
+    [property: JsonPropertyName("currency")] PingenApiCurrency Currency,
+    [property: JsonPropertyName("price")] decimal Price
+);

@@ -24,68 +24,19 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-// ReSharper disable InconsistentNaming
+using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Enums;
+namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
-/// Pingen API data type to identify the kind of data transported in requests
+/// Letter update (edit) object to send via <see cref="DataPatch{TAttributes}"/> to the API
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PingenApiDataType
+public sealed record LetterUpdate
 {
     /// <summary>
-    /// Data type letters
+    /// Paper types. Paper types. Use values from <see cref="LetterPaperTypes"/>
     /// </summary>
-    letters,
-
-    /// <summary>
-    /// Data type organisations
-    /// </summary>
-    organisations,
-
-    /// <summary>
-    /// Data type letter_price_calculator
-    /// </summary>
-    letter_price_calculator,
-
-    /// <summary>
-    /// Data type letters_events
-    /// </summary>
-    letters_events,
-
-    /// <summary>
-    /// Data type users
-    /// </summary>
-    users,
-
-    /// <summary>
-    /// Data type associations
-    /// </summary>
-    associations,
-
-    /// <summary>
-    /// Data type webhooks
-    /// </summary>
-    webhooks,
-
-    /// <summary>
-    /// Data type file_uploads
-    /// </summary>
-    file_uploads,
-
-    /// <summary>
-    /// Data type webhook_issues
-    /// </summary>
-    webhook_issues,
-
-    /// <summary>
-    /// Data type webhook_sent
-    /// </summary>
-    webhook_sent,
-
-    /// <summary>
-    /// Data type webhook_undeliverable
-    /// </summary>
-    webhook_undeliverable
+    [JsonPropertyName("paper_types")]
+    public required List<string> PaperTypes { get; init; } // NOTE: is not required in API Doc, but there is nothing else to change... :)
 }

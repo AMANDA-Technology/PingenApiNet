@@ -24,10 +24,11 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Enums;
-using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.Data;
+
 /// <summary>
 /// Generic data POST object with attributes based on type to send to the API
 /// </summary>

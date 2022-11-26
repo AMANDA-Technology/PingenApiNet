@@ -32,7 +32,7 @@ namespace PingenApiNet.Abstractions.Models.Associations;
 /// </summary>
 /// <param name="Href"></param>
 /// <param name="Meta"></param>
-public record RelatedManyLinkInfo(
+public sealed record RelatedManyLinkInfo(
     [property: JsonPropertyName("href")] string Href,
     [property: JsonPropertyName("meta")] RelatedManyLinkMeta Meta
 );

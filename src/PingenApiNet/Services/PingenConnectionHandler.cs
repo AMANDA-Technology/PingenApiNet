@@ -29,7 +29,7 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Records;
@@ -136,24 +136,38 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
+    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, apiRequest, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
+    public async Task<ApiResult> DeleteAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath, apiRequest), cancellationToken));
+    }
+
+    /// <inheritdoc cref="PatchAsync" />
+    public async Task<ApiResult> PatchAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    {
+        await SetOrUpdateAccessToken();
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, apiRequest, idempotencyKey), cancellationToken));
+    }
+
+    /// <inheritdoc cref="PatchAsync{TResult,TPost}" />
+    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, ApiRequest<TPatch> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
+    {
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, apiRequest, idempotencyKey), cancellationToken));
     }
 
     /// <summary>
@@ -162,10 +176,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="httpMethod"></param>
     /// <param name="requestPath"></param>
     /// <param name="apiRequest"></param>
+    /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, ApiRequest<T> apiRequest) where T : IDataPost
+    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, ApiRequest<T> apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
     {
-        var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest);
+        var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest, idempotencyKey);
 
         httpRequestMessage.Content = apiRequest.Data is null
             ? null
@@ -180,8 +195,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="requestPath"></param>
     /// <param name="apiRequest"></param>
     /// <param name="httpMethod"></param>
+    /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, ApiRequest? apiRequest)
+    private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey)
     {
         var httpRequestMessage = new HttpRequestMessage
         {
@@ -194,14 +210,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!, $"organisations/{_organisationId}/{requestPath}"));
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
-        if (apiRequest is not null)
-        {
-            foreach (var (key, value) in GetRequestHeaders(apiRequest))
-                httpRequestMessage.Headers.Add(key, value);
+        foreach (var (key, value) in GetRequestHeaders(apiRequest, idempotencyKey))
+            httpRequestMessage.Headers.Add(key, value);
 
-            foreach (var (key, value) in GetQueryParameters(apiRequest))
-                query[key] = value;
-        }
+        foreach (var (key, value) in GetQueryParameters(apiRequest))
+            query[key] = value;
 
         uriBuilder.Query = query.ToString();
         httpRequestMessage.RequestUri = uriBuilder.Uri;
@@ -213,11 +226,17 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// Get API request headers
     /// </summary>
     /// <param name="apiRequest"></param>
+    /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private static IEnumerable<KeyValuePair<string, string>> GetRequestHeaders(ApiRequest apiRequest)
+    private static IEnumerable<KeyValuePair<string, string>> GetRequestHeaders(ApiRequest? apiRequest, [Optional] Guid? idempotencyKey)
     {
-        if (apiRequest.IdempotencyKey.HasValue)
-            yield return new(ApiHeaderNames.IdempotencyKey, apiRequest.IdempotencyKey.Value.ToString());
+        if (idempotencyKey.HasValue)
+            yield return new(ApiHeaderNames.IdempotencyKey, idempotencyKey.Value.ToString());
+
+        if (apiRequest is not null)
+        {
+            // nothing
+        }
     }
 
     /// <summary>
@@ -225,26 +244,29 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="apiRequest"></param>
     /// <returns></returns>
-    private static IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest apiRequest)
+    private static IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest? apiRequest)
     {
-        if (apiRequest.Sorting?.Any() is true)
-            yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
+        if (apiRequest is not null)
+        {
+            if (apiRequest.Sorting?.Any() is true)
+                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
 
-        if (apiRequest.Filtering?.Any() is true)
-            yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiRequest.Filtering));
+            if (apiRequest.Filtering?.Any() is true)
+                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiRequest.Filtering));
 
-        if (!string.IsNullOrEmpty(apiRequest.Searching))
-            yield return new(ApiQueryParameterNames.Searching, apiRequest.Searching);
+            if (!string.IsNullOrEmpty(apiRequest.Searching))
+                yield return new(ApiQueryParameterNames.Searching, apiRequest.Searching);
 
-        if (apiRequest.PageNumber.HasValue)
-            yield return new(ApiQueryParameterNames.PageNumber, apiRequest.PageNumber.Value.ToString());
+            if (apiRequest.PageNumber.HasValue)
+                yield return new(ApiQueryParameterNames.PageNumber, apiRequest.PageNumber.Value.ToString());
 
-        if (apiRequest.PageLimit.HasValue)
-            yield return new(ApiQueryParameterNames.PageLimit, apiRequest.PageLimit.Value.ToString());
+            if (apiRequest.PageLimit.HasValue)
+                yield return new(ApiQueryParameterNames.PageLimit, apiRequest.PageLimit.Value.ToString());
 
-        // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+            // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
-        // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+            // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+        }
     }
 
     /// <summary>
@@ -255,33 +277,45 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private async Task<ApiResult<T>> GetApiResult<T>(HttpResponseMessage httpResponseMessage) where T : IDataResult
     {
+        var isSuccess = httpResponseMessage.IsSuccessStatusCode || httpResponseMessage.StatusCode is HttpStatusCode.Found;
         var headers = GetResponseHeaders(httpResponseMessage);
-
-        if (httpResponseMessage.IsSuccessStatusCode)
-            return new()
-            {
-                IsSuccess = true,
-                Data = JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync()),
-                RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
-                RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
-                RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
-                RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
-                RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
-                IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-                ApiError = null
-            };
 
         return new()
         {
-            IsSuccess = false,
-            Data = default,
+            IsSuccess = isSuccess,
             RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
             RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
             RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
             RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-            ApiError = JsonSerializer.Deserialize<ApiError>(await httpResponseMessage.Content.ReadAsStringAsync())
+            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(await httpResponseMessage.Content.ReadAsStringAsync()),
+            Location = (Uri?) headers[ApiHeaderNames.Location],
+            Data = httpResponseMessage.IsSuccessStatusCode ? JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync()) : default
+        };
+    }
+
+    /// <summary>
+    /// Get API result from response
+    /// </summary>
+    /// <param name="httpResponseMessage"></param>
+    /// <returns></returns>
+    private async Task<ApiResult> GetApiResult(HttpResponseMessage httpResponseMessage)
+    {
+        var isSuccess = httpResponseMessage.IsSuccessStatusCode || httpResponseMessage.StatusCode is HttpStatusCode.Found;
+        var headers = GetResponseHeaders(httpResponseMessage);
+
+        return new()
+        {
+            IsSuccess = isSuccess,
+            RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
+            RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
+            RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
+            RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
+            RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
+            IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
+            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(await httpResponseMessage.Content.ReadAsStringAsync()),
+            Location = (Uri?) headers[ApiHeaderNames.Location]
         };
     }
 
@@ -290,7 +324,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="httpResponseMessage"></param>
     /// <returns></returns>
-    private Dictionary<string, object?> GetResponseHeaders(HttpResponseMessage httpResponseMessage)
+    private static Dictionary<string, object?> GetResponseHeaders(HttpResponseMessage httpResponseMessage)
     {
         return new()
         {
@@ -316,7 +350,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
             [ApiHeaderNames.IdempotentReplayed] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.IdempotentReplayed, out values)
                                                   && bool.TryParse(values.First(), out var idempotentReplayed)
-                                                  && idempotentReplayed
+                                                  && idempotentReplayed,
+
+            [ApiHeaderNames.Location] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.Location, out values) && Uri.TryCreate(values.First(), UriKind.Absolute, out var location)
+                ? location
+                : null
         };
     }
 }

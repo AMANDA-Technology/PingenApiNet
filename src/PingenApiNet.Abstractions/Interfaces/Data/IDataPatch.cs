@@ -23,14 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Related many link meta
+/// Interface for data objects to patch to the API
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+public interface IDataPatch : IDataPost
+{
+    /// <summary>
+    /// Id of the object
+    /// </summary>
+    public string Id { get; init; }
+}

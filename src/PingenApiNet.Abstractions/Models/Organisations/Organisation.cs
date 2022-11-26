@@ -43,7 +43,7 @@ namespace PingenApiNet.Abstractions.Models.Organisations;
 /// <param name="Color"></param>
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
-public record Organisation(
+public sealed record Organisation(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("status")] string Status,
     [property: JsonPropertyName("plan")] string Plan,

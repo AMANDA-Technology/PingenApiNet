@@ -24,9 +24,8 @@ SOFTWARE.
 */
 
 using System.Runtime.Serialization;
-using PingenApiNet.Abstractions.Models.API;
 
-namespace PingenApiNet.Abstractions.Enums.Api;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
 /// Represents errors that occur from Pingen API responses

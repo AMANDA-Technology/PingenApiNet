@@ -30,4 +30,4 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <summary>
 /// Letter data object
 /// </summary>
-public record LetterData : Data<Letter, LetterRelationships>;
+public sealed record LetterData : Data<Letter, LetterRelationships>;

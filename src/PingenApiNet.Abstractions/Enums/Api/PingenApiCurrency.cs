@@ -24,13 +24,24 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Related many link meta
+/// Pingen API currency
 /// </summary>
-/// <param name="Count"></param>
-public sealed record RelatedManyLinkMeta(
-    [property: JsonPropertyName("count")] int Count
-);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PingenApiCurrency
+{
+    /// <summary>
+    /// EUR
+    /// </summary>
+    EUR,
+
+    /// <summary>
+    /// CHF
+    /// </summary>
+    CHF,
+    // TODO: Missing API Doc about currencies
+}

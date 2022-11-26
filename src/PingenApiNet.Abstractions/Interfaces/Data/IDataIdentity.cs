@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Enums;
+using PingenApiNet.Abstractions.Enums.Api;
 
 namespace PingenApiNet.Abstractions.Interfaces.Data;
 
