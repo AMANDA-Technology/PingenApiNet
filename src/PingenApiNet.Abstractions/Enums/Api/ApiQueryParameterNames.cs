@@ -26,18 +26,43 @@ SOFTWARE.
 namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Collection filter operator
+/// API query parameters for requests
 /// </summary>
 // TODO: use another namespaces for static values?
-public static class CollectionFilterOperator
+public static class ApiQueryParameterNames
 {
     /// <summary>
-    /// AND operator
+    /// Query parameter for Sorting
     /// </summary>
-    public const string And = "and";
+    public const string Sorting = "sort";
 
     /// <summary>
-    /// OR operator
+    /// Query parameter for Filtering
     /// </summary>
-    public const string Or = "or";
+    public const string Filtering = "filter";
+
+    /// <summary>
+    /// Query parameter for Searching
+    /// </summary>
+    public const string Searching = "q";
+
+    /// <summary>
+    /// Query parameter for page number
+    /// </summary>
+    public const string PageNumber = "page[number]";
+
+    /// <summary>
+    /// Query parameter for page limit
+    /// </summary>
+    public const string PageLimit = "page[limit]";
+
+    /// <summary>
+    /// Query parameter for sparse fieldsets
+    /// </summary>
+    public static string SparseFields(PingenApiDataType type) => $"fields[{Enum.GetName(type)}]";
+
+    /// <summary>
+    /// Query parameter for Include
+    /// </summary>
+    public const string Include = "include";
 }

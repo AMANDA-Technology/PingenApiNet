@@ -63,5 +63,11 @@ public class TestLetters
         var res = await _pingenApiClient.Letters.GetAll();
 
         Assert.That(res, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(res.IsSuccess, Is.True);
+            Assert.That(res.ApiError, Is.Null);
+            Assert.That(res.Data, Is.Not.Null);
+        });
     }
 }

@@ -23,9 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Web;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Api;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Interfaces;
@@ -77,43 +80,38 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         };
     }
 
-    /// <inheritdoc />
-    public async Task SetOrUpdateAccessToken()
+    /// <summary>
+    /// Set or update access token to use for authenticated requests
+    /// </summary>
+    /// <exception cref="Exception"></exception>
+    private async Task SetOrUpdateAccessToken()
     {
         // Only update if needed
         if (_accessToken?.ExpiresAt.AddSeconds(-60) > DateTime.Now)
-        {
             return;
-        }
 
         // Create client and set header
         using var identityClient = new HttpClient();
         identityClient.DefaultRequestHeaders.Accept.Clear();
         identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
 
-        // Set content
-        var content = new FormUrlEncodedContent(new[]
+        // Send request and validate
+        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", new FormUrlEncodedContent(new[]
         {
             new KeyValuePair<string, string>("grant_type", "client_credentials"),
             new KeyValuePair<string, string>("client_id", _configuration.ClientId),
             new KeyValuePair<string, string>("client_secret", _configuration.ClientSecret),
             //new KeyValuePair<string, string>("scope", "client-id-source"),
-        });
-
-        // Send request and validate
-        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", content);
+        }));
 
         if (!response.IsSuccessStatusCode)
         {
-            var authenticationError = await JsonSerializer
-                .DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync());
+            var authenticationError = await JsonSerializer.DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync());
 
             if (authenticationError is null)
-            {
                 throw new("Invalid authentication error received");
-            }
 
-            throw new ($"Failed to obtain token with error: {authenticationError.Message}");
+            throw new($"Failed to obtain token with error: {authenticationError.Message}");
         }
 
         // Try to get token
@@ -131,65 +129,194 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
-        // TODO: Add param ApiRequest (new type, empty, without data) and Implement headers
-        return await GetApiResult<TResult>(await _client.GetAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken));
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
-        // TODO: Implement headers
-        return await GetApiResult<TResult>(await _client.PostAsync($"organisations/{_organisationId}/{requestPath}", GetHttpContent(apiRequest.Data), cancellationToken));
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    public async Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
-        // TODO: Add param ApiRequest (new type, empty, without data) and Implement headers
-        return await GetApiResult<TResult>(await _client.DeleteAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken));
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> PatchAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
-        // TODO: Implement headers
-        return await GetApiResult<TResult>(await _client.PatchAsync($"organisations/{_organisationId}/{requestPath}", GetHttpContent(apiRequest.Data), cancellationToken));
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, apiRequest), cancellationToken));
     }
 
     /// <summary>
-    ///
+    /// Get http request message to send to the API (with body as json from data with type T)
+    /// </summary>
+    /// <param name="httpMethod"></param>
+    /// <param name="requestPath"></param>
+    /// <param name="apiRequest"></param>
+    /// <returns></returns>
+    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, ApiRequest<T> apiRequest) where T : IDataPost
+    {
+        var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest);
+
+        httpRequestMessage.Content = apiRequest.Data is null
+            ? null
+            : new StringContent(JsonSerializer.Serialize(apiRequest.Data), Encoding.UTF8, "application/json");
+
+        return httpRequestMessage;
+    }
+
+    /// <summary>
+    /// Get http request message to send to the API (without body)
+    /// </summary>
+    /// <param name="requestPath"></param>
+    /// <param name="apiRequest"></param>
+    /// <param name="httpMethod"></param>
+    /// <returns></returns>
+    private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, ApiRequest? apiRequest)
+    {
+        var httpRequestMessage = new HttpRequestMessage
+        {
+            Content = null,
+            Method = httpMethod,
+            RequestUri = null,
+            Version = HttpVersion.Version20, // TODO: HTTP2 OK?
+            VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+        };
+        var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!, $"organisations/{_organisationId}/{requestPath}"));
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+        if (apiRequest is not null)
+        {
+            foreach (var (key, value) in GetRequestHeaders(apiRequest))
+                httpRequestMessage.Headers.Add(key, value);
+
+            foreach (var (key, value) in GetQueryParameters(apiRequest))
+                query[key] = value;
+        }
+
+        uriBuilder.Query = query.ToString();
+        httpRequestMessage.RequestUri = uriBuilder.Uri;
+
+        return httpRequestMessage;
+    }
+
+    /// <summary>
+    /// Get API request headers
+    /// </summary>
+    /// <param name="apiRequest"></param>
+    /// <returns></returns>
+    private static IEnumerable<KeyValuePair<string, string>> GetRequestHeaders(ApiRequest apiRequest)
+    {
+        if (apiRequest.IdempotencyKey.HasValue)
+            yield return new(ApiHeaderNames.IdempotencyKey, apiRequest.IdempotencyKey.Value.ToString());
+    }
+
+    /// <summary>
+    /// Get API request query parameters
+    /// </summary>
+    /// <param name="apiRequest"></param>
+    /// <returns></returns>
+    private static IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest apiRequest)
+    {
+        if (apiRequest.Sorting?.Any() is true)
+            yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
+
+        if (apiRequest.Filtering?.Any() is true)
+            yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiRequest.Filtering));
+
+        if (!string.IsNullOrEmpty(apiRequest.Searching))
+            yield return new(ApiQueryParameterNames.Searching, apiRequest.Searching);
+
+        if (apiRequest.PageNumber.HasValue)
+            yield return new(ApiQueryParameterNames.PageNumber, apiRequest.PageNumber.Value.ToString());
+
+        if (apiRequest.PageLimit.HasValue)
+            yield return new(ApiQueryParameterNames.PageLimit, apiRequest.PageLimit.Value.ToString());
+
+        // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+
+        // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+    }
+
+    /// <summary>
+    /// Get API result from response
     /// </summary>
     /// <param name="httpResponseMessage"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     private async Task<ApiResult<T>> GetApiResult<T>(HttpResponseMessage httpResponseMessage) where T : IDataResult
     {
+        var headers = GetResponseHeaders(httpResponseMessage);
+
         if (httpResponseMessage.IsSuccessStatusCode)
             return new()
             {
                 IsSuccess = true,
                 Data = JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync()),
-                RequestId = Guid.Empty,
-                RateLimitLimit = 0,
-                RateLimitRemaining = 0,
-                RateLimitReset = null,
-                RetryAfter = null,
-                IdempotentReplayed = false,
+                RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
+                RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
+                RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
+                RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
+                RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
+                IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
                 ApiError = null
             };
 
-        throw new NotImplementedException("API error result not implemented yet");
+        return new()
+        {
+            IsSuccess = false,
+            Data = default,
+            RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
+            RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
+            RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
+            RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
+            RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
+            IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
+            ApiError = JsonSerializer.Deserialize<ApiError>(await httpResponseMessage.Content.ReadAsStringAsync())
+        };
     }
 
     /// <summary>
-    /// Get data as http content to send in request body
+    /// Get API headers from response
     /// </summary>
-    /// <param name="data"></param>
+    /// <param name="httpResponseMessage"></param>
     /// <returns></returns>
-    private HttpContent? GetHttpContent(IDataPost? data)
+    private Dictionary<string, object?> GetResponseHeaders(HttpResponseMessage httpResponseMessage)
     {
-        return data is null ? null : new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        return new()
+        {
+            [ApiHeaderNames.RequestId] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RequestId, out var values) && Guid.TryParse(values.First(), out var requestId)
+                ? requestId
+                : Guid.Empty,
+
+            [ApiHeaderNames.RateLimitLimit] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RateLimitLimit, out values) && int.TryParse(values.First(), out var rateLimitLimit)
+                ? rateLimitLimit
+                : 0,
+
+            [ApiHeaderNames.RateLimitRemaining] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RateLimitRemaining, out values) && int.TryParse(values.First(), out var rateLimitRemaining)
+                ? rateLimitRemaining
+                : 0,
+
+            [ApiHeaderNames.RateLimitReset] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RateLimitReset, out values) && DateTime.TryParse(values.First(), out var rateLimitReset)
+                ? rateLimitReset
+                : null,
+
+            [ApiHeaderNames.RetryAfter] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RetryAfter, out values) && int.TryParse(values.First(), out var retryAfter)
+                ? retryAfter
+                : null,
+
+            [ApiHeaderNames.IdempotentReplayed] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.IdempotentReplayed, out values)
+                                                  && bool.TryParse(values.First(), out var idempotentReplayed)
+                                                  && idempotentReplayed
+        };
     }
 }

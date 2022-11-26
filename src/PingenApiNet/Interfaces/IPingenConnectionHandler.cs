@@ -35,12 +35,6 @@ namespace PingenApiNet.Interfaces;
 public interface IPingenConnectionHandler
 {
     /// <summary>
-    /// Set or update access token to use for authenticated requests
-    /// </summary>
-    /// <returns></returns>
-    public Task SetOrUpdateAccessToken();
-
-    /// <summary>
     /// Change the organisation ID to use for upcoming requests
     /// </summary>
     /// <param name="organisationId">Id to use for all requests at /organisations/{organisationId}/*</param>
@@ -50,17 +44,18 @@ public interface IPingenConnectionHandler
     /// Base GET request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
+    public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
     /// Base POST request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="apiRequest">Request object to send to the API</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
     /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>
@@ -70,17 +65,18 @@ public interface IPingenConnectionHandler
     /// Base DELETE request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
+    public Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
     /// Base PATCH request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="apiRequest">Request object to send to the API</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <typeparam name="TResult"></typeparam>
     /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>

@@ -51,32 +51,12 @@ public sealed class LetterService : ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterData>>> GetAll()
     {
-        await _pingenConnectionHandler.SetOrUpdateAccessToken();
-
-        var response = await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters");
-
-        if (!response.IsSuccess)
-        {
-            // do something
-            throw new();
-        }
-
-        return response;
+        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters");
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data)
     {
-        await _pingenConnectionHandler.SetOrUpdateAccessToken();
-
-        var response = await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data);
-
-        if (!response.IsSuccess)
-        {
-            // do something
-            throw new();
-        }
-
-        return response;
+        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data);
     }
 }

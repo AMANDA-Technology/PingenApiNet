@@ -29,16 +29,10 @@ using PingenApiNet.Abstractions.Interfaces.Api;
 namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters and data to send in body
+/// An API request object to sent to the API with meta information to send as headers or query parameters
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public record ApiRequest<T> where T : IDataPost
+public record ApiRequest
 {
-    /// <summary>
-    /// Data to send to the API
-    /// </summary>
-    public T? Data { get; init; }
-
     /// <summary>
     /// To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string.
     /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see>
@@ -52,13 +46,14 @@ public record ApiRequest<T> where T : IDataPost
     public IEnumerable<KeyValuePair<string, CollectionSortDirection>>? Sorting { get; init; }
 
     /// <summary>
-    /// Possibly nested enumerable of filtering instructions with operator name and collection of conditions or key / value filter comparator.
+    /// Possibly nested enumerable of filtering instructions with operator name (<see cref="CollectionFilterOperator"/>) and collection of conditions (array of KeyValuePair{string, object}) or key / value filter comparator (KeyValuePair{string, string}).
     /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Filtering-collections">API Doc - Filtering</see>
     /// </summary>
     public IEnumerable<KeyValuePair<string, object>>? Filtering { get; init; }
 
     /// <summary>
-    /// Plain blind searches can be done by passing the string to be searched in the parameter q. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Searching-collections">API Doc - Searching</see>
+    /// Plain blind searches can be done by passing the string to be searched in the parameter q.
+    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Searching-collections">API Doc - Searching</see>
     /// </summary>
     public string? Searching { get; init; }
 
@@ -81,4 +76,16 @@ public record ApiRequest<T> where T : IDataPost
     // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
     // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+}
+
+/// <summary>
+/// An API request object to sent to the API with meta information to send as headers or query parameters and data (with type T) to send in body
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public record ApiRequest<T> : ApiRequest where T : IDataPost
+{
+    /// <summary>
+    /// Data to send to the API
+    /// </summary>
+    public T? Data { get; init; }
 }
