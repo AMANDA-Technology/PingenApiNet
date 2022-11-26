@@ -25,7 +25,6 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Interfaces.Connectors.Base;
 
 namespace PingenApiNet.Services.Connectors.Base;
@@ -33,9 +32,6 @@ namespace PingenApiNet.Services.Connectors.Base;
 /// <inheritdoc />
 public abstract class ConnectorService : IConnectorService
 {
-    /// <inheritdoc />
-    public abstract ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
-
     /// <inheritdoc />
     public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
     {

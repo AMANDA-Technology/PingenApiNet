@@ -24,7 +24,6 @@ SOFTWARE.
 */
 
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.API;
 
@@ -70,16 +69,4 @@ public record ApiRequest
     // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
     // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
-}
-
-/// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters and data (with type T) to send in body
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public sealed record ApiRequest<T> : ApiRequest where T : IDataPost
-{
-    /// <summary>
-    /// Data to send to the API
-    /// </summary>
-    public T? Data { get; init; }
 }

@@ -25,7 +25,6 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
 
 namespace PingenApiNet.Interfaces.Connectors.Base;
 
@@ -34,14 +33,6 @@ namespace PingenApiNet.Interfaces.Connectors.Base;
 /// </summary>
 public interface IConnectorService
 {
-    /// <summary>
-    /// Get default API request for connector service
-    /// </summary>
-    /// <param name="data"></param>
-    /// <typeparam name="TData"></typeparam>
-    /// <returns></returns>
-    public ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
-
     /// <summary>
     /// Handle API result, throw on error, return data from <see cref="CollectionResult{TData}"/>
     /// </summary>

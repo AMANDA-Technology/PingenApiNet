@@ -25,7 +25,6 @@ SOFTWARE.
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
@@ -53,24 +52,6 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public override ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data)
-    {
-        return new()
-        {
-            Sorting = null,
-            Filtering = null,
-            Searching = null,
-            PageNumber = null,
-            PageLimit = null,
-            Data = new()
-            {
-                Type = PingenApiDataType.letters,
-                Attributes = data
-            }
-        };
-    }
-
-    /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
         return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiRequest, cancellationToken);
@@ -90,56 +71,56 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> apiRequestWithData, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterData>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", apiRequestWithData, idempotencyKey, cancellationToken);
+        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<LetterData> CreateWithDefaultRequestAndHandleResult(LetterCreate data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<LetterData> CreateAndGetResult(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return HandleResult(await Create(GetDefaultApiRequest(data), idempotencyKey, cancellationToken)) ?? throw new("Unexpected result. API returned no data after create.");
+        return HandleResult(await Create(data, idempotencyKey, cancellationToken)) ?? throw new("Unexpected result. API returned no data after create.");
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Send(ApiRequest<DataPatch<LetterSend>> apiRequestWithData, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterData>>> Send(DataPatch<LetterSend> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterSend>>($"letters/{apiRequestWithData.Data?.Id}/send", apiRequestWithData, idempotencyKey, cancellationToken);
+        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterSend>>($"letters/{data.Id}/send", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Cancel(int letterId, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Cancel(int letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync($"letters/{letterId}/cancel", apiRequest, idempotencyKey, cancellationToken);
+        return await _pingenConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Get(int letterId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterData>>> Get(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<SingleResult<LetterData>>($"letters/{letterId}", apiRequest, cancellationToken);
+        return await _pingenConnectionHandler.GetAsync<SingleResult<LetterData>>($"letters/{letterId}", null, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Delete(int letterId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Delete(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.DeleteAsync($"letters/{letterId}", apiRequest, cancellationToken);
+        return await _pingenConnectionHandler.DeleteAsync($"letters/{letterId}", cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Update(ApiRequest<DataPatch<LetterUpdate>> apiRequestWithData, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterData>>> Update(DataPatch<LetterUpdate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterUpdate>>($"letters/{apiRequestWithData.Data?.Id}", apiRequestWithData, idempotencyKey, cancellationToken);
+        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterUpdate>>($"letters/{data.Id}", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> GetFileLocation(int letterId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> GetFileLocation(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync($"letters/{letterId}/file", apiRequest, cancellationToken);
+        return await _pingenConnectionHandler.GetAsync($"letters/{letterId}/file", null, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(ApiRequest<DataPost<LetterPriceConfiguration>> apiRequestWithData, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", apiRequestWithData, idempotencyKey, cancellationToken);
+        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
     }
 }

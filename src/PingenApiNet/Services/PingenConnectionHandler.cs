@@ -143,31 +143,31 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
+    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, apiRequest, idempotencyKey), cancellationToken));
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, dataPost, null, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> DeleteAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath), cancellationToken));
     }
 
     /// <inheritdoc cref="PatchAsync" />
-    public async Task<ApiResult> PatchAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> PatchAsync(string requestPath, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, apiRequest, idempotencyKey), cancellationToken));
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, null, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc cref="PatchAsync{TResult,TPost}" />
-    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, ApiRequest<TPatch> apiRequest, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
+    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, apiRequest, idempotencyKey), cancellationToken));
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, data, null, idempotencyKey), cancellationToken));
     }
 
     /// <summary>
@@ -175,16 +175,17 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="httpMethod"></param>
     /// <param name="requestPath"></param>
+    /// <param name="payload"></param>
     /// <param name="apiRequest"></param>
     /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, ApiRequest<T> apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
+    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, T? payload, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
     {
         var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest, idempotencyKey);
 
-        httpRequestMessage.Content = apiRequest.Data is null
+        httpRequestMessage.Content = payload is null
             ? null
-            : new StringContent(JsonSerializer.Serialize(apiRequest.Data), Encoding.UTF8, "application/json");
+            : new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
         return httpRequestMessage;
     }
