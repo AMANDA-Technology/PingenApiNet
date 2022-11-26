@@ -23,26 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Interfaces.Connectors;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+/// Generic response of single object endpoint
 /// </summary>
-public interface ILetterService
-{
-    /// <summary>
-    /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterData>>> GetAll();
-
-    /// <summary>
-    /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data);
-}
+/// <param name="Data"></param>
+/// <typeparam name="TData"></typeparam>
+public sealed record SingleResult<TData>(
+    [property: JsonPropertyName("data")] TData Data
+    // [property: JsonPropertyName("included")] TIncluded Included, // TODO: Implement Included?
+) : IDataResult<TData> where TData : IData;

@@ -24,19 +24,23 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Pagination;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Generic response of collection endpoint
+/// Collection filter operator
 /// </summary>
-/// <param name="Data">Collection of data objects requested from endpoint</param>
-/// <param name="Links"></param>
-/// <param name="Meta"></param>
-public sealed record GetListResult<TData>(
-    [property: JsonPropertyName("data")] IReadOnlyList<TData> Data,
-    // [property: JsonPropertyName("included")] IReadOnlyList<TIncluded> Included,
-    [property: JsonPropertyName("links")] ListLinks Links,
-    [property: JsonPropertyName("meta")] ListMeta Meta
-) where TData : IData;
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum CollectionFilterOperator
+{
+    /// <summary>
+    /// AND operator
+    /// </summary>
+    and,
+
+    /// <summary>
+    /// OR operator
+    /// </summary>
+    or
+}

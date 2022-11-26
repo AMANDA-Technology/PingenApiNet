@@ -24,6 +24,8 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Models.API;
 
 namespace PingenApiNet.Interfaces;
 
@@ -49,32 +51,38 @@ public interface IPingenConnectionHandler
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
-    public Task<HttpResponseMessage> GetAsync(string requestPath, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
     /// Base POST request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
-    /// <param name="content">The HTTP request content sent to the server</param>
+    /// <param name="apiRequest">Request object to send to the API</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>
-    public Task<HttpResponseMessage> PostAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
 
     /// <summary>
     /// Base DELETE request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
-    public Task<HttpResponseMessage> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
     /// Base PATCH request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
-    /// <param name="content">The HTTP request content sent to the server</param>
+    /// <param name="apiRequest">Request object to send to the API</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>
-    public Task<HttpResponseMessage> PatchAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<TResult>> PatchAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
 }

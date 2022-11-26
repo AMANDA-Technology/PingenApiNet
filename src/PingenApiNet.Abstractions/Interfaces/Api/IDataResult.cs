@@ -23,17 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
-
-namespace PingenApiNet.Abstractions.Models.Pagination;
+namespace PingenApiNet.Abstractions.Interfaces.Api;
 
 /// <summary>
-/// Generic response of single object endpoint
+/// Empty interface to require an IDataResult{T} without type specification
 /// </summary>
-/// <param name="Data"></param>
-/// <typeparam name="TData"></typeparam>
-public sealed record GetSingleResult<TData>(
-    [property: JsonPropertyName("data")] TData Data
-    // [property: JsonPropertyName("included")] TIncluded Included,
-) where TData : IData;
+public interface IDataResult
+{
+}
+
+/// <summary>
+/// Interface for all API data results
+/// </summary>
+public interface IDataResult<T> : IDataResult
+{
+    /// <summary>
+    /// Data received from API
+    /// </summary>
+    public T Data { get; init; }
+}

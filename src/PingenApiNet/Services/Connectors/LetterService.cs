@@ -23,19 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text;
-using System.Text.Json;
+using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
-using PingenApiNet.Abstractions.Models.Pagination;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 
 namespace PingenApiNet.Services.Connectors;
 
-/// <summary>
-/// Pingen case service endpoint
-/// </summary>
+/// <inheritdoc />
 public sealed class LetterService : ILetterService
 {
     /// <summary>
@@ -53,40 +49,34 @@ public sealed class LetterService : ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<GetListResult<LetterData>> GetAll()
+    public async Task<ApiResult<CollectionResult<LetterData>>> GetAll()
     {
         await _pingenConnectionHandler.SetOrUpdateAccessToken();
 
-        var response = await _pingenConnectionHandler.GetAsync("letters");
+        var response = await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters");
 
-        if (!response.IsSuccessStatusCode)
+        if (!response.IsSuccess)
         {
             // do something
             throw new();
         }
 
-        var res = await JsonSerializer.DeserializeAsync<GetListResult<LetterData>>(await response.Content.ReadAsStreamAsync());
-        if (res is null) throw new();
-
-        return res;
+        return response;
     }
 
     /// <inheritdoc />
-    public async Task<GetSingleResult<LetterData>> Create(DataPost<LetterCreate> data)
+    public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data)
     {
         await _pingenConnectionHandler.SetOrUpdateAccessToken();
 
-        var response = await _pingenConnectionHandler.PostAsync("letters", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+        var response = await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data);
 
-        if (!response.IsSuccessStatusCode)
+        if (!response.IsSuccess)
         {
             // do something
             throw new();
         }
 
-        var res = await JsonSerializer.DeserializeAsync<GetSingleResult<LetterData>>(await response.Content.ReadAsStreamAsync());
-        if (res is null) throw new();
-
-        return res;
+        return response;
     }
 }

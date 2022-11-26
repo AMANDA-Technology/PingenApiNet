@@ -25,22 +25,18 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.Pagination;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// List meta
+/// API error
 /// </summary>
-/// <param name="CurrentPage"></param>
-/// <param name="LastPage"></param>
-/// <param name="PerPage"></param>
-/// <param name="From"></param>
-/// <param name="To"></param>
-/// <param name="Total"></param>
-public sealed record ListMeta(
-    [property: JsonPropertyName("current_page")] int? CurrentPage,
-    [property: JsonPropertyName("last_page")] int? LastPage,
-    [property: JsonPropertyName("per_page")] int? PerPage,
-    [property: JsonPropertyName("from")] int? From,
-    [property: JsonPropertyName("to")] int? To,
-    [property: JsonPropertyName("total")] int? Total
+/// <param name="Code">An application-specific error code, expressed as a string value</param>
+/// <param name="Title">A short, human-readable summary of the problem</param>
+/// <param name="Detail">Default: "null". A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized</param>
+/// <param name="Source">An object containing references to the source of the error</param>
+public record ApiError(
+    [property: JsonPropertyName("code")] string Code,
+    [property: JsonPropertyName("title")] string Title,
+    [property: JsonPropertyName("detail")] string Detail,
+    [property: JsonPropertyName("source")] ApiErrorSource Source
 );

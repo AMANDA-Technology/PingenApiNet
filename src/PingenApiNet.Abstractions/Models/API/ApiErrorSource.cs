@@ -23,26 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Interfaces.Connectors;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+/// API error source
 /// </summary>
-public interface ILetterService
-{
-    /// <summary>
-    /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterData>>> GetAll();
-
-    /// <summary>
-    /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data);
-}
+/// <param name="Pointer">Default: "null". A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. '/data' for a primary data object, or '/data/attributes/title' for a specific attribute]</param>
+/// <param name="Parameter">Default: "null". A string indicating which URI query parameter caused the error</param>
+public record ApiErrorSource(
+    [property: JsonPropertyName("pointer")] string Pointer,
+    [property: JsonPropertyName("parameter")] string Parameter
+);

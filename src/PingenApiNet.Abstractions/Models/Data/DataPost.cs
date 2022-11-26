@@ -25,18 +25,16 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums;
+using PingenApiNet.Abstractions.Interfaces.Api;
 
 namespace PingenApiNet.Abstractions.Models.Data;
-
 /// <summary>
 /// Generic data POST object with attributes based on type to send to the API
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
-public record DataPost<TAttributes>
+public record DataPost<TAttributes> : IDataPost
 {
-    /// <summary>
-    /// Type of the object
-    /// </summary>
+    /// <inheritdoc />
     [JsonPropertyName("type")]
     public required PingenApiDataType Type { get; init; }
 

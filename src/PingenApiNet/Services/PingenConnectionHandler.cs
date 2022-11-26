@@ -24,7 +24,10 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
+using PingenApiNet.Abstractions.Interfaces.Api;
+using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Records;
 
@@ -128,26 +131,65 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<HttpResponseMessage> GetAsync(string requestPath, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
-        return await _client.GetAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken);
+        // TODO: Add param ApiRequest (new type, empty, without data) and Implement headers
+        return await GetApiResult<TResult>(await _client.GetAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<HttpResponseMessage> PostAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
-        return await _client.PostAsync($"organisations/{_organisationId}/{requestPath}", content, cancellationToken);
+        // TODO: Implement headers
+        return await GetApiResult<TResult>(await _client.PostAsync($"organisations/{_organisationId}/{requestPath}", GetHttpContent(apiRequest.Data), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<HttpResponseMessage> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<TResult>> DeleteAsync<TResult>(string requestPath, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
-        return await _client.DeleteAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken);
+        // TODO: Add param ApiRequest (new type, empty, without data) and Implement headers
+        return await GetApiResult<TResult>(await _client.DeleteAsync($"organisations/{_organisationId}/{requestPath}", cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<HttpResponseMessage> PatchAsync(string requestPath, HttpContent? content, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPost>(string requestPath, ApiRequest<TPost> apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
-        return await _client.PatchAsync($"organisations/{_organisationId}/{requestPath}", content, cancellationToken);
+        // TODO: Implement headers
+        return await GetApiResult<TResult>(await _client.PatchAsync($"organisations/{_organisationId}/{requestPath}", GetHttpContent(apiRequest.Data), cancellationToken));
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="httpResponseMessage"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    private async Task<ApiResult<T>> GetApiResult<T>(HttpResponseMessage httpResponseMessage) where T : IDataResult
+    {
+        if (httpResponseMessage.IsSuccessStatusCode)
+            return new()
+            {
+                IsSuccess = true,
+                Data = JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync()),
+                RequestId = Guid.Empty,
+                RateLimitLimit = 0,
+                RateLimitRemaining = 0,
+                RateLimitReset = null,
+                RetryAfter = null,
+                IdempotentReplayed = false,
+                ApiError = null
+            };
+
+        throw new NotImplementedException("API error result not implemented yet");
+    }
+
+    /// <summary>
+    /// Get data as http content to send in request body
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    private HttpContent? GetHttpContent(IDataPost? data)
+    {
+        return data is null ? null : new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
     }
 }

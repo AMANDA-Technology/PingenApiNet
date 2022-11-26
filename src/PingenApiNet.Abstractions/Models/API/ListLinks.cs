@@ -23,26 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Interfaces.Connectors;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+/// List links
 /// </summary>
-public interface ILetterService
-{
-    /// <summary>
-    /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterData>>> GetAll();
-
-    /// <summary>
-    /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data);
-}
+/// <param name="First"></param>
+/// <param name="Last"></param>
+/// <param name="Prev"></param>
+/// <param name="Next"></param>
+/// <param name="Self"></param>
+public sealed record ListLinks(
+    [property: JsonPropertyName("first")] string First,
+    [property: JsonPropertyName("last")] string Last,
+    [property: JsonPropertyName("prev")] string Prev,
+    [property: JsonPropertyName("next")] string Next,
+    [property: JsonPropertyName("self")] string Self
+);

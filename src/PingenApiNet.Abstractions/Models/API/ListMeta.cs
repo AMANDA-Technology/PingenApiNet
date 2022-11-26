@@ -23,26 +23,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Interfaces.Connectors;
+namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+/// List meta
 /// </summary>
-public interface ILetterService
-{
-    /// <summary>
-    /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterData>>> GetAll();
-
-    /// <summary>
-    /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
-    /// </summary>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data);
-}
+/// <param name="CurrentPage"></param>
+/// <param name="LastPage"></param>
+/// <param name="PerPage"></param>
+/// <param name="From"></param>
+/// <param name="To"></param>
+/// <param name="Total"></param>
+public sealed record ListMeta(
+    [property: JsonPropertyName("current_page")] int? CurrentPage,
+    [property: JsonPropertyName("last_page")] int? LastPage,
+    [property: JsonPropertyName("per_page")] int? PerPage,
+    [property: JsonPropertyName("from")] int? From,
+    [property: JsonPropertyName("to")] int? To,
+    [property: JsonPropertyName("total")] int? Total
+);

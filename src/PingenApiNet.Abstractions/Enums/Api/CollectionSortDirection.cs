@@ -24,21 +24,23 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Pagination;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// List links
+/// Collection sort direction
 /// </summary>
-/// <param name="First"></param>
-/// <param name="Last"></param>
-/// <param name="Prev"></param>
-/// <param name="Next"></param>
-/// <param name="Self"></param>
-public sealed record ListLinks(
-    [property: JsonPropertyName("first")] string First,
-    [property: JsonPropertyName("last")] string Last,
-    [property: JsonPropertyName("prev")] string Prev,
-    [property: JsonPropertyName("next")] string Next,
-    [property: JsonPropertyName("self")] string Self
-);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum CollectionSortDirection
+{
+    /// <summary>
+    /// Sort ascending
+    /// </summary>
+    ASC,
+
+    /// <summary>
+    /// Sort descending
+    /// </summary>
+    DESC
+}
