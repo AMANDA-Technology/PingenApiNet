@@ -36,8 +36,8 @@ namespace PingenApiNet.Abstractions.Models.API;
 /// <param name="Links"></param>
 /// <param name="Meta"></param>
 public sealed record CollectionResult<TData>(
-    [property: JsonPropertyName("data")] IReadOnlyList<TData> Data,
-    // [property: JsonPropertyName("included")] IReadOnlyList<TIncluded> Included, // TODO: Implement Included?
+    [property: JsonPropertyName("data")] IList<TData> Data,
+    // [property: JsonPropertyName("included")] IList<TIncluded> Included, // TODO: Implement Included?
     [property: JsonPropertyName("links")] ListLinks Links,
     [property: JsonPropertyName("meta")] ListMeta Meta
-) : IDataResult<IReadOnlyList<TData>> where TData : IData;
+) : IDataResult<IList<TData>> where TData : IData;

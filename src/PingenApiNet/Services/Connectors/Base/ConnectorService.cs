@@ -23,23 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Interfaces.Connectors;
+using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Interfaces.Connectors.Base;
 
-namespace PingenApiNet.Interfaces;
+namespace PingenApiNet.Services.Connectors.Base;
 
-/// <summary>
-/// Connector service to call Pingen REST API. <see href="https://api.v2.pingen.com/documentation">API Doc</see>
-/// </summary>
-public interface IPingenApiClient
+/// <inheritdoc />
+public abstract class ConnectorService : IConnectorService
 {
-    /// <summary>
-    /// Change the organisation ID to use for upcoming requests
-    /// </summary>
-    /// <param name="organisationId">Id to use for all requests at /organisations/{organisationId}/*</param>
-    public void SetOrganisationId(string organisationId);
+    /// <inheritdoc />
+    public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
+    {
+        if (!apiResult.IsSuccess)
+            throw new PingenApiErrorException(apiResult);
 
-    /// <summary>
-    /// Pingen letters connector. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
-    /// </summary>
-    public ILetterService Letters { get; set; }
+        return apiResult.Data is null
+            ? new()
+            : apiResult.Data.Data.ToList();
+    }
+
+    /// <inheritdoc />
+    public TData? HandleResult<TData>(ApiResult<SingleResult<TData>> apiResult) where TData : IData
+    {
+        if (!apiResult.IsSuccess)
+            throw new PingenApiErrorException(apiResult);
+
+        return apiResult.Data is null
+            ? default
+            : apiResult.Data.Data;
+    }
+
+    /// <inheritdoc />
+    public abstract ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
 }

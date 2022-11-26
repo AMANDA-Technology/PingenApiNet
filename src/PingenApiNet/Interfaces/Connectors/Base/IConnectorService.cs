@@ -23,23 +23,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Interfaces.Connectors;
+using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Interfaces;
+namespace PingenApiNet.Interfaces.Connectors.Base;
 
 /// <summary>
-/// Connector service to call Pingen REST API. <see href="https://api.v2.pingen.com/documentation">API Doc</see>
+/// Base interface for all connector services for the API
 /// </summary>
-public interface IPingenApiClient
+public interface IConnectorService
 {
     /// <summary>
-    /// Change the organisation ID to use for upcoming requests
+    /// Handle API result, throw on error, return data from <see cref="CollectionResult{TData}"/>
     /// </summary>
-    /// <param name="organisationId">Id to use for all requests at /organisations/{organisationId}/*</param>
-    public void SetOrganisationId(string organisationId);
+    /// <param name="apiResult"></param>
+    /// <typeparam name="TData"></typeparam>
+    /// <returns></returns>
+    public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData;
 
     /// <summary>
-    /// Pingen letters connector. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+    /// Handle API result, throw on error, return data from <see cref="SingleResult{TData}"/>
     /// </summary>
-    public ILetterService Letters { get; set; }
+    /// <param name="apiResult"></param>
+    /// <typeparam name="TData"></typeparam>
+    /// <returns></returns>
+    public TData? HandleResult<TData>(ApiResult<SingleResult<TData>> apiResult) where TData : IData;
+
+    /// <summary>
+    /// Get default API request for connector service
+    /// </summary>
+    /// <param name="data"></param>
+    /// <typeparam name="TData"></typeparam>
+    /// <returns></returns>
+    public ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
 }

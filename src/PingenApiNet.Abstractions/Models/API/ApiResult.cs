@@ -28,20 +28,14 @@ using PingenApiNet.Abstractions.Interfaces.Api;
 namespace PingenApiNet.Abstractions.Models.API;
 
 /// <summary>
-/// An API result with meta information and data received from the pingen API
+/// An API result with meta information received from the Pingen API
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public record ApiResult<T> where T : IDataResult
+public record ApiResult
 {
     /// <summary>
     /// Indicates if the API call was successfully or not
     /// </summary>
     public bool IsSuccess { get; init; }
-
-    /// <summary>
-    /// Data received from the API. Check <see cref="IsSuccess"/> and <see cref="ApiError"/>, especially when Data is empty.
-    /// </summary>
-    public T? Data { get; init; }
 
     /// <summary>
     /// UUID. Can be used for support inquiries.
@@ -83,4 +77,16 @@ public record ApiResult<T> where T : IDataResult
     /// API error, set when failed. <see cref="Data"/> might be empty in that case.
     /// </summary>
     public ApiError? ApiError { get; init; }
+}
+
+/// <summary>
+/// An API result with meta information and data received from the Pingen API
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public record ApiResult<T> : ApiResult where T : IDataResult
+{
+    /// <summary>
+    /// Data received from the API. Check <see cref="ApiResult.IsSuccess"/> and <see cref="ApiResult.ApiError"/>, especially when Data is null.
+    /// </summary>
+    public T? Data { get; init; }
 }

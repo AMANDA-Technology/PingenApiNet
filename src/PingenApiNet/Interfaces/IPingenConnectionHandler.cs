@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.API;
 namespace PingenApiNet.Interfaces;
 
 /// <summary>
-/// Connection handler to call pingen REST API
+/// Connection handler to call Pingen REST API
 /// </summary>
 public interface IPingenConnectionHandler
 {

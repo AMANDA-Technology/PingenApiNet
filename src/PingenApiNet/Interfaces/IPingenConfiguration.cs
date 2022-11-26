@@ -26,7 +26,7 @@ SOFTWARE.
 namespace PingenApiNet.Interfaces;
 
 /// <summary>
-/// Configuration for accessing pingen API
+/// Configuration for accessing Pingen API
 /// </summary>
 public interface IPingenConfiguration
 {

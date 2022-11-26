@@ -60,7 +60,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private string _organisationId;
 
     /// <summary>
-    /// Create a new connection handler to call pingen REST API
+    /// Create a new connection handler to call Pingen REST API
     /// </summary>
     /// <param name="configuration"></param>
     public PingenConnectionHandler(IPingenConfiguration configuration)

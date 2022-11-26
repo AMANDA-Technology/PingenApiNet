@@ -26,13 +26,14 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Interfaces.Connectors.Base;
 
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
 /// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
 /// </summary>
-public interface ILetterService
+public interface ILetterService : IConnectorService
 {
     /// <summary>
     /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
@@ -41,8 +42,20 @@ public interface ILetterService
     public Task<ApiResult<CollectionResult<LetterData>>> GetAll();
 
     /// <summary>
+    /// Call <see cref="GetAll"/> and handle result via <see cref="IConnectorService.HandleResult{TData}(ApiResult{CollectionResult{TData}})"/>
+    /// </summary>
+    /// <returns></returns>
+    public Task<List<LetterData>> GetAllAndHandleResult();
+
+    /// <summary>
     /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
     /// </summary>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data);
+
+    /// <summary>
+    /// Use <see cref="IConnectorService.GetDefaultApiRequest{TData}"/> to call <see cref="Create"/> and handle result via <see cref="IConnectorService.HandleResult{TData}(ApiResult{SingleResult{TData}})"/>
+    /// </summary>
+    /// <returns></returns>
+    public Task<LetterData> CreateWithDefaultAndHandleResult(LetterCreate data);
 }

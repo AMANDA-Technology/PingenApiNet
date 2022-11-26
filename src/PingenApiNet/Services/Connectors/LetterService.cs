@@ -23,16 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Enums;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
+using PingenApiNet.Services.Connectors.Base;
 
 namespace PingenApiNet.Services.Connectors;
 
-/// <inheritdoc />
-public sealed class LetterService : ILetterService
+/// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.ILetterService" />
+public sealed class LetterService : ConnectorService, ILetterService
 {
     /// <summary>
     /// Pingen connection handler
@@ -49,14 +51,45 @@ public sealed class LetterService : ILetterService
     }
 
     /// <inheritdoc />
+    public override ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data)
+    {
+        return new()
+        {
+            IdempotencyKey = null,
+            Sorting = null,
+            Filtering = null,
+            Searching = null,
+            PageNumber = null,
+            PageLimit = null,
+            Data = new()
+            {
+                Type = PingenApiDataType.letters,
+                Attributes = data
+            }
+        };
+    }
+
+    /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterData>>> GetAll()
     {
         return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters");
     }
 
     /// <inheritdoc />
+    public async Task<List<LetterData>> GetAllAndHandleResult()
+    {
+        return HandleResult(await GetAll());
+    }
+
+    /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data)
     {
         return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data);
+    }
+
+    /// <inheritdoc />
+    public async Task<LetterData> CreateWithDefaultAndHandleResult(LetterCreate data)
+    {
+        return HandleResult(await Create(GetDefaultApiRequest(data))) ?? throw new("Unexpected result. API returned no data after create.");
     }
 }

@@ -61,7 +61,6 @@ public class TestLetters
         Assert.That(_pingenApiClient, Is.Not.Null);
 
         var res = await _pingenApiClient.Letters.GetAll();
-
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -69,5 +68,8 @@ public class TestLetters
             Assert.That(res.ApiError, Is.Null);
             Assert.That(res.Data, Is.Not.Null);
         });
+
+        var res2 = await _pingenApiClient.Letters.GetAllAndHandleResult();
+        Assert.That(res2, Is.Not.Null);
     }
 }
