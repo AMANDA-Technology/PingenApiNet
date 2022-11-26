@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Models.Letters;
+
 namespace PingenApiNet.Tests;
 
 public class TestLetters
@@ -60,16 +62,24 @@ public class TestLetters
     {
         Assert.That(_pingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.Letters.GetAll();
+        var res = await _pingenApiClient.Letters.GetPage();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(res.IsSuccess, Is.True);
             Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data, Is.Not.Null);
+            Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
-        var res2 = await _pingenApiClient.Letters.GetAllAndHandleResult();
+        var res2 = await _pingenApiClient.Letters.GetPageAndHandleResult();
         Assert.That(res2, Is.Not.Null);
+
+        List<LetterData>? letters = null;
+        await foreach (var page in _pingenApiClient.Letters.GetAllAutoPaging())
+        {
+            letters ??= new();
+            letters.AddRange(page);
+        }
+        Assert.That(letters, Is.Not.Null);
     }
 }

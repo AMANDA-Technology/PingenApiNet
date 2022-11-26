@@ -35,6 +35,14 @@ namespace PingenApiNet.Interfaces.Connectors.Base;
 public interface IConnectorService
 {
     /// <summary>
+    /// Get default API request for connector service
+    /// </summary>
+    /// <param name="data"></param>
+    /// <typeparam name="TData"></typeparam>
+    /// <returns></returns>
+    public ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
+
+    /// <summary>
     /// Handle API result, throw on error, return data from <see cref="CollectionResult{TData}"/>
     /// </summary>
     /// <param name="apiResult"></param>
@@ -49,12 +57,4 @@ public interface IConnectorService
     /// <typeparam name="TData"></typeparam>
     /// <returns></returns>
     public TData? HandleResult<TData>(ApiResult<SingleResult<TData>> apiResult) where TData : IData;
-
-    /// <summary>
-    /// Get default API request for connector service
-    /// </summary>
-    /// <param name="data"></param>
-    /// <typeparam name="TData"></typeparam>
-    /// <returns></returns>
-    public ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
 }

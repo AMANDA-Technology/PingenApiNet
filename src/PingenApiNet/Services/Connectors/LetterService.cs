@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Enums;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
@@ -70,26 +72,33 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterData>>> GetAll()
+    public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters");
+        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<List<LetterData>> GetAllAndHandleResult()
+    public async Task<List<LetterData>> GetPageAndHandleResult([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return HandleResult(await GetAll());
+        return HandleResult(await GetPage(cancellationToken: cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data)
+    public async IAsyncEnumerable<IEnumerable<LetterData>> GetAllAutoPaging([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data);
+        await foreach (var page in AutoPage(async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+            yield return page;
     }
 
     /// <inheritdoc />
-    public async Task<LetterData> CreateWithDefaultAndHandleResult(LetterCreate data)
+    public async Task<ApiResult<SingleResult<LetterData>>> Create(ApiRequest<DataPost<LetterCreate>> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return HandleResult(await Create(GetDefaultApiRequest(data))) ?? throw new("Unexpected result. API returned no data after create.");
+        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<LetterData> CreateWithDefaultRequestAndHandleResult(LetterCreate data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    {
+        return HandleResult(await Create(GetDefaultApiRequest(data), cancellationToken: cancellationToken)) ?? throw new("Unexpected result. API returned no data after create.");
     }
 }

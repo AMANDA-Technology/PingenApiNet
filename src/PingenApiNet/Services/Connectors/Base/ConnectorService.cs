@@ -35,6 +35,9 @@ namespace PingenApiNet.Services.Connectors.Base;
 public abstract class ConnectorService : IConnectorService
 {
     /// <inheritdoc />
+    public abstract ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
+
+    /// <inheritdoc />
     public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
     {
         if (!apiResult.IsSuccess)
@@ -56,6 +59,32 @@ public abstract class ConnectorService : IConnectorService
             : apiResult.Data.Data;
     }
 
-    /// <inheritdoc />
-    public abstract ApiRequest<DataPost<TData>> GetDefaultApiRequest<TData>(TData data);
+    /// <summary>
+    /// Generic auto page async
+    /// </summary>
+    /// <param name="getPage">Function to get page</param>
+    /// <typeparam name="TData"></typeparam>
+    /// <returns></returns>
+    protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(Func<ApiRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
+    {
+        var apiReRequest = new ApiRequest
+        {
+            IdempotencyKey = Guid.NewGuid(),
+            PageNumber = 1
+        };
+
+        ApiResult<CollectionResult<TData>> result;
+        do
+        {
+            result = await getPage.Invoke(apiReRequest);
+            HandleResult(result);
+            yield return result.Data?.Data ?? Enumerable.Empty<TData>();
+
+            apiReRequest = apiReRequest with
+            {
+                IdempotencyKey = Guid.NewGuid(),
+                PageNumber = apiReRequest.PageNumber + 1
+            };
+        } while (result.Data?.Meta is not null && result.Data.Meta.CurrentPage < result.Data.Meta.LastPage);
+    }
 }
