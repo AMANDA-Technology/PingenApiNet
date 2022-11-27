@@ -25,7 +25,7 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Models.Base;
 
-namespace PingenApiNet.Abstractions.Models.FileUpload;
+namespace PingenApiNet.Abstractions.Models.Files;
 
 /// <summary>
 /// File upload data object

@@ -26,7 +26,7 @@ SOFTWARE.
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Abstractions.Models.FileUpload;
+namespace PingenApiNet.Abstractions.Models.Files;
 
 /// <summary>
 /// File upload
