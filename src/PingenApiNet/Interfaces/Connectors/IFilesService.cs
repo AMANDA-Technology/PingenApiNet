@@ -24,45 +24,29 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Enums;
 using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.FileUpload;
-using PingenApiNet.Interfaces;
-using PingenApiNet.Interfaces.Connectors;
-using PingenApiNet.Services.Connectors.Base;
 
-namespace PingenApiNet.Services.Connectors;
+namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-///
+/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
 /// </summary>
-public sealed class FileUploadService : ConnectorService, IFileUploadService
+public interface IFilesService
 {
     /// <summary>
-    /// Pingen connection handler
+    /// Get details for file upload. <see href="https://api.v2.pingen.com/documentation#tag/misc.files/operation/files.file-upload">API Doc - Files details</see>
     /// </summary>
-    private readonly IPingenConnectionHandler _pingenConnectionHandler;
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Inject connection handler at construction
+    /// Upload a file to URL received in result from <see cref="GetPath"/>
     /// </summary>
-    /// <param name="pingenConnectionHandler"></param>
-    public FileUploadService(IPingenConnectionHandler pingenConnectionHandler)
-    {
-        _pingenConnectionHandler = pingenConnectionHandler;
-    }
-
-    /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
-    {
-        return await _pingenConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken)
-    {
-        using var httpClient = new HttpClient();
-        return (await httpClient.PutAsync(fileUploadData.Attributes.Url, new ByteArrayContent(data.ToArray()), cancellationToken)).IsSuccessStatusCode;
-    }
+    /// <param name="fileUploadData">Result from <see cref="GetPath"/></param>
+    /// <param name="data">Binary file to upload as memory stream</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken);
 }

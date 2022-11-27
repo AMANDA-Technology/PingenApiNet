@@ -23,8 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json;
-using PingenApiNet.Helpers;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors;
@@ -46,7 +44,7 @@ public sealed class PingenApiClient : IPingenApiClient
     {
         _pingenConnectionHandler = pingenConnectionHandler;
         Letters = new LetterService(_pingenConnectionHandler);
-        FileUpload = new FileUploadService(_pingenConnectionHandler);
+        Files = new FilesService(_pingenConnectionHandler);
     }
 
     /// <inheritdoc />
@@ -59,5 +57,5 @@ public sealed class PingenApiClient : IPingenApiClient
     public ILetterService Letters { get; set; }
 
     /// <inheritdoc />
-    public IFileUploadService FileUpload { get; set; }
+    public IFilesService Files { get; set; }
 }

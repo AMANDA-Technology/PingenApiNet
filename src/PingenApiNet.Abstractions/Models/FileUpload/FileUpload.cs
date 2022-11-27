@@ -29,10 +29,9 @@ using PingenApiNet.Abstractions.Interfaces.Data;
 namespace PingenApiNet.Abstractions.Models.FileUpload;
 
 /// <summary>
-///
+/// File upload
 /// </summary>
-public sealed record FileUpload
-(
+public sealed record FileUpload(
     [property: JsonPropertyName("url")] string Url,
     [property: JsonPropertyName("url_signature")] string UrlSignature,
     [property: JsonPropertyName("expires_at")] DateTime? ExpiresAt

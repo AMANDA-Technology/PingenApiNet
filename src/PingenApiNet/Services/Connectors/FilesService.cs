@@ -26,26 +26,39 @@ SOFTWARE.
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.FileUpload;
+using PingenApiNet.Interfaces;
+using PingenApiNet.Interfaces.Connectors;
+using PingenApiNet.Services.Connectors.Base;
 
-namespace PingenApiNet.Interfaces.Connectors;
+namespace PingenApiNet.Services.Connectors;
 
-/// <summary>
-///
-/// </summary>
-public interface IFileUploadService
+/// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.IFilesService" />
+public sealed class FilesService : ConnectorService, IFilesService
 {
     /// <summary>
-    ///
+    /// Pingen connection handler
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken);
+    private readonly IPingenConnectionHandler _pingenConnectionHandler;
 
     /// <summary>
-    ///
+    /// Inject connection handler at construction
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken);
+    /// <param name="pingenConnectionHandler"></param>
+    public FilesService(IPingenConnectionHandler pingenConnectionHandler)
+    {
+        _pingenConnectionHandler = pingenConnectionHandler;
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
+    {
+        return await _pingenConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken)
+    {
+        using var httpClient = new HttpClient();
+        return (await httpClient.PutAsync(fileUploadData.Attributes.Url, new ByteArrayContent(data.ToArray()), cancellationToken)).IsSuccessStatusCode;
+    }
 }

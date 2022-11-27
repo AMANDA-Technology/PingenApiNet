@@ -26,7 +26,6 @@ SOFTWARE.
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
@@ -62,7 +61,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private string _organisationId;
 
     /// <summary>
-    ///
+    /// Json serializer options with default settings and custom converters
     /// </summary>
     /// <returns></returns>
     private readonly JsonSerializerOptions _serializerOptions = new ();

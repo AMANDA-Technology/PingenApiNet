@@ -44,7 +44,7 @@ public interface IPingenApiClient
     public ILetterService Letters { get; set; }
 
     /// <summary>
-    ///
+    /// Pingen files connector. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
     /// </summary>
-    public IFileUploadService FileUpload { get; set; }
+    public IFilesService Files { get; set; }
 }

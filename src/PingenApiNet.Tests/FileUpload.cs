@@ -25,8 +25,6 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
-using PingenApiNet.Abstractions.Models.Data;
-using PingenApiNet.Abstractions.Models.Letters;
 
 namespace PingenApiNet.Tests;
 
@@ -65,7 +63,7 @@ public class TestGetFileUploadData
     {
         Assert.That(_pingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.FileUpload.GetPath();
+        var res = await _pingenApiClient.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -80,7 +78,7 @@ public class TestGetFileUploadData
     {
         Assert.That(_pingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.FileUpload.GetPath();
+        var res = await _pingenApiClient.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -91,7 +89,7 @@ public class TestGetFileUploadData
 
         MemoryStream stream = new();
         await File.OpenRead("Assets/sample.pdf").CopyToAsync(stream);
-        var uploadRes = await _pingenApiClient.FileUpload.UploadFile(res.Data!.Data, stream);
+        var uploadRes = await _pingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
         Assert.That(uploadRes, Is.True);
 

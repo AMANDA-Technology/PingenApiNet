@@ -30,5 +30,4 @@ namespace PingenApiNet.Abstractions.Interfaces.Data;
 /// </summary>
 public interface IAttributes
 {
-
 }

@@ -28,6 +28,6 @@ using PingenApiNet.Abstractions.Models.Data;
 namespace PingenApiNet.Abstractions.Models.FileUpload;
 
 /// <summary>
-///
+/// File upload data object
 /// </summary>
 public sealed record FileUploadData : Data<FileUpload>;

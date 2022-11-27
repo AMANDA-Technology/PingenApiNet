@@ -28,16 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Assets\sample_simulate_undeliverable.pdf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Assets\sample_simulate_unprintable.pdf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Assets\sample_simulate_cancellable.pdf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Assets\sample.pdf">
+      <None Update="Assets\*">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
