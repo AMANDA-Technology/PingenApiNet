@@ -83,6 +83,11 @@ public record ApiResult
     /// Location Url, for result 302 Found
     /// </summary>
     public Uri? Location { get; init; }
+
+    /// <summary>
+    /// Signature, used to verify the authenticity of webhooks
+    /// </summary>
+    public string Signature { get; init; }
 }
 
 /// <summary>

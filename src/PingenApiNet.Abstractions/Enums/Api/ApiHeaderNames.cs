@@ -77,5 +77,10 @@ public static class ApiHeaderNames
     /// </summary>
     public const string Location = "Location";
 
+    /// <summary>
+    /// Header name for signature
+    /// </summary>
+    public const string Signature = "Signature";
+
     #endregion HeadersToReceive
 }

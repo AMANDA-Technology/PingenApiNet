@@ -65,7 +65,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// Json serializer options with default settings and custom converters
     /// </summary>
     /// <returns></returns>
-    private readonly JsonSerializerOptions _serializerOptions = new ();
+    private readonly JsonSerializerOptions _serializerOptions = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
@@ -326,6 +326,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
             Location = (Uri?) headers[ApiHeaderNames.Location],
+            Signature = (string) (headers[ApiHeaderNames.Signature] ?? string.Empty),
             Data = httpResponseMessage.IsSuccessStatusCode ? JsonSerializer.Deserialize<T>(content, options: _serializerOptions) : default
         };
     }
@@ -351,7 +352,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
-            Location = (Uri?) headers[ApiHeaderNames.Location]
+            Location = (Uri?) headers[ApiHeaderNames.Location],
+            Signature = (string) (headers[ApiHeaderNames.Signature] ?? string.Empty)
         };
     }
 
@@ -390,7 +392,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
             [ApiHeaderNames.Location] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.Location, out values) && Uri.TryCreate(values.First(), UriKind.Absolute, out var location)
                 ? location
-                : null
+                : null,
+
+            [ApiHeaderNames.Signature] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.Signature, out values)
+                ? values.First()
+                : string.Empty
         };
     }
 }

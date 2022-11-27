@@ -32,7 +32,7 @@ namespace PingenApiNet.Abstractions.Models.Webhooks.Views;
 /// <summary>
 /// Letter create object to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public record WebhookCreate
+public sealed record WebhookCreate
 {
     /// <summary>
     /// Webhook event category

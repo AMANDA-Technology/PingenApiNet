@@ -23,18 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Base;
 
-namespace PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 /// <summary>
-/// Generic response of single object endpoint
+/// Webhook event data object
 /// </summary>
-/// <param name="Data">Data object requested from endpoint</param>
-/// <param name="Included">Additionally requested includes</param>
-/// <typeparam name="TData"></typeparam>
-public sealed record SingleResult<TData>(
-    [property: JsonPropertyName("data")] TData Data,
-    [property: JsonPropertyName("included")] IList<object> Included // TODO: Implement type for Included?
-) : IDataResult<TData> where TData : IData;
+public sealed record WebhookEventData : Data<WebhookEvent, WebhookEventRelationships>;

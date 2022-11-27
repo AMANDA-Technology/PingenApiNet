@@ -33,11 +33,13 @@ namespace PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 /// Generic response of collection endpoint
 /// </summary>
 /// <param name="Data">Collection of data objects requested from endpoint</param>
-/// <param name="Links"></param>
-/// <param name="Meta"></param>
+/// <param name="Included">Additionally requested includes</param>
+/// <param name="Links">Collection result links</param>
+/// <param name="Meta">Collection result meta information</param>
+/// <typeparam name="TData"></typeparam>
 public sealed record CollectionResult<TData>(
     [property: JsonPropertyName("data")] IList<TData> Data,
-    // [property: JsonPropertyName("included")] IList<TIncluded> Included, // TODO: Implement Included?
+    [property: JsonPropertyName("included")] IList<object> Included, // TODO: Implement type for Included?
     [property: JsonPropertyName("links")] CollectionResultLinks Links,
     [property: JsonPropertyName("meta")] CollectionResultMeta Meta
 ) : IDataResult<IList<TData>> where TData : IData;

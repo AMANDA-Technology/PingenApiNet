@@ -33,6 +33,6 @@ namespace PingenApiNet.Abstractions.Models.Webhooks;
 /// Webhook relationships
 /// </summary>
 /// <param name="Organisation"></param>
-public record WebhookRelationships(
+public sealed record WebhookRelationships(
     [property: JsonPropertyName("organisation")] RelatedSingleOutput Organisation
 ) : IRelationships;

@@ -25,16 +25,18 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
 
-namespace PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 /// <summary>
-/// Generic response of single object endpoint
+/// Webhook event relationships
 /// </summary>
-/// <param name="Data">Data object requested from endpoint</param>
-/// <param name="Included">Additionally requested includes</param>
-/// <typeparam name="TData"></typeparam>
-public sealed record SingleResult<TData>(
-    [property: JsonPropertyName("data")] TData Data,
-    [property: JsonPropertyName("included")] IList<object> Included // TODO: Implement type for Included?
-) : IDataResult<TData> where TData : IData;
+/// <param name="Organisation"></param>
+/// <param name="Letter"></param>
+/// <param name="Event"></param>
+public sealed record WebhookEventRelationships(
+    [property: JsonPropertyName("organisation")] RelatedSingleOutput Organisation,
+    [property: JsonPropertyName("letter")] RelatedSingleOutput Letter,
+    [property: JsonPropertyName("event")] RelatedSingleOutput Event
+) : IRelationships;
