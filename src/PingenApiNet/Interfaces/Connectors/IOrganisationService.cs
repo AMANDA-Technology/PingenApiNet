@@ -26,36 +26,36 @@ SOFTWARE.
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
-using PingenApiNet.Abstractions.Models.UserAssociations;
-using PingenApiNet.Abstractions.Models.Users;
+using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Interfaces.Connectors.Base;
 
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen user service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
+/// Pingen organisation service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
 /// </summary>
-public interface IUserService : IConnectorService
+public interface IOrganisationService : IConnectorService
 {
     /// <summary>
-    /// Get details of the authenticated user. <see href="https://api.v2.pingen.com/documentation#tag/user.general/operation/users.show">API Doc - Users show</see>
-    /// </summary>
-    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
-    public Task<ApiResult<SingleResult<UserDataDetailed>>> Get([Optional] CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Get collection of associations. <see href="https://api.v2.pingen.com/documentation#tag/user.associations/operation/user.associations.list">API Doc - Users associations</see>
+    /// Get collection of organisations. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general/operation/organisations.index">API Doc - Organisations list</see>
     /// </summary>>
     /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<OrganisationData>>> GetPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Call <see cref="GetAssociationsPage"/> and auto page until end of collection
+    /// Call <see cref="GetPage"/> and auto page until end of collection
     /// </summary>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<OrganisationData>> GetPageResultsAsync([Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get details of an organisation. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general/operation/organisations.show">API Doc - Organisations show</see>
+    /// </summary>
+    /// <param name="organisationId">ID of the organisation to get</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(int organisationId, [Optional] CancellationToken cancellationToken);
 }

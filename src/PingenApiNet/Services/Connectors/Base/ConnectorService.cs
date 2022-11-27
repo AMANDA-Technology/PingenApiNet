@@ -77,9 +77,9 @@ public abstract class ConnectorService : IConnectorService
     /// <param name="getPage">Function to get page</param>
     /// <typeparam name="TData"></typeparam>
     /// <returns></returns>
-    protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(Func<ApiRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
+    protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(Func<ApiPagingRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
     {
-        var apiReRequest = new ApiRequest { PageNumber = 1 };
+        var apiReRequest = new ApiPagingRequest { PageNumber = 1 };
 
         ApiResult<CollectionResult<TData>> result;
         do

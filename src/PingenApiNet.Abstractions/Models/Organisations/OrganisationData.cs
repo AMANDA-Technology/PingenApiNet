@@ -25,14 +25,23 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
+using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.Base.Embedded;
+using PingenApiNet.Abstractions.Models.UserAssociations;
 
 namespace PingenApiNet.Abstractions.Models.Organisations;
 
 /// <summary>
-/// Organisation relationships
+/// Organisation data object
 /// </summary>
-/// <param name="Associations"></param>
-public sealed record OrganisationRelationships(
-    [property: JsonPropertyName("associations")] RelatedManyOutput Associations
-) : IRelationships;
+public record OrganisationData : Data<Organisation, OrganisationRelationships>;
+
+/// <summary>
+/// Organisation data object detailed
+/// </summary>
+public sealed record OrganisationDataDetailed : OrganisationData, IData<Organisation, OrganisationRelationships, Meta<MetaAbility<OrganisationAbilities>>>
+{
+    /// <inheritdoc />
+    [JsonPropertyName("meta")]
+    public required Meta<MetaAbility<OrganisationAbilities>> Meta { get; init; }
+}

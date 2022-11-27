@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.Organisations;
 
@@ -57,4 +58,4 @@ public sealed record Organisation(
     [property: JsonPropertyName("color")] string Color,
     [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
     [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
- );
+ ) : IAttributes;

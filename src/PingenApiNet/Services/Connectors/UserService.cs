@@ -53,7 +53,7 @@ public sealed class UserService : ConnectorService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.GetAsync<CollectionResult<UserAssociationDataDetailed>>("user/associations", apiRequest, cancellationToken);
     }

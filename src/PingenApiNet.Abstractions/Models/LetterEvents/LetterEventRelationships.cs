@@ -33,6 +33,6 @@ namespace PingenApiNet.Abstractions.Models.LetterEvents;
 /// Letter event relationships
 /// </summary>
 /// <param name="Letter"></param>
-public record LetterEventRelationships(
+public sealed record LetterEventRelationships(
     [property: JsonPropertyName("letter")] RelatedSingleOutput Letter
 ) : IRelationships;

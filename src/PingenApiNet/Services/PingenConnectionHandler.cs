@@ -26,7 +26,6 @@ SOFTWARE.
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
@@ -141,14 +140,14 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
         await SetOrUpdateAccessToken();
         return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
@@ -192,7 +191,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="apiRequest"></param>
     /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, T? payload, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
+    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, T? payload, [Optional] ApiPagingRequest? apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
     {
         var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest, idempotencyKey);
 
@@ -267,24 +266,41 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     {
         if (apiRequest is not null)
         {
-            if (apiRequest.Sorting?.Any() is true)
-                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
-
-            if (apiRequest.Filtering?.Any() is true)
-                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiRequest.Filtering, options: _serializerOptions));
-
-            if (!string.IsNullOrEmpty(apiRequest.Searching))
-                yield return new(ApiQueryParameterNames.Searching, apiRequest.Searching);
-
-            if (apiRequest.PageNumber.HasValue)
-                yield return new(ApiQueryParameterNames.PageNumber, apiRequest.PageNumber.Value.ToString());
-
-            if (apiRequest.PageLimit.HasValue)
-                yield return new(ApiQueryParameterNames.PageLimit, apiRequest.PageLimit.Value.ToString());
-
             // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
             // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+
+            if (apiRequest is not ApiPagingRequest apiPagingRequest)
+                yield break;
+
+            foreach (var keyValuePair in GetQueryParameters(apiPagingRequest))
+                yield return keyValuePair;
+        }
+    }
+
+    /// <summary>
+    /// Get API request query parameters
+    /// </summary>
+    /// <param name="apiPagingRequest"></param>
+    /// <returns></returns>
+    private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiPagingRequest? apiPagingRequest)
+    {
+        if (apiPagingRequest is not null)
+        {
+            if (apiPagingRequest.Sorting?.Any() is true)
+                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
+
+            if (apiPagingRequest.Filtering?.Any() is true)
+                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiPagingRequest.Filtering, options: _serializerOptions));
+
+            if (!string.IsNullOrEmpty(apiPagingRequest.Searching))
+                yield return new(ApiQueryParameterNames.Searching, apiPagingRequest.Searching);
+
+            if (apiPagingRequest.PageNumber.HasValue)
+                yield return new(ApiQueryParameterNames.PageNumber, apiPagingRequest.PageNumber.Value.ToString());
+
+            if (apiPagingRequest.PageLimit.HasValue)
+                yield return new(ApiQueryParameterNames.PageLimit, apiPagingRequest.PageLimit.Value.ToString());
         }
     }
 
