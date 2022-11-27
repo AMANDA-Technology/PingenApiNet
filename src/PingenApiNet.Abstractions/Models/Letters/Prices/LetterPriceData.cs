@@ -26,7 +26,7 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Models.Letters.Prices;
 
 /// <summary>
 /// Letter price data object

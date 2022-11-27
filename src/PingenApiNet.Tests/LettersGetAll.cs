@@ -71,9 +71,6 @@ public class TestLetters
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
-        var res2 = await _pingenApiClient.Letters.GetPageResult();
-        Assert.That(res2, Is.Not.Null);
-
         List<LetterData>? letters = null;
         await foreach (var page in _pingenApiClient.Letters.GetPageResultsAsync())
         {

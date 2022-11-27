@@ -23,15 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Relations;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Organisations;
+namespace PingenApiNet.Abstractions.Models.Letters.Events;
 
 /// <summary>
-/// Organisation relationships
+/// Letter data object
 /// </summary>
-/// <param name="Associations"></param>
-public sealed record OrganisationRelationships(
-    [property: JsonPropertyName("associations")] RelatedManyOutput Associations
-);
+public sealed record LetterEventData : Data<LetterEvent, LetterEventRelationships>;

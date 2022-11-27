@@ -27,7 +27,7 @@ using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Models.Letters.Prices;
 
 /// <summary>
 /// Letter configuration for price calculator to send via <see cref="DataPost{TAttributes}"/> to the API

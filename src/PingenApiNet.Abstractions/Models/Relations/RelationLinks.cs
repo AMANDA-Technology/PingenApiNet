@@ -25,12 +25,12 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Relations;
 
 /// <summary>
-/// Related many output. NOTE: Not sure how this works, the documentation mentions 'to many' relationships, but there is always an object and never a list.
+/// Relation links
 /// </summary>
-/// <param name="Links"></param>
-public sealed record RelatedManyOutput(
-    [property: JsonPropertyName("links")] RelatedManyLinks Links
+/// <param name="Related"></param>
+public sealed record RelationLinks(
+    [property: JsonPropertyName("related")] string Related
 );

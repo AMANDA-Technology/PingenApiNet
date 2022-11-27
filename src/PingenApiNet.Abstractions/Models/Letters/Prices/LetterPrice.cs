@@ -27,7 +27,7 @@ using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Models.Letters.Prices;
 
 /// <summary>
 /// Letter price

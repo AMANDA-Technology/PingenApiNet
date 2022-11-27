@@ -24,14 +24,13 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Relations;
 
-namespace PingenApiNet.Abstractions.Models.Organisations;
+namespace PingenApiNet.Abstractions.Models.Relations;
 
 /// <summary>
-/// Organisation relationships
+/// Related many link meta
 /// </summary>
-/// <param name="Associations"></param>
-public sealed record OrganisationRelationships(
-    [property: JsonPropertyName("associations")] RelatedManyOutput Associations
+/// <param name="Count"></param>
+public sealed record RelatedManyLinkMeta(
+    [property: JsonPropertyName("count")] int Count
 );

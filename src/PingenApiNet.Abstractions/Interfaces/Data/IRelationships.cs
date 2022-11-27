@@ -23,14 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-
-namespace PingenApiNet.Abstractions.Models.Data;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Relation links
+/// Empty interface for contract to relationship models
 /// </summary>
-/// <param name="Related"></param>
-public sealed record RelationLinks(
-    [property: JsonPropertyName("related")] string Related
-);
+public interface IRelationships
+{
+}

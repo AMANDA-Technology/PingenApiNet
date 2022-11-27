@@ -24,15 +24,18 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Related many link info
+/// Pingen API languages
 /// </summary>
-/// <param name="Href"></param>
-/// <param name="Meta"></param>
-public sealed record RelatedManyLinkInfo(
-    [property: JsonPropertyName("href")] string Href,
-    [property: JsonPropertyName("meta")] RelatedManyLinkMeta Meta
-);
+// TODO: Only used for letter events?
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PingenApiLanguage
+{
+    en,
+    de
+    // TODO: Which languages are supported?
+}

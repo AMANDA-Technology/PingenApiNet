@@ -24,16 +24,15 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Organisations;
+namespace PingenApiNet.Abstractions.Models.Relations;
 
 /// <summary>
-/// Relation to a single organisation
+/// Related many link info
 /// </summary>
-/// <param name="Links"></param>
-/// <param name="Data"></param>
-public sealed record OrganisationRelatedSingleOutput(
-    [property: JsonPropertyName("links")] RelationLinks Links,
-    [property: JsonPropertyName("data")] DataIdentity Data
+/// <param name="Href"></param>
+/// <param name="Meta"></param>
+public sealed record RelatedManyLinkInfo(
+    [property: JsonPropertyName("href")] string Href,
+    [property: JsonPropertyName("meta")] RelatedManyLinkMeta Meta
 );
