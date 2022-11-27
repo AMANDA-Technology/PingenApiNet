@@ -23,11 +23,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Data;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.Base.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
 /// Letter data object
 /// </summary>
-public sealed record LetterData : Data<Letter, LetterRelationships>;
+public record LetterData : Data<Letter, LetterRelationships>;
+
+/// <summary>
+/// Letter data object detailed
+/// </summary>
+public sealed record LetterDataDetailed : LetterData, IData<Letter, LetterRelationships, Meta<MetaAbility<LetterAbilities>>>
+{
+    /// <inheritdoc />
+    [JsonPropertyName("meta")]
+    public required Meta<MetaAbility<LetterAbilities>> Meta { get; init; }
+}

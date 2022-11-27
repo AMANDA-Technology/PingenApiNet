@@ -24,7 +24,8 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.FileUpload;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
@@ -36,23 +37,17 @@ namespace PingenApiNet.Services.Connectors;
 public sealed class FilesService : ConnectorService, IFilesService
 {
     /// <summary>
-    /// Pingen connection handler
+    /// Initializes a new instance of the <see cref="FilesService"/> class.
     /// </summary>
-    private readonly IPingenConnectionHandler _pingenConnectionHandler;
-
-    /// <summary>
-    /// Inject connection handler at construction
-    /// </summary>
-    /// <param name="pingenConnectionHandler"></param>
-    public FilesService(IPingenConnectionHandler pingenConnectionHandler)
+    /// <param name="connectionHandler"></param>
+    public FilesService(IPingenConnectionHandler connectionHandler) : base(connectionHandler)
     {
-        _pingenConnectionHandler = pingenConnectionHandler;
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

@@ -24,7 +24,8 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.FileUpload;
 
 namespace PingenApiNet.Interfaces.Connectors;

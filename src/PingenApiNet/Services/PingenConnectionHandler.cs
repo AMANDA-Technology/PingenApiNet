@@ -26,11 +26,13 @@ SOFTWARE.
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Helpers;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Records;
@@ -220,7 +222,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
         };
 
-        var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!, requestPath.StartsWith("file-upload") ? requestPath : $"organisations/{_organisationId}/{requestPath}"));
+        var uriBuilder = new UriBuilder(new Uri(
+            _client.BaseAddress!,
+            requestPath.StartsWith("file-upload") || requestPath.StartsWith("user")
+                ? requestPath
+                : $"organisations/{_organisationId}/{requestPath}"));
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
         foreach (var (key, value) in GetRequestHeaders(apiRequest, idempotencyKey))

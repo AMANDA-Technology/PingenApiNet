@@ -24,7 +24,8 @@ SOFTWARE.
 */
 
 using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 
 namespace PingenApiNet.Interfaces.Connectors.Base;
 

@@ -25,7 +25,7 @@ SOFTWARE.
 
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
 
 namespace PingenApiNet.Interfaces;
 

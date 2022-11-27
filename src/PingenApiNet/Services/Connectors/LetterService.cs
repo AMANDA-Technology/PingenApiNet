@@ -26,11 +26,13 @@ SOFTWARE.
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Models.API;
-using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Abstractions.Models.LetterEvents;
+using PingenApiNet.Abstractions.Models.LetterPrices;
 using PingenApiNet.Abstractions.Models.Letters;
-using PingenApiNet.Abstractions.Models.Letters.Events;
-using PingenApiNet.Abstractions.Models.Letters.Prices;
+using PingenApiNet.Abstractions.Models.Letters.Views;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
@@ -41,23 +43,17 @@ namespace PingenApiNet.Services.Connectors;
 public sealed class LetterService : ConnectorService, ILetterService
 {
     /// <summary>
-    /// Pingen connection handler
+    /// Initializes a new instance of the <see cref="LetterService"/> class.
     /// </summary>
-    private readonly IPingenConnectionHandler _pingenConnectionHandler;
-
-    /// <summary>
-    /// Inject connection handler at construction
-    /// </summary>
-    /// <param name="pingenConnectionHandler"></param>
-    public LetterService(IPingenConnectionHandler pingenConnectionHandler)
+    /// <param name="connectionHandler"></param>
+    public LetterService(IPingenConnectionHandler connectionHandler) : base(connectionHandler)
     {
-        _pingenConnectionHandler = pingenConnectionHandler;
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -68,57 +64,57 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Send(DataPatch<LetterSend> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Send(DataPatch<LetterSend> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterSend>>($"letters/{data.Id}/send", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>($"letters/{data.Id}/send", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> Cancel(int letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Get(int letterId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<SingleResult<LetterData>>(requestPath: $"letters/{letterId}", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: $"letters/{letterId}", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> Delete(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.DeleteAsync($"letters/{letterId}", cancellationToken);
+        return await ConnectionHandler.DeleteAsync($"letters/{letterId}", cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterData>>> Update(DataPatch<LetterUpdate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Update(DataPatch<LetterUpdate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PatchAsync<SingleResult<LetterData>, DataPatch<LetterUpdate>>($"letters/{data.Id}", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>($"letters/{data.Id}", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> GetFileLocation(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={Enum.GetName(language)}", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -131,7 +127,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={Enum.GetName(language)}", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />

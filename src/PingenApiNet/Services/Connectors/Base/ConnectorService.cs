@@ -23,8 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors.Base;
 
 namespace PingenApiNet.Services.Connectors.Base;
@@ -32,6 +35,20 @@ namespace PingenApiNet.Services.Connectors.Base;
 /// <inheritdoc />
 public abstract class ConnectorService : IConnectorService
 {
+    /// <summary>
+    /// Pingen connection handler
+    /// </summary>
+    protected readonly IPingenConnectionHandler ConnectionHandler;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectorService"/> class. Inject connection handler at construction.
+    /// </summary>
+    /// <param name="pingenConnectionHandler"></param>
+    protected ConnectorService(IPingenConnectionHandler pingenConnectionHandler)
+    {
+        ConnectionHandler = pingenConnectionHandler;
+    }
+
     /// <inheritdoc />
     public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
     {

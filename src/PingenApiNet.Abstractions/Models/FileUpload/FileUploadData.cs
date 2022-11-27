@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.Base;
 
 namespace PingenApiNet.Abstractions.Models.FileUpload;
 

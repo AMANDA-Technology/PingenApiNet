@@ -35,7 +35,14 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PingenApiLanguage
 {
+    /// <summary>
+    /// Language EN
+    /// </summary>
     en,
+
+    /// <summary>
+    /// Language DE
+    /// </summary>
     de
     // TODO: Which languages are supported?
 }

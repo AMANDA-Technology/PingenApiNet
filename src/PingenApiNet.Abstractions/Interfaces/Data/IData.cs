@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.Base.Embedded;
 
 namespace PingenApiNet.Abstractions.Interfaces.Data;
 
@@ -42,7 +42,8 @@ public interface IData
 /// Base data object including type based data
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
-public interface IData<TAttributes> : IData where TAttributes : IAttributes
+public interface IData<TAttributes> : IData
+    where TAttributes : IAttributes
 {
     /// <summary>
     /// Object data attributes based on type
@@ -51,14 +52,33 @@ public interface IData<TAttributes> : IData where TAttributes : IAttributes
 }
 
 /// <summary>
-/// Base data object including type based data
+/// Base data object including type based data and relationships
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
 /// <typeparam name="TRelationships"></typeparam>
-public interface IData<TAttributes, TRelationships> : IData<TAttributes> where TAttributes : IAttributes
+public interface IData<TAttributes, TRelationships> : IData<TAttributes>
+    where TAttributes : IAttributes
+    where TRelationships : IRelationships
 {
     /// <summary>
     /// Relationships based on type
     /// </summary>
     public TRelationships Relationships { get; init; }
+}
+
+/// <summary>
+/// Base data object including type based data, relationships and meta information
+/// </summary>
+/// <typeparam name="TAttributes"></typeparam>
+/// <typeparam name="TRelationships"></typeparam>
+/// <typeparam name="TMeta"></typeparam>
+public interface IData<TAttributes, TRelationships, TMeta> : IData<TAttributes, TRelationships>
+    where TAttributes : IAttributes
+    where TRelationships : IRelationships
+    where TMeta : IMeta
+{
+    /// <summary>
+    /// Meta information based on type
+    /// </summary>
+    public TMeta Meta { get; init; }
 }

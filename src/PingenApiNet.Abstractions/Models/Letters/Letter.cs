@@ -26,6 +26,7 @@ SOFTWARE.
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Letters.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Letters;
 
@@ -62,7 +63,7 @@ public sealed record Letter(
     [property: JsonPropertyName("price_currency")] string PriceCurrency,
     [property: JsonPropertyName("price_value")] double? PriceValue,
     [property: JsonPropertyName("paper_types")] IReadOnlyList<string> PaperTypes,
-    [property: JsonPropertyName("fonts")] IReadOnlyList<Font> Fonts,
+    [property: JsonPropertyName("fonts")] IReadOnlyList<LetterFont> Fonts,
     [property: JsonPropertyName("tracking_number")] string TrackingNumber,
     [property: JsonPropertyName("submitted_at")] DateTime? SubmittedAt,
     [property: JsonPropertyName("created_at")] DateTime? CreatedAt,

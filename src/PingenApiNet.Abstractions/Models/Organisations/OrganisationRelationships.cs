@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Relations;
+using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
 
 namespace PingenApiNet.Abstractions.Models.Organisations;
 
