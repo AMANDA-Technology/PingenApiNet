@@ -44,6 +44,21 @@ public interface IPingenApiClient
     public ILetterService Letters { get; set; }
 
     /// <summary>
+    /// Pingen users connector. <see href="https://api.v2.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
+    /// </summary>
+    public IUserService Users { get; set; }
+
+    /// <summary>
+    /// Pingen organisations connector. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
+    /// </summary>
+    public IOrganisationService Organisations { get; set; }
+
+    /// <summary>
+    /// Pingen webhooks connector. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
+    /// </summary>
+    public IWebhookService Webhooks { get; set; }
+
+    /// <summary>
     /// Pingen files connector. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
     /// </summary>
     public IFilesService Files { get; set; }

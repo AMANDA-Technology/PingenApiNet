@@ -23,14 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Api;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
+
+namespace PingenApiNet.Abstractions.Models.Webhooks;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Webhook
 /// </summary>
-public abstract record ApiRequest
-{
-    // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
-    // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
-}
+/// <param name="EventCategory"></param>
+/// <param name="Url"></param>
+/// <param name="SigningKey"></param>
+public sealed record Webhook(
+    [property: JsonPropertyName("event_category")] WebhookEventCategory EventCategory,
+    [property: JsonPropertyName("url")] Uri? Url,
+    [property: JsonPropertyName("signing_key")] string SigningKey
+) : IAttributes;

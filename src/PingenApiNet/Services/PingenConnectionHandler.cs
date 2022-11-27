@@ -68,7 +68,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private readonly JsonSerializerOptions _serializerOptions = new ();
 
     /// <summary>
-    /// Create a new connection handler to call Pingen REST API
+    /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
     /// </summary>
     /// <param name="configuration"></param>
     public PingenConnectionHandler(IPingenConfiguration configuration)
@@ -221,9 +221,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
         };
 
-        var uriBuilder = new UriBuilder(new Uri(
-            _client.BaseAddress!,
-            requestPath.StartsWith("file-upload") || requestPath.StartsWith("user")
+        var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!,
+            requestPath.StartsWith("file-upload") || requestPath.StartsWith("user") || requestPath.StartsWith("organisations") // TODO: Another solution to decide if request path is under organisation id
                 ? requestPath
                 : $"organisations/{_organisationId}/{requestPath}"));
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);

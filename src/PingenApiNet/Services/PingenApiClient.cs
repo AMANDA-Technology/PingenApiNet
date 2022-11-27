@@ -38,12 +38,17 @@ public sealed class PingenApiClient : IPingenApiClient
     private readonly IPingenConnectionHandler _pingenConnectionHandler;
 
     /// <summary>
-    /// Pingen REST API client that holds a handler for calling the API
+    /// Initializes a new instance of the <see cref="PingenApiClient"/> class.
     /// </summary>
     public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler)
     {
         _pingenConnectionHandler = pingenConnectionHandler;
+
+        // TODO: Shouldn't these be injected?
         Letters = new LetterService(_pingenConnectionHandler);
+        Users = new UserService(_pingenConnectionHandler);
+        Organisations = new OrganisationService(_pingenConnectionHandler);
+        Webhooks = new WebhookService(_pingenConnectionHandler);
         Files = new FilesService(_pingenConnectionHandler);
     }
 
@@ -55,6 +60,15 @@ public sealed class PingenApiClient : IPingenApiClient
 
     /// <inheritdoc />
     public ILetterService Letters { get; set; }
+
+    /// <inheritdoc />
+    public IUserService Users { get; set; }
+
+    /// <inheritdoc />
+    public IOrganisationService Organisations { get; set; }
+
+    /// <inheritdoc />
+    public IWebhookService Webhooks { get; set; }
 
     /// <inheritdoc />
     public IFilesService Files { get; set; }

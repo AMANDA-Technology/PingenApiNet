@@ -23,14 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Api;
+using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
+
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Pingen API languages
 /// </summary>
-public abstract record ApiRequest
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum WebhookEventCategory
 {
-    // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
-    // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
+    /// <summary>
+    /// Event category Issues
+    /// </summary>
+    issues,
+
+    /// <summary>
+    /// Event category Undeliverable
+    /// </summary>
+    undeliverable,
+
+    /// <summary>
+    /// Event category Sent
+    /// </summary>
+    sent
 }

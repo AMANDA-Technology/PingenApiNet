@@ -23,14 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Api;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
+
+namespace PingenApiNet.Abstractions.Models.Webhooks;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Webhook relationships
 /// </summary>
-public abstract record ApiRequest
-{
-    // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
-    // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
-}
+/// <param name="Organisation"></param>
+public record WebhookRelationships(
+    [property: JsonPropertyName("organisation")] RelatedSingleOutput Organisation
+) : IRelationships;
