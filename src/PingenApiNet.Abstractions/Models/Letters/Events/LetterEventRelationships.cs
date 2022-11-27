@@ -24,14 +24,15 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Relations;
 
-namespace PingenApiNet.Abstractions.Models.Organisations;
+namespace PingenApiNet.Abstractions.Models.Letters.Events;
 
 /// <summary>
-/// Organisation relationships
+///
 /// </summary>
-/// <param name="Associations"></param>
-public sealed record OrganisationRelationships(
-    [property: JsonPropertyName("associations")] RelatedManyOutput Associations
-);
+/// <param name="Letter"></param>
+public record LetterEventRelationships(
+    [property: JsonPropertyName("letter")] RelatedSingleOutput Letter
+) : IRelationships;

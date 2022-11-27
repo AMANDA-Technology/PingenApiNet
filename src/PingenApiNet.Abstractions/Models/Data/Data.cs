@@ -45,7 +45,7 @@ public abstract record Data<TAttributes> : Data, IData<TAttributes>
 }
 
 /// <inheritdoc cref="IData{TAttributes,TRelationships}" />
-public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships>
+public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships> where TRelationships : IRelationships
 {
     /// <inheritdoc />
     [JsonPropertyName("relationships")]

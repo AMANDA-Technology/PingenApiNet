@@ -24,16 +24,16 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Enums.Api;
 
-namespace PingenApiNet.Abstractions.Models.Organisations;
+namespace PingenApiNet.Abstractions.Models.Letters.Prices;
 
 /// <summary>
-/// Relation to a single organisation
+/// Letter price
 /// </summary>
-/// <param name="Links"></param>
-/// <param name="Data"></param>
-public sealed record OrganisationRelatedSingleOutput(
-    [property: JsonPropertyName("links")] RelationLinks Links,
-    [property: JsonPropertyName("data")] DataIdentity Data
+/// <param name="Currency"></param>
+/// <param name="Price"></param>
+public sealed record LetterPrice(
+    [property: JsonPropertyName("currency")] PingenApiCurrency Currency,
+    [property: JsonPropertyName("price")] decimal Price
 );

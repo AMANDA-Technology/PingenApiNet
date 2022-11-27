@@ -25,12 +25,12 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Relations;
 
 /// <summary>
-/// Related many links
+/// Relation links
 /// </summary>
 /// <param name="Related"></param>
-public sealed record RelatedManyLinks(
-    [property: JsonPropertyName("related")] RelatedManyLinkInfo Related
+public sealed record RelationLinks(
+    [property: JsonPropertyName("related")] string Related
 );

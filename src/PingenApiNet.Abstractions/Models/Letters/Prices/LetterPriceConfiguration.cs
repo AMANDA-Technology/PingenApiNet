@@ -24,15 +24,43 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Models.Data;
 
-namespace PingenApiNet.Abstractions.Models.Associations;
+namespace PingenApiNet.Abstractions.Models.Letters.Prices;
 
 /// <summary>
-/// Related many link info
+/// Letter configuration for price calculator to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-/// <param name="Href"></param>
-/// <param name="Meta"></param>
-public sealed record RelatedManyLinkInfo(
-    [property: JsonPropertyName("href")] string Href,
-    [property: JsonPropertyName("meta")] RelatedManyLinkMeta Meta
-);
+public sealed record LetterPriceConfiguration
+{
+    /// <summary>
+    /// Country
+    /// </summary>
+    [JsonPropertyName("country")]
+    public required string Country { get; init; }
+
+    /// <summary>
+    /// Paper types. Use values from <see cref="LetterPaperTypes"/>
+    /// </summary>
+    [JsonPropertyName("paper_types")]
+    public required List<string> PaperTypes { get; init; }
+
+    /// <summary>
+    /// Print mode
+    /// </summary>
+    [JsonPropertyName("print_mode")]
+    public required LetterPrintMode PrintMode { get; init; }
+
+    /// <summary>
+    /// Print spectrum
+    /// </summary>
+    [JsonPropertyName("print_spectrum")]
+    public required LetterPrintSpectrum PrintSpectrum { get; init; }
+
+    /// <summary>
+    /// Delivery product
+    /// </summary>
+    [JsonPropertyName("delivery_product")]
+    public required LetterDeliveryProduct DeliveryProduct { get; init; }
+}

@@ -25,12 +25,28 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.Data;
+namespace PingenApiNet.Abstractions.Models.Letters.Events;
 
 /// <summary>
-/// Relation links
+/// Letter event
 /// </summary>
-/// <param name="Related"></param>
-public sealed record RelationLinks(
-    [property: JsonPropertyName("related")] string Related
-);
+/// <param name="Code"></param>
+/// <param name="Name"></param>
+/// <param name="Producer"></param>
+/// <param name="Location"></param>
+/// <param name="HasImage"></param>
+/// <param name="Data"></param>
+/// <param name="EmittedAt"></param>
+/// <param name="CreatedAt"></param>
+/// <param name="UpdatedAt"></param>
+public sealed record LetterEvent(
+    [property: JsonPropertyName("code")] string Code,
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("producer")] string Producer,
+    [property: JsonPropertyName("location")] string Location,
+    [property: JsonPropertyName("has_image")] bool HasImage,
+    [property: JsonPropertyName("data")] IReadOnlyList<string> Data,
+    [property: JsonPropertyName("emitted_at")] DateTime? EmittedAt,
+    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
+    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+); // TODO: implement IAttributes

@@ -25,9 +25,12 @@ SOFTWARE.
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Letters.Events;
+using PingenApiNet.Abstractions.Models.Letters.Prices;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
@@ -58,12 +61,6 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<List<LetterData>> GetPageResult([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
-    {
-        return HandleResult(await GetPage(apiRequest, cancellationToken));
-    }
-
-    /// <inheritdoc />
     public async IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
         await foreach (var page in AutoPage(async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
@@ -74,12 +71,6 @@ public sealed class LetterService : ConnectorService, ILetterService
     public async Task<ApiResult<SingleResult<LetterData>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await _pingenConnectionHandler.PostAsync<SingleResult<LetterData>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<LetterData> CreateAndGetResult(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
-    {
-        return HandleResult(await Create(data, idempotencyKey, cancellationToken)) ?? throw new("Unexpected result. API returned no data after create.");
     }
 
     /// <inheritdoc />
@@ -122,5 +113,31 @@ public sealed class LetterService : ConnectorService, ILetterService
     public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await _pingenConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    {
+        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, PingenApiLanguage language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    {
+        await foreach (var page in AutoPage(async apiRequest => await GetEventsPage(letterId, language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+            yield return page;
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    {
+        return await _pingenConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(PingenApiLanguage language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    {
+        await foreach (var page in AutoPage(async apiRequest => await GetIssuesPage(language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+            yield return page;
     }
 }

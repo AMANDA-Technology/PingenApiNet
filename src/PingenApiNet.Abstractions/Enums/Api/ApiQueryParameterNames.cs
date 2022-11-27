@@ -65,4 +65,9 @@ public static class ApiQueryParameterNames
     /// Query parameter for Include
     /// </summary>
     public const string Include = "include";
+
+    /// <summary>
+    /// Query parameter for language
+    /// </summary>
+    public const string Language = "language";
 }

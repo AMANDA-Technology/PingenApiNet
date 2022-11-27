@@ -23,11 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Data;
+using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Letter price data object
+/// Pingen API languages
 /// </summary>
-public sealed record LetterPriceData : Data<LetterPrice>;
+// TODO: Only used for letter events?
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PingenApiLanguage
+{
+    en,
+    de
+    // TODO: Which languages are supported?
+}

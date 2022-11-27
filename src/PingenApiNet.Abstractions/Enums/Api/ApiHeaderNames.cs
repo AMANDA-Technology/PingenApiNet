@@ -31,10 +31,16 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 // TODO: use another namespaces for static values?
 public static class ApiHeaderNames
 {
+    #region HeadersToSend
+
     /// <summary>
     /// Header name for Idempotency key
     /// </summary>
     public const string IdempotencyKey = "Idempotency-Key";
+
+    #endregion HeadersToSend
+
+    #region HeadersToReceive
 
     /// <summary>
     /// Header name for request ID
@@ -70,4 +76,6 @@ public static class ApiHeaderNames
     /// Header name for location
     /// </summary>
     public const string Location = "Location";
+
+    #endregion HeadersToReceive
 }

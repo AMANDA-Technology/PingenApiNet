@@ -24,9 +24,12 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.API;
 using PingenApiNet.Abstractions.Models.Data;
 using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Letters.Events;
+using PingenApiNet.Abstractions.Models.Letters.Prices;
 using PingenApiNet.Interfaces.Connectors.Base;
 
 namespace PingenApiNet.Interfaces.Connectors;
@@ -43,14 +46,6 @@ public interface ILetterService : IConnectorService
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Call <see cref="GetPage"/> and handle result via <see cref="IConnectorService.HandleResult{TData}(ApiResult{CollectionResult{TData}})"/>
-    /// </summary>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
-    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
-    public Task<List<LetterData>> GetPageResult([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetPage"/> and auto page until end of collection
@@ -71,15 +66,6 @@ public interface ILetterService : IConnectorService
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<LetterData>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Call <see cref="Create"/> and handle result via <see cref="IConnectorService.HandleResult{TData}(ApiResult{SingleResult{TData}})"/>
-    /// </summary>
-    /// <param name="data">Data for POST</param>
-    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
-    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
-    public Task<LetterData> CreateAndGetResult(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Send a letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.send">API Doc - Letters send</see>
@@ -141,4 +127,40 @@ public interface ILetterService : IConnectorService
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get a collection of letter events. <see href="https://api.v2.pingen.com/documentation#tag/letters.events/operation/letters.events">API Doc - Letters events</see>
+    /// </summary>>
+    /// <param name="letterId">ID of letter to get events</param>
+    /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Call <see cref="GetEventsPage"/> and auto page until end of collection
+    /// </summary>
+    /// <param name="letterId">ID of letter to get events</param>
+    /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, PingenApiLanguage language, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get a collection of issues of all letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.events/operation/letters.issues">API Doc - Letters issues</see>
+    /// </summary>>
+    /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(PingenApiLanguage language, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Call <see cref="GetIssuesPage"/> and auto page until end of collection
+    /// </summary>
+    /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(PingenApiLanguage language, [Optional] CancellationToken cancellationToken);
 }

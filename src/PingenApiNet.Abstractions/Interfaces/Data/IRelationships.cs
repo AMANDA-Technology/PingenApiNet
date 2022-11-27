@@ -23,17 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Enums.Api;
-
-namespace PingenApiNet.Abstractions.Models.Letters;
+namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
-/// Letter price
+/// Empty interface for contract to relationship models
 /// </summary>
-/// <param name="Currency"></param>
-/// <param name="Price"></param>
-public sealed record LetterPrice(
-    [property: JsonPropertyName("currency")] PingenApiCurrency Currency,
-    [property: JsonPropertyName("price")] decimal Price
-);
+public interface IRelationships
+{
+}

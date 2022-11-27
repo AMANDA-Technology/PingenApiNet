@@ -24,17 +24,18 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Models.Associations;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Organisations;
+using PingenApiNet.Abstractions.Models.Relations;
 
 namespace PingenApiNet.Abstractions.Models.Letters;
 
 /// <summary>
 /// Letter relationships
 /// </summary>
-/// <param name="OrganisationRelatedSingleOutput"></param>
+/// <param name="Organisation"></param>
 /// <param name="Events"></param>
 public sealed record LetterRelationships(
-    [property: JsonPropertyName("organisation")] OrganisationRelatedSingleOutput OrganisationRelatedSingleOutput,
+    [property: JsonPropertyName("organisation")] RelatedSingleOutput Organisation,
     [property: JsonPropertyName("events")] RelatedManyOutput Events
-);
+) : IRelationships;
