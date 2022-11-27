@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.Letters;
 
@@ -36,4 +37,4 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 public sealed record LetterPrice(
     [property: JsonPropertyName("currency")] PingenApiCurrency Currency,
     [property: JsonPropertyName("price")] decimal Price
-);
+) : IAttributes;

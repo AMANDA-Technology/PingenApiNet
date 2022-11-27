@@ -23,41 +23,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json;
-using PingenApiNet.Helpers;
+using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Enums;
+using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.Data;
+using PingenApiNet.Abstractions.Models.FileUpload;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
-using PingenApiNet.Services.Connectors;
+using PingenApiNet.Services.Connectors.Base;
 
-namespace PingenApiNet.Services;
+namespace PingenApiNet.Services.Connectors;
 
-/// <inheritdoc />
-public sealed class PingenApiClient : IPingenApiClient
+/// <summary>
+///
+/// </summary>
+public sealed class FileUploadService : ConnectorService, IFileUploadService
 {
     /// <summary>
-    /// Private instance of connection handler used for all Services
+    /// Pingen connection handler
     /// </summary>
     private readonly IPingenConnectionHandler _pingenConnectionHandler;
 
     /// <summary>
-    /// Pingen REST API client that holds a handler for calling the API
+    /// Inject connection handler at construction
     /// </summary>
-    public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler)
+    /// <param name="pingenConnectionHandler"></param>
+    public FileUploadService(IPingenConnectionHandler pingenConnectionHandler)
     {
         _pingenConnectionHandler = pingenConnectionHandler;
-        Letters = new LetterService(_pingenConnectionHandler);
-        FileUpload = new FileUploadService(_pingenConnectionHandler);
     }
 
     /// <inheritdoc />
-    public void SetOrganisationId(string organisationId)
+    public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
     {
-        _pingenConnectionHandler.SetOrganisationId(organisationId);
+        return await _pingenConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
-    public ILetterService Letters { get; set; }
-
-    /// <inheritdoc />
-    public IFileUploadService FileUpload { get; set; }
+    public async Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken)
+    {
+        using var httpClient = new HttpClient();
+        return (await httpClient.PutAsync(fileUploadData.Attributes.Url, new ByteArrayContent(data.ToArray()), cancellationToken)).IsSuccessStatusCode;
+    }
 }

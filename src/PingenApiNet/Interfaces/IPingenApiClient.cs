@@ -42,4 +42,9 @@ public interface IPingenApiClient
     /// Pingen letters connector. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
     /// </summary>
     public ILetterService Letters { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public IFileUploadService FileUpload { get; set; }
 }

@@ -97,7 +97,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterData>>> Get(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync<SingleResult<LetterData>>($"letters/{letterId}", null, cancellationToken);
+        return await _pingenConnectionHandler.GetAsync<SingleResult<LetterData>>(requestPath: $"letters/{letterId}", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
@@ -115,7 +115,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult> GetFileLocation(int letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await _pingenConnectionHandler.GetAsync($"letters/{letterId}/file", null, cancellationToken);
+        return await _pingenConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

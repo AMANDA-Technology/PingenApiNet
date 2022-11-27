@@ -42,7 +42,7 @@ public interface IData
 /// Base data object including type based data
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
-public interface IData<TAttributes> : IData
+public interface IData<TAttributes> : IData where TAttributes : IAttributes
 {
     /// <summary>
     /// Object data attributes based on type
@@ -55,7 +55,7 @@ public interface IData<TAttributes> : IData
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
 /// <typeparam name="TRelationships"></typeparam>
-public interface IData<TAttributes, TRelationships> : IData<TAttributes>
+public interface IData<TAttributes, TRelationships> : IData<TAttributes> where TAttributes : IAttributes
 {
     /// <summary>
     /// Relationships based on type

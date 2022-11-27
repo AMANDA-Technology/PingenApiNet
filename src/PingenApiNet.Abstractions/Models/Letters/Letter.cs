@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.Letters;
 
@@ -66,4 +67,4 @@ public sealed record Letter(
     [property: JsonPropertyName("submitted_at")] DateTime? SubmittedAt,
     [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
     [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
-);
+) : IAttributes;

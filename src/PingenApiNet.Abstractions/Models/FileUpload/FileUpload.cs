@@ -26,28 +26,14 @@ SOFTWARE.
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Abstractions.Models.Data;
+namespace PingenApiNet.Abstractions.Models.FileUpload;
 
-/// <inheritdoc cref="IData" />
-public abstract record Data : DataIdentity, IData
-{
-    /// <inheritdoc />
-    [JsonPropertyName("links")]
-    public required DataLinks Links { get; init; }
-}
-
-/// <inheritdoc cref="IData{TAttributes}" />
-public abstract record Data<TAttributes> : Data, IData<TAttributes> where TAttributes : IAttributes
-{
-    /// <inheritdoc />
-    [JsonPropertyName("attributes")]
-    public required TAttributes Attributes { get; init; }
-}
-
-/// <inheritdoc cref="IData{TAttributes,TRelationships}" />
-public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships> where TAttributes : IAttributes
-{
-    /// <inheritdoc />
-    [JsonPropertyName("relationships")]
-    public required TRelationships Relationships { get; init; }
-}
+/// <summary>
+///
+/// </summary>
+public sealed record FileUpload
+(
+    [property: JsonPropertyName("url")] string Url,
+    [property: JsonPropertyName("url_signature")] string UrlSignature,
+    [property: JsonPropertyName("expires_at")] DateTime? ExpiresAt
+) : IAttributes;

@@ -23,31 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
+using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Models.API;
+using PingenApiNet.Abstractions.Models.FileUpload;
 
-namespace PingenApiNet.Abstractions.Models.Data;
+namespace PingenApiNet.Interfaces.Connectors;
 
-/// <inheritdoc cref="IData" />
-public abstract record Data : DataIdentity, IData
+/// <summary>
+///
+/// </summary>
+public interface IFileUploadService
 {
-    /// <inheritdoc />
-    [JsonPropertyName("links")]
-    public required DataLinks Links { get; init; }
-}
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken);
 
-/// <inheritdoc cref="IData{TAttributes}" />
-public abstract record Data<TAttributes> : Data, IData<TAttributes> where TAttributes : IAttributes
-{
-    /// <inheritdoc />
-    [JsonPropertyName("attributes")]
-    public required TAttributes Attributes { get; init; }
-}
-
-/// <inheritdoc cref="IData{TAttributes,TRelationships}" />
-public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships> where TAttributes : IAttributes
-{
-    /// <inheritdoc />
-    [JsonPropertyName("relationships")]
-    public required TRelationships Relationships { get; init; }
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken);
 }

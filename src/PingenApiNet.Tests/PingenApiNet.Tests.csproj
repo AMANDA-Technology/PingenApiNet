@@ -27,4 +27,19 @@
       <ProjectReference Include="..\PingenApiNet\PingenApiNet.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Assets\sample_simulate_undeliverable.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Assets\sample_simulate_unprintable.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Assets\sample_simulate_cancellable.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Assets\sample.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
