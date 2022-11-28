@@ -44,4 +44,7 @@ public sealed record PingenConfiguration : IPingenConfiguration
 
     /// <inheritdoc />
     public required string DefaultOrganisationId { get; set; }
+
+    /// <inheritdoc />
+    public Dictionary<string, string>? WebhookSigningKeys { get; set; }
 }

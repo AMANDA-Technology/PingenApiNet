@@ -26,12 +26,12 @@ SOFTWARE.
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Helpers;
+namespace PingenApiNet.Abstractions.Helpers;
 
 /// <summary>
 /// Pingen date time json converter
 /// </summary>
-internal class PingenDateTimeConverter : JsonConverter<DateTime?>
+public class PingenDateTimeConverter : JsonConverter<DateTime?>
 {
     /// <summary>
     /// Default pingen date time string format

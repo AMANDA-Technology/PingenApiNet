@@ -25,16 +25,22 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Models;
 
 /// <summary>
-///
+/// Access token
 /// </summary>
-/// <param name="Error"></param>
-/// <param name="ErrorDescription"></param>
-/// <param name="Message"></param>
-public sealed record AuthenticationError(
-    [property: JsonPropertyName("error")] string Error,
-    [property: JsonPropertyName("error_description")] string ErrorDescription,
-    [property: JsonPropertyName("message")] string Message
-);
+/// <param name="Token"></param>
+/// <param name="TokenType"></param>
+/// <param name="ExpiresIn"></param>
+public sealed record AccessToken(
+    [property: JsonPropertyName("access_token")] string Token,
+    [property: JsonPropertyName("token_type")] string TokenType,
+    [property: JsonPropertyName("expires_in")] long ExpiresIn
+)
+{
+    /// <summary>
+    /// Expires at
+    /// </summary>
+    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+}

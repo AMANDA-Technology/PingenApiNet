@@ -23,40 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Helpers;
+namespace PingenApiNet.Models;
 
 /// <summary>
-/// Pingen date time json converter
+///
 /// </summary>
-internal class PingenNullableDateTimeConverter : JsonConverter<DateTime?>
-{
-    /// <summary>
-    /// Default pingen date time string format
-    /// </summary>
-    private const string PingenDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
-
-    /// <inheritdoc cref="JsonConverter{T}"/>
-    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var valueString = reader.GetString();
-
-        if (string.IsNullOrEmpty(valueString)) return null;
-        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value) ? value : null;
-    }
-
-    /// <inheritdoc cref="JsonConverter{T}"/>
-    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-    {
-        if (value.HasValue)
-        {
-            writer.WriteStringValue(value.Value.ToString(PingenDateTimeFormat));
-        }
-        else
-        {
-            writer.WriteNullValue();
-        }
-    }
-}
+/// <param name="Error"></param>
+/// <param name="ErrorDescription"></param>
+/// <param name="Message"></param>
+public sealed record AuthenticationError(
+    [property: JsonPropertyName("error")] string Error,
+    [property: JsonPropertyName("error_description")] string ErrorDescription,
+    [property: JsonPropertyName("message")] string Message
+);

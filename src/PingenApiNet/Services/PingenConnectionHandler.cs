@@ -29,12 +29,12 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
-using PingenApiNet.Helpers;
 using PingenApiNet.Interfaces;
-using PingenApiNet.Records;
+using PingenApiNet.Models;
 
 namespace PingenApiNet.Services;
 
@@ -326,7 +326,6 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
             Location = (Uri?) headers[ApiHeaderNames.Location],
-            Signature = (string) (headers[ApiHeaderNames.Signature] ?? string.Empty),
             Data = httpResponseMessage.IsSuccessStatusCode ? JsonSerializer.Deserialize<T>(content, options: _serializerOptions) : default
         };
     }
@@ -352,8 +351,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
-            Location = (Uri?) headers[ApiHeaderNames.Location],
-            Signature = (string) (headers[ApiHeaderNames.Signature] ?? string.Empty)
+            Location = (Uri?) headers[ApiHeaderNames.Location]
         };
     }
 

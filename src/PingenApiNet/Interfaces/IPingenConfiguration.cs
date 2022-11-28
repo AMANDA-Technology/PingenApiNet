@@ -54,4 +54,10 @@ public interface IPingenConfiguration
     /// Default organisation ID to use. Can be changed later using <see cref="IPingenApiClient.SetOrganisationId"/>. <see href="https://api.v2.pingen.com/documentation#section/Quickstart">API Doc - Quickstart</see>
     /// </summary>
     public string DefaultOrganisationId { get; set; }
+
+    /// <summary>
+    /// Dictionary with webhook guid and the assigned signing key.
+    /// The signing key is also stated as secret sometimes in the pingen documentation.
+    /// </summary>
+    public Dictionary<string, string>? WebhookSigningKeys { get; set; }
 }

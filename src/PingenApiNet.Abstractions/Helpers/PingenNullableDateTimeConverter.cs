@@ -23,24 +23,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Records;
+namespace PingenApiNet.Abstractions.Helpers;
 
 /// <summary>
-/// Access token
+/// Pingen date time json converter
 /// </summary>
-/// <param name="Token"></param>
-/// <param name="TokenType"></param>
-/// <param name="ExpiresIn"></param>
-public sealed record AccessToken(
-    [property: JsonPropertyName("access_token")] string Token,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("expires_in")] long ExpiresIn
-)
+public class PingenNullableDateTimeConverter : JsonConverter<DateTime?>
 {
     /// <summary>
-    /// Expires at
+    /// Default pingen date time string format
     /// </summary>
-    public DateTime ExpiresAt { get; init; } = DateTime.Now.AddSeconds(ExpiresIn);
+    private const string PingenDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
+
+    /// <inheritdoc cref="JsonConverter{T}"/>
+    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var valueString = reader.GetString();
+
+        if (string.IsNullOrEmpty(valueString)) return null;
+        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value) ? value : null;
+    }
+
+    /// <inheritdoc cref="JsonConverter{T}"/>
+    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
+    {
+        if (value.HasValue)
+        {
+            writer.WriteStringValue(value.Value.ToString(PingenDateTimeFormat));
+        }
+        else
+        {
+            writer.WriteNullValue();
+        }
+    }
 }
