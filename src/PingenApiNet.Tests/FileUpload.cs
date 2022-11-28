@@ -25,6 +25,7 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.Tests;
 
@@ -39,17 +40,23 @@ public class TestGetFileUploadData
         var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new("Missing PingenApiNet__ClientId");
         var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new("Missing PingenApiNet__ClientSecret");
         var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId");
+        var connectionHandler = new PingenConnectionHandler(
+            new PingenConfiguration
+            {
+                BaseUri = baseUri,
+                IdentityUri = identityUri,
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                DefaultOrganisationId = organisationId
+            });
 
         _pingenApiClient = new PingenApiClient(
-            new PingenConnectionHandler(
-                new PingenConfiguration
-                {
-                    BaseUri = baseUri,
-                    IdentityUri = identityUri,
-                    ClientId = clientId,
-                    ClientSecret = clientSecret,
-                    DefaultOrganisationId = organisationId
-                }));
+            connectionHandler,
+            new LetterService(connectionHandler),
+            new UserService(connectionHandler),
+            new OrganisationService(connectionHandler),
+            new WebhookService(connectionHandler),
+            new FilesService(connectionHandler));
     }
 
     [SetUp]

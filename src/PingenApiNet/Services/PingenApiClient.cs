@@ -40,16 +40,20 @@ public sealed class PingenApiClient : IPingenApiClient
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenApiClient"/> class.
     /// </summary>
-    public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler)
+    public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler,
+        ILetterService letterService,
+        IUserService userService,
+        IOrganisationService organisationService,
+        IWebhookService webhooks,
+        IFilesService filesService)
     {
         _pingenConnectionHandler = pingenConnectionHandler;
 
-        // TODO: Shouldn't these be injected?
-        Letters = new LetterService(_pingenConnectionHandler);
-        Users = new UserService(_pingenConnectionHandler);
-        Organisations = new OrganisationService(_pingenConnectionHandler);
-        Webhooks = new WebhookService(_pingenConnectionHandler);
-        Files = new FilesService(_pingenConnectionHandler);
+        Letters = letterService;
+        Users = userService;
+        Organisations = organisationService;
+        Webhooks = webhooks;
+        Files = filesService;
     }
 
     /// <inheritdoc />

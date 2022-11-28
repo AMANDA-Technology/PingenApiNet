@@ -28,7 +28,6 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// API query parameters for requests
 /// </summary>
-// TODO: use another namespaces for static values?
 public static class ApiQueryParameterNames
 {
     /// <summary>

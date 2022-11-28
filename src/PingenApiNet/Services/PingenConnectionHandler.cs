@@ -214,10 +214,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     {
         var httpRequestMessage = new HttpRequestMessage
         {
-            Content = null,
             Method = httpMethod,
-            RequestUri = null,
-            Version = HttpVersion.Version20, // TODO: HTTP2 OK?
             VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
         };
 

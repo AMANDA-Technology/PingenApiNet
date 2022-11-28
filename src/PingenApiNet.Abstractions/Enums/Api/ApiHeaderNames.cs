@@ -28,7 +28,6 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// API header names for requests or from responses
 /// </summary>
-// TODO: use another namespaces for static values?
 public static class ApiHeaderNames
 {
     #region HeadersToSend

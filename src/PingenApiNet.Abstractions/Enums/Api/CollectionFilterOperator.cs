@@ -28,7 +28,6 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Collection filter operator
 /// </summary>
-// TODO: use another namespaces for static values?
 public static class CollectionFilterOperator
 {
     /// <summary>

@@ -31,7 +31,6 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API languages
 /// </summary>
-// TODO: Only used for letter events?
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PingenApiLanguage
 {
@@ -43,6 +42,11 @@ public enum PingenApiLanguage
     /// <summary>
     /// Language DE
     /// </summary>
-    de
+    de,
+
+    /// <summary>
+    /// Language FR
+    /// </summary>
+    fr
     // TODO: Which languages are supported?
 }

@@ -25,7 +25,9 @@ SOFTWARE.
 
 using Microsoft.Extensions.DependencyInjection;
 using PingenApiNet.Interfaces;
+using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services;
+using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.AspNetCore;
 
@@ -67,6 +69,11 @@ public static class PingenServiceCollection
     {
         services.AddSingleton(pingenConfiguration);
         services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
+        services.AddScoped<ILetterService, LetterService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IOrganisationService, OrganisationService>();
+        services.AddScoped<IWebhookService, WebhookService>();
+        services.AddScoped<IFilesService, FilesService>();
         services.AddScoped<IPingenApiClient, PingenApiClient>();
 
         return services;
