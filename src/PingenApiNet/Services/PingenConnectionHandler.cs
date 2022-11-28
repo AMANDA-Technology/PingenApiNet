@@ -321,7 +321,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
+            ApiErrors = (isSuccess ? new() : JsonSerializer.Deserialize<List<ApiError>>(content, options: _serializerOptions)) ?? new(),
             Location = (Uri?) headers[ApiHeaderNames.Location],
             Data = httpResponseMessage.IsSuccessStatusCode ? JsonSerializer.Deserialize<T>(content, options: _serializerOptions) : default
         };
@@ -347,7 +347,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
+            ApiErrors = (isSuccess ? new() : JsonSerializer.Deserialize<List<ApiError>>(content, options: _serializerOptions)) ?? new(),
             Location = (Uri?) headers[ApiHeaderNames.Location]
         };
     }

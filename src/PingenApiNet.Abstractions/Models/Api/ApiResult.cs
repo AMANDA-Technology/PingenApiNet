@@ -75,9 +75,9 @@ public record ApiResult
     public bool IdempotentReplayed { get; init; }
 
     /// <summary>
-    /// API error, set when failed. <see cref="ApiResult{T}.Data"/> might be empty in that case.
+    /// API errors, set when failed. <see cref="ApiResult{T}.Data"/> might be empty in that case.
     /// </summary>
-    public ApiError? ApiError { get; init; }
+    public required IList<ApiError> ApiErrors { get; init; }
 
     /// <summary>
     /// Location Url, for result 302 Found
@@ -92,7 +92,7 @@ public record ApiResult
 public sealed record ApiResult<T> : ApiResult where T : IDataResult
 {
     /// <summary>
-    /// Data received from the API. Check <see cref="ApiResult.IsSuccess"/> and <see cref="ApiResult.ApiError"/>, especially when Data is null.
+    /// Data received from the API. Check <see cref="ApiResult.IsSuccess"/> and <see cref="ApiResult.ApiErrors"/>, especially when Data is null.
     /// </summary>
     public T? Data { get; init; }
 }

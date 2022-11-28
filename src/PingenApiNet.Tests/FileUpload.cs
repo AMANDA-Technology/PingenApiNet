@@ -75,7 +75,7 @@ public class TestGetFileUploadData
         Assert.Multiple(() =>
         {
             Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
+            Assert.That(res.ApiErrors, Is.Empty);
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
     }
@@ -90,7 +90,7 @@ public class TestGetFileUploadData
         Assert.Multiple(() =>
         {
             Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
+            Assert.That(res.ApiErrors, Is.Empty);
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
@@ -141,7 +141,7 @@ public class TestGetFileUploadData
         Assert.Multiple(() =>
         {
             Assert.That(resLetter.IsSuccess, Is.True);
-            Assert.That(resLetter.ApiError, Is.Null);
+            Assert.That(res.ApiErrors, Is.Empty);
             Assert.That(resLetter.Data?.Data, Is.Not.Null);
         });
     }
