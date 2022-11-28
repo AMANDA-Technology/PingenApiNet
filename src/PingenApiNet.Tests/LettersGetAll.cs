@@ -74,7 +74,7 @@ public class TestLetters
         Assert.Multiple(() =>
         {
             Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiErrors, Is.Empty);
+            Assert.That(res.ApiError, Is.Null);
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
