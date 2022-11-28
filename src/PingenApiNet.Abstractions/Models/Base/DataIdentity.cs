@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Interfaces.Data;
 namespace PingenApiNet.Abstractions.Models.Base;
 
 /// <inheritdoc />
-public abstract record DataIdentity : IDataIdentity
+public record DataIdentity : IDataIdentity
 {
     /// <inheritdoc />
     [JsonPropertyName("id")]

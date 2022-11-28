@@ -76,19 +76,19 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Cancel(int letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Cancel(string letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(int letterId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: $"letters/{letterId}", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Delete(int letterId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Delete(string letterId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.DeleteAsync($"letters/{letterId}", cancellationToken);
     }
@@ -100,7 +100,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> GetFileLocation(int letterId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
     }

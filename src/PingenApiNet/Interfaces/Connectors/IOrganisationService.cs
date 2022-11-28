@@ -57,5 +57,5 @@ public interface IOrganisationService : IConnectorService
     /// <param name="organisationId">ID of the organisation to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(int organisationId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(string organisationId, [Optional] CancellationToken cancellationToken);
 }

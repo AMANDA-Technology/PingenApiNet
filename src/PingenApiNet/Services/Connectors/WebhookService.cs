@@ -67,13 +67,13 @@ public class WebhookService : ConnectorService, IWebhookService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<WebhookData>>> Get(int webhookId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<WebhookData>>> Get(string webhookId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.GetAsync<SingleResult<WebhookData>>(requestPath: $"webhooks/{webhookId}", cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Delete(int webhookId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Delete(string webhookId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.DeleteAsync($"webhooks/{webhookId}", cancellationToken);
     }

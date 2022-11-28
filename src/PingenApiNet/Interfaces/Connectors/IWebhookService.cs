@@ -67,7 +67,7 @@ public interface IWebhookService
     /// <param name="webhookId">ID of the webhook to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<WebhookData>>> Get(int webhookId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<WebhookData>>> Get(string webhookId, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Delete a webhook. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.destroy">API Doc - Webhooks delete</see>
@@ -75,5 +75,5 @@ public interface IWebhookService
     /// <param name="webhookId">ID of the webhook to delete</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult> Delete(int webhookId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult> Delete(string webhookId, [Optional] CancellationToken cancellationToken);
 }

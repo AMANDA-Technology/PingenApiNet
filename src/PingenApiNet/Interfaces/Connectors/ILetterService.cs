@@ -85,7 +85,7 @@ public interface ILetterService : IConnectorService
     /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult> Cancel(int letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult> Cancel(string letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Get details of a letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letters show</see>
@@ -93,7 +93,7 @@ public interface ILetterService : IConnectorService
     /// <param name="letterId">ID of the letter to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(int letterId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Delete a letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.delete">API Doc - Letters delete</see>
@@ -101,7 +101,7 @@ public interface ILetterService : IConnectorService
     /// <param name="letterId">ID of the letter to delete</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult> Delete(int letterId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult> Delete(string letterId, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Edit a letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.edit">API Doc - Letters edit</see>
@@ -119,7 +119,7 @@ public interface ILetterService : IConnectorService
     /// <param name="letterId">ID of the letter to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult> GetFileLocation(int letterId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Calculate price for given letter configuration. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.price-calculator">API Doc - Letters price calculator</see>

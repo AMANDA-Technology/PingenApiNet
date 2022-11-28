@@ -33,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.Base.Embedded;
 /// </summary>
 /// <param name="Self"></param>
 /// <typeparam name="TSelfAbilities"></typeparam>
-public abstract record MetaAbility<TSelfAbilities>(
+public record MetaAbility<TSelfAbilities>(
     [property: JsonPropertyName("self")] TSelfAbilities Self
 ) : IMetaAbility where TSelfAbilities : IAbilities;
 
@@ -44,7 +44,7 @@ public abstract record MetaAbility<TSelfAbilities>(
 /// <param name="Organisation"></param>
 /// <typeparam name="TSelfAbilities"></typeparam>
 /// <typeparam name="TOrganisationAbilities"></typeparam>
-public abstract record MetaAbilityWithOrganisation<TSelfAbilities, TOrganisationAbilities>(
+public record MetaAbilityWithOrganisation<TSelfAbilities, TOrganisationAbilities>(
     TSelfAbilities Self,
     [property: JsonPropertyName("organisation")] TOrganisationAbilities Organisation
 ) : MetaAbility<TSelfAbilities>(Self)

@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Base.Embedded;
 namespace PingenApiNet.Abstractions.Models.Base;
 
 /// <inheritdoc cref="IData" />
-public abstract record Data : DataIdentity, IData
+public record Data : DataIdentity, IData
 {
     /// <inheritdoc />
     [JsonPropertyName("links")]
@@ -38,7 +38,7 @@ public abstract record Data : DataIdentity, IData
 }
 
 /// <inheritdoc cref="IData{TAttributes}" />
-public abstract record Data<TAttributes> : Data, IData<TAttributes>
+public record Data<TAttributes> : Data, IData<TAttributes>
     where TAttributes : IAttributes
 {
     /// <inheritdoc />
@@ -47,7 +47,7 @@ public abstract record Data<TAttributes> : Data, IData<TAttributes>
 }
 
 /// <inheritdoc cref="IData{TAttributes,TRelationships}" />
-public abstract record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships>
+public record Data<TAttributes, TRelationships> : Data<TAttributes>, IData<TAttributes, TRelationships>
     where TAttributes : IAttributes
     where TRelationships : IRelationships
 {

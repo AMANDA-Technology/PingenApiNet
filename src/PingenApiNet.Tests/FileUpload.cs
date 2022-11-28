@@ -95,7 +95,7 @@ public class TestGetFileUploadData
         });
 
         MemoryStream stream = new();
-        await File.OpenRead("Assets/sample.pdf").CopyToAsync(stream);
+        await File.OpenRead("Assets/sample_simulate_unprintable.pdf").CopyToAsync(stream);
         var uploadRes = await _pingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
         Assert.That(uploadRes, Is.True);
@@ -104,7 +104,7 @@ public class TestGetFileUploadData
         {
             Attributes = new()
             {
-                FileOriginalName = "sample.pdf",
+                FileOriginalName = "sample_simulate_unprintable.pdf",
                 FileUrl = res.Data.Data.Attributes.Url,
                 FileUrlSignature = res.Data.Data.Attributes.UrlSignature,
                 AddressPosition = LetterAddressPosition.left,
@@ -141,8 +141,20 @@ public class TestGetFileUploadData
         Assert.Multiple(() =>
         {
             Assert.That(resLetter.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
+            Assert.That(resLetter.ApiError, Is.Null);
             Assert.That(resLetter.Data?.Data, Is.Not.Null);
         });
+
+        var letterFromRemote = await _pingenApiClient.Letters.Get(resLetter.Data.Data.Id);
+        Assert.That(letterFromRemote, Is.Not.Null);
+        var letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.de);
+        Assert.That(letterEvents, Is.Not.Null);
+
+        letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.en);
+        Assert.That(letterEvents, Is.Not.Null);
+
+        letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.fr);
+        Assert.That(letterEvents, Is.Not.Null);
+
     }
 }

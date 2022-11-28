@@ -33,6 +33,6 @@ namespace PingenApiNet.Abstractions.Models.Base.Embedded;
 /// </summary>
 /// <param name="Abilities"></param>
 /// <typeparam name="TMetaAbility"></typeparam>
-public abstract record Meta<TMetaAbility>(
+public record Meta<TMetaAbility>(
     [property: JsonPropertyName("abilities")] TMetaAbility Abilities
 ) : IMeta where TMetaAbility : IMetaAbility;

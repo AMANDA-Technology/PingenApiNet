@@ -28,7 +28,7 @@ namespace PingenApiNet.Abstractions.Models.Api;
 /// <summary>
 /// An API request object to sent to the API with meta information to send as headers or query parameters
 /// </summary>
-public abstract record ApiRequest
+public record ApiRequest
 {
     // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
     // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
