@@ -87,5 +87,10 @@ public enum PingenApiDataType
     /// <summary>
     /// Data type webhook_undeliverable
     /// </summary>
-    webhook_undeliverable
+    webhook_undeliverable,
+
+    /// <summary>
+    /// Data type delivery products
+    /// </summary>
+    delivery_products
 }

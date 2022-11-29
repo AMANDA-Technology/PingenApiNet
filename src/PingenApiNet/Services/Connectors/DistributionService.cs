@@ -23,38 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Abstractions.Models.DeliveryProducts;
+using PingenApiNet.Interfaces;
+using PingenApiNet.Interfaces.Connectors;
+using PingenApiNet.Services.Connectors.Base;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Services.Connectors;
 
-/// <summary>
-///
-/// </summary>
-public class TestLetters : TestBase
+/// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.IDistributionService" />
+public sealed class DistributionService : ConnectorService, IDistributionService
 {
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="LetterService"/> class.
     /// </summary>
-    [Test]
-    public async Task GetAllLetters()
+    /// <param name="connectionHandler"></param>
+    public DistributionService(IPingenConnectionHandler connectionHandler) : base(connectionHandler)
     {
-        Assert.That(PingenApiClient, Is.Not.Null);
+    }
 
-        var res = await PingenApiClient.Letters.GetPage();
-        Assert.That(res, Is.Not.Null);
-        Assert.Multiple(() =>
-        {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
-        });
-
-        List<LetterData>? letters = null;
-        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync())
-        {
-            letters ??= new();
-            letters.AddRange(page);
-        }
-        Assert.That(letters, Is.Not.Null);
+    /// <inheritdoc />
+    public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProducts([Optional] CancellationToken cancellationToken)
+    {
+        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: $"distribution/delivery-products", cancellationToken: cancellationToken);
     }
 }

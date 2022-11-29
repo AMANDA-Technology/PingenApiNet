@@ -62,4 +62,10 @@ public interface IPingenApiClient
     /// Pingen files connector. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
     /// </summary>
     public IFilesService Files { get; set; }
+
+    /// <summary>
+    /// Pingen distribution connector.
+    /// Undocumented endpoint, use at own risk.
+    /// </summary>
+    public IDistributionService Distributions { get; set; }
 }

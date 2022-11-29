@@ -23,38 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Base;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
 
 /// <summary>
-///
+/// Delivery product data object
 /// </summary>
-public class TestLetters : TestBase
+public record DeliveryProductData : Data<DeliveryProduct>
 {
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public async Task GetAllLetters()
-    {
-        Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient.Letters.GetPage();
-        Assert.That(res, Is.Not.Null);
-        Assert.Multiple(() =>
-        {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
-        });
-
-        List<LetterData>? letters = null;
-        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync())
-        {
-            letters ??= new();
-            letters.AddRange(page);
-        }
-        Assert.That(letters, Is.Not.Null);
-    }
 }

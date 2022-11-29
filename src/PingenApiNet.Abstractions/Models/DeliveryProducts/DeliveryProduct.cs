@@ -23,38 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Letters;
+using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
 
 /// <summary>
-///
+/// Delivery product
 /// </summary>
-public class TestLetters : TestBase
-{
-    /// <summary>
-    ///
-    /// </summary>
-    [Test]
-    public async Task GetAllLetters()
-    {
-        Assert.That(PingenApiClient, Is.Not.Null);
-
-        var res = await PingenApiClient.Letters.GetPage();
-        Assert.That(res, Is.Not.Null);
-        Assert.Multiple(() =>
-        {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
-        });
-
-        List<LetterData>? letters = null;
-        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync())
-        {
-            letters ??= new();
-            letters.AddRange(page);
-        }
-        Assert.That(letters, Is.Not.Null);
-    }
-}
+public sealed record DeliveryProduct(
+    [property: JsonPropertyName("country")] string Country,
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("full_name")] string FullName,
+    [property: JsonPropertyName("delivery_time_days")] IReadOnlyList<int?> DeliveryTimeDays,
+    [property: JsonPropertyName("features")] IReadOnlyList<string> Features,
+    [property: JsonPropertyName("price_currency")] string PriceCurrency,
+    [property: JsonPropertyName("price_starting_from")] double? PriceStartingFrom
+) : IAttributes;

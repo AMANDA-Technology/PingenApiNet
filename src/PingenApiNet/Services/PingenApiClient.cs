@@ -25,7 +25,6 @@ SOFTWARE.
 
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
-using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.Services;
 
@@ -45,7 +44,8 @@ public sealed class PingenApiClient : IPingenApiClient
         IUserService userService,
         IOrganisationService organisationService,
         IWebhookService webhooks,
-        IFilesService filesService)
+        IFilesService filesService,
+        IDistributionService distributionService)
     {
         _pingenConnectionHandler = pingenConnectionHandler;
 
@@ -54,6 +54,7 @@ public sealed class PingenApiClient : IPingenApiClient
         Organisations = organisationService;
         Webhooks = webhooks;
         Files = filesService;
+        Distributions = distributionService;
     }
 
     /// <inheritdoc />
@@ -76,4 +77,7 @@ public sealed class PingenApiClient : IPingenApiClient
 
     /// <inheritdoc />
     public IFilesService Files { get; set; }
+
+    /// <inheritdoc />
+    public IDistributionService Distributions { get; set; }
 }

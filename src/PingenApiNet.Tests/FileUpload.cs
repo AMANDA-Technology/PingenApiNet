@@ -25,52 +25,23 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
-using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.Tests;
 
-public class TestGetFileUploadData
+/// <summary>
+///
+/// </summary>
+public class TestGetFileUploadData : TestBase
 {
-    private readonly IPingenApiClient _pingenApiClient;
-
-    public TestGetFileUploadData()
-    {
-        var baseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new("Missing PingenApiNet__BaseUri");
-        var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new("Missing PingenApiNet__IdentityUri");
-        var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new("Missing PingenApiNet__ClientId");
-        var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new("Missing PingenApiNet__ClientSecret");
-        var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId");
-        var connectionHandler = new PingenConnectionHandler(
-            new PingenConfiguration
-            {
-                BaseUri = baseUri,
-                IdentityUri = identityUri,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                DefaultOrganisationId = organisationId
-            });
-
-        _pingenApiClient = new PingenApiClient(
-            connectionHandler,
-            new LetterService(connectionHandler),
-            new UserService(connectionHandler),
-            new OrganisationService(connectionHandler),
-            new WebhookService(connectionHandler),
-            new FilesService(connectionHandler));
-    }
-
-    [SetUp]
-    public void Setup()
-    {
-        // Nothing to do yet
-    }
-
+    /// <summary>
+    ///
+    /// </summary>
     [Test]
     public async Task GetUploadData()
     {
-        Assert.That(_pingenApiClient, Is.Not.Null);
+        Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.Files.GetPath();
+        var res = await PingenApiClient.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -83,9 +54,9 @@ public class TestGetFileUploadData
     [Test]
     public async Task GetUploadDataAndCreateLetter()
     {
-        Assert.That(_pingenApiClient, Is.Not.Null);
+        Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await _pingenApiClient.Files.GetPath();
+        var res = await PingenApiClient.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -96,11 +67,11 @@ public class TestGetFileUploadData
 
         MemoryStream stream = new();
         await File.OpenRead("Assets/sample_simulate_unprintable.pdf").CopyToAsync(stream);
-        var uploadRes = await _pingenApiClient.Files.UploadFile(res.Data!.Data, stream);
+        var uploadRes = await PingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
         Assert.That(uploadRes, Is.True);
 
-        var resLetter = await _pingenApiClient.Letters.Create(new()
+        var resLetter = await PingenApiClient.Letters.Create(new()
         {
             Attributes = new()
             {
@@ -145,15 +116,15 @@ public class TestGetFileUploadData
             Assert.That(resLetter.Data?.Data, Is.Not.Null);
         });
 
-        var letterFromRemote = await _pingenApiClient.Letters.Get(resLetter.Data.Data.Id);
+        var letterFromRemote = await PingenApiClient.Letters.Get(resLetter.Data.Data.Id);
         Assert.That(letterFromRemote, Is.Not.Null);
-        var letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.de);
+        var letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.de);
         Assert.That(letterEvents, Is.Not.Null);
 
-        letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.en);
+        letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.en);
         Assert.That(letterEvents, Is.Not.Null);
 
-        letterEvents = await _pingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.fr);
+        letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.fr);
         Assert.That(letterEvents, Is.Not.Null);
 
     }
