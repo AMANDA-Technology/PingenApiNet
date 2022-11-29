@@ -134,11 +134,11 @@ public interface ILetterService : IConnectorService
     /// Get a collection of letter events. <see href="https://api.v2.pingen.com/documentation#tag/letters.events/operation/letters.events">API Doc - Letters events</see>
     /// </summary>>
     /// <param name="letterId">ID of letter to get events</param>
-    /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="language">Language for events. Default: "en". Nope, API Doc is wrong!! Culture names required, e.g. 'en-GB'. Use any of <see cref="PingenApiLanguage"/></param>
     /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, PingenApiLanguage language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetEventsPage"/> and auto page until end of collection
@@ -147,7 +147,7 @@ public interface ILetterService : IConnectorService
     /// <param name="language">Language for events. Default: "en"</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, PingenApiLanguage language, [Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Get a collection of issues of all letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.events/operation/letters.issues">API Doc - Letters issues</see>
@@ -156,7 +156,7 @@ public interface ILetterService : IConnectorService
     /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(PingenApiLanguage language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetIssuesPage"/> and auto page until end of collection
@@ -164,5 +164,5 @@ public interface ILetterService : IConnectorService
     /// <param name="language">Language for events. Default: "en"</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(PingenApiLanguage language, [Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [Optional] CancellationToken cancellationToken);
 }

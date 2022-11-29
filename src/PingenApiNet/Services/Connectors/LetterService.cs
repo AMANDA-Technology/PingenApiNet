@@ -112,26 +112,26 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, PingenApiLanguage language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={language}", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, PingenApiLanguage language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
         await foreach (var page in AutoPage(async apiRequest => await GetEventsPage(letterId, language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(PingenApiLanguage language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={Enum.GetName(language)}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={language}", apiRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(PingenApiLanguage language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
         await foreach (var page in AutoPage(async apiRequest => await GetIssuesPage(language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;

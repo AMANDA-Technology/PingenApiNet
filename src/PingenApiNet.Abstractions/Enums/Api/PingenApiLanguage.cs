@@ -31,22 +31,30 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API languages
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PingenApiLanguage
+public static class PingenApiLanguage
 {
     /// <summary>
-    /// Language EN
+    /// Language en-GB
     /// </summary>
-    en,
+    public const string EnGB = "en-GB";
 
     /// <summary>
-    /// Language DE
+    /// Language de-DE
     /// </summary>
-    de,
+    public const string DeDE = "de-DE";
 
     /// <summary>
-    /// Language FR
+    /// Language de-CH
     /// </summary>
-    fr
-    // TODO: Which languages are supported?
+    public const string DeCH = "de-CH";
+
+    /// <summary>
+    /// Language nl-NL
+    /// </summary>
+    public const string NlNL = "nl-NL";
+
+    /// <summary>
+    /// Language fr-FR
+    /// </summary>
+    public const string FrFR = "fr-FR";
 }

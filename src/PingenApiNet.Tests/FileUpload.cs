@@ -41,7 +41,7 @@ public class TestGetFileUploadData : TestBase
     {
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient.Files.GetPath();
+        var res = await PingenApiClient!.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -56,7 +56,7 @@ public class TestGetFileUploadData : TestBase
     {
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient.Files.GetPath();
+        var res = await PingenApiClient!.Files.GetPath();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -116,16 +116,35 @@ public class TestGetFileUploadData : TestBase
             Assert.That(resLetter.Data?.Data, Is.Not.Null);
         });
 
-        var letterFromRemote = await PingenApiClient.Letters.Get(resLetter.Data.Data.Id);
+        var letterFromRemote = await PingenApiClient.Letters.Get(resLetter.Data!.Data.Id);
         Assert.That(letterFromRemote, Is.Not.Null);
-        var letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.de);
+        var letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.EnGB);
         Assert.That(letterEvents, Is.Not.Null);
+    }
 
-        letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.en);
-        Assert.That(letterEvents, Is.Not.Null);
+    [Test]
+    public async Task GetLetterEvents()
+    {
+        Assert.That(PingenApiClient, Is.Not.Null);
+        const string letterId = "578bb746-52b7-4ef3-95d8-ca7bab0b1af0";
 
-        letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.fr);
-        Assert.That(letterEvents, Is.Not.Null);
-
+        foreach (var language in new[]
+                 {
+                     PingenApiLanguage.EnGB,
+                     PingenApiLanguage.DeDE,
+                     PingenApiLanguage.DeCH,
+                     PingenApiLanguage.NlNL,
+                     PingenApiLanguage.FrFR,
+                 })
+        {
+            var res = await PingenApiClient!.Letters.GetEventsPage(letterId, language);
+            Assert.That(res, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(res.IsSuccess, Is.True);
+                Assert.That(res.ApiError, Is.Null);
+                Assert.That(res.Data?.Data, Is.Not.Null);
+            });
+        }
     }
 }

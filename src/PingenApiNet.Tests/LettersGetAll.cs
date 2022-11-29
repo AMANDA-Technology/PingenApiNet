@@ -40,7 +40,7 @@ public class TestLetters : TestBase
     {
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient.Letters.GetPage();
+        var res = await PingenApiClient!.Letters.GetPage();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
