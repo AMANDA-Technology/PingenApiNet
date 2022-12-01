@@ -74,6 +74,7 @@ public static class PingenServiceCollection
         services.AddScoped<IOrganisationService, OrganisationService>();
         services.AddScoped<IWebhookService, WebhookService>();
         services.AddScoped<IFilesService, FilesService>();
+        services.AddScoped<IDistributionService, DistributionService>();
         services.AddScoped<IPingenApiClient, PingenApiClient>();
 
         return services;
