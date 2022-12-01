@@ -27,6 +27,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
@@ -46,19 +47,26 @@ public static class PingenWebhookHelper
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="PingenWebhookValidationErrorException"></exception>
-    public static async Task<WebhookEvent?> ValidateWebhookAndGetData(string signingKey, string signature, Stream requestStream, [Optional] CancellationToken cancellationToken)
+    public static async Task<WebhookEventData?> ValidateWebhookAndGetData(string signingKey, string signature, Stream requestStream, [Optional] CancellationToken cancellationToken)
     {
         using var reader = new StreamReader(requestStream);
         var payload = await reader.ReadToEndAsync(cancellationToken);
 
         if (await ValidateWebhook(signingKey, signature, payload, cancellationToken))
         {
-            return JsonSerializer.Deserialize<WebhookEvent>(payload);
+            return JsonSerializer.Deserialize<WebhookEventData>(payload);
         }
 
         throw new PingenWebhookValidationErrorException(
-            JsonSerializer.Deserialize<WebhookEvent>(payload) ??
-            new WebhookEvent(string.Empty, new(""), DateTime.MinValue),
+            JsonSerializer.Deserialize<WebhookEventData>(payload) ??
+            new WebhookEventData
+            {
+                Id = string.Empty,
+                Type = PingenApiDataType.letters,
+                Links = null!,
+                Attributes = null!,
+                Relationships = null!
+            },
             "Validation of webhook signature failed");
     }
 

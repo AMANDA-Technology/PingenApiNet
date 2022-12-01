@@ -37,27 +37,27 @@ public class PingenWebhookValidationErrorException : Exception
     /// <summary>
     /// API Result
     /// </summary>
-    public WebhookEvent? WebhookEvent { get; }
+    public WebhookEventData? WebhookEventData { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenWebhookValidationErrorException"/> class
     /// </summary>
-    /// <param name="webhookEvent"></param>
+    /// <param name="webhookEventData"></param>
     /// <param name="message"></param>
-    public PingenWebhookValidationErrorException(WebhookEvent webhookEvent, string message) : base(message)
+    public PingenWebhookValidationErrorException(WebhookEventData webhookEventData, string message) : base(message)
     {
-        WebhookEvent = webhookEvent;
+        WebhookEventData = webhookEventData;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
     /// </summary>
-    /// <param name="webhookEvent"></param>
+    /// <param name="webhookEventData"></param>
     /// <param name="message"></param>
     /// <param name="inner"></param>
-    public PingenWebhookValidationErrorException(WebhookEvent webhookEvent, string message, Exception inner) : base(message, inner)
+    public PingenWebhookValidationErrorException(WebhookEventData webhookEventData, string message, Exception inner) : base(message, inner)
     {
-        WebhookEvent = webhookEvent;
+        WebhookEventData = webhookEventData;
     }
 
     /// <summary>
@@ -67,13 +67,13 @@ public class PingenWebhookValidationErrorException : Exception
     /// <param name="context"></param>
     protected PingenWebhookValidationErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        WebhookEvent = info.GetValue(nameof(WebhookEvent), typeof(WebhookEvent)) as WebhookEvent;
+        WebhookEventData = info.GetValue(nameof(WebhookEventData), typeof(WebhookEventData)) as WebhookEventData;
     }
 
     /// <inheritdoc />
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
-        info.AddValue(nameof(Models.Webhooks.WebhookEvents.WebhookEvent), WebhookEvent);
+        info.AddValue(nameof(Models.Webhooks.WebhookEvents.WebhookEventData), WebhookEventData);
     }
 }
