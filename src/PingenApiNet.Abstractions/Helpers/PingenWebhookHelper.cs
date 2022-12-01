@@ -72,10 +72,20 @@ public static class PingenWebhookHelper
     /// <returns></returns>
     public static async Task<bool> ValidateWebhook(string signingKey, string signature, string payload, [Optional] CancellationToken cancellationToken)
     {
-        using var hash = new HMACSHA256(Encoding.UTF8.GetBytes(signingKey));
-        return signature == Convert.ToBase64String(
-            await hash.ComputeHashAsync(
-                new MemoryStream(Encoding.UTF8.GetBytes(payload)),
-                cancellationToken));
+        var keyByte = Encoding.UTF8.GetBytes(signingKey);
+        using var hmacsha256 = new HMACSHA256(keyByte);
+        hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(payload));
+
+        return hmacsha256.Hash != null && signature == ByteToString(hmacsha256.Hash);
+    }
+
+    /// <summary>
+    /// Create string vom byte array
+    /// </summary>
+    /// <param name="buff"></param>
+    /// <returns></returns>
+    private static string ByteToString(IEnumerable<byte> buff)
+    {
+        return buff.Aggregate("", (current, t) => current + t.ToString("x2"));
     }
 }
