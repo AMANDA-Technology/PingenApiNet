@@ -82,7 +82,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (!_configuration.IdentityUri.EndsWith("/"))
             _configuration.IdentityUri += "/";
 
-        _client = new()
+        _client = new(new HttpClientHandler { AllowAutoRedirect = false })
         {
             BaseAddress = new(_configuration.BaseUri)
         };
@@ -212,11 +212,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey)
     {
-        var httpRequestMessage = new HttpRequestMessage
-        {
-            Method = httpMethod,
-            VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
-        };
+        var httpRequestMessage = new HttpRequestMessage { Method = httpMethod };
 
         var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!,
             requestPath.StartsWith("file-upload") || requestPath.StartsWith("user") || requestPath.StartsWith("organisations") // TODO: Another solution to decide if request path is under organisation id

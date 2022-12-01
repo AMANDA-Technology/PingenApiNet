@@ -25,7 +25,8 @@ SOFTWARE.
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using PingenApiNet.Abstractions.Enums.Api;
+using System.Xml;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -103,6 +104,23 @@ public sealed class LetterService : ConnectorService, ILetterService
     public async Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<MemoryStream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken)
+    {
+        using var httpClient = new HttpClient();
+        var fileContentResponse = await httpClient.GetAsync(fileUrl, cancellationToken);
+        if (!fileContentResponse.IsSuccessStatusCode)
+        {
+            var errorContent = await fileContentResponse.Content.ReadAsStringAsync(cancellationToken);
+            var xml = new XmlDocument();
+            xml.LoadXml(errorContent);
+            throw new PingenFileDownloadException(xml.SelectSingleNode("/Error/Code/text()")?.Value ?? string.Empty);
+        }
+
+        await fileContentResponse.Content.LoadIntoBufferAsync();
+        return (MemoryStream) await fileContentResponse.Content.ReadAsStreamAsync(cancellationToken);
     }
 
     /// <inheritdoc />

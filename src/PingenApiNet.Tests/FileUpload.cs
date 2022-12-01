@@ -25,6 +25,7 @@ SOFTWARE.
 
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Exceptions;
 
 namespace PingenApiNet.Tests;
 
@@ -134,7 +135,7 @@ public class TestGetFileUploadData : TestBase
                      PingenApiLanguage.DeDE,
                      PingenApiLanguage.DeCH,
                      PingenApiLanguage.NlNL,
-                     PingenApiLanguage.FrFR,
+                     PingenApiLanguage.FrFR
                  })
         {
             var res = await PingenApiClient!.Letters.GetEventsPage(letterId, language);
@@ -146,5 +147,38 @@ public class TestGetFileUploadData : TestBase
                 Assert.That(res.Data?.Data, Is.Not.Null);
             });
         }
+    }
+
+    [Test]
+    public void GetFileDownloadError()
+    {
+        Assert.That(PingenApiClient, Is.Not.Null);
+        const string url = "https://pingen2-staging.objects.rma.cloudscale.ch/letters/20c1e673-03fe-4e19-ad45-9cdd85c5a940?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=Z3YMWIXX6Y1G0KHUQDZ7%2F20221128%2Fregion1%2Fs3%2Faws4_request&X-Amz-Date=20221128T222323Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Signature=02705e5180cd082c5907d93e77fdb2d8c5a77938bc2e91a6e7c014ef953db9dd";
+
+        Assert.ThrowsAsync<PingenFileDownloadException>(async () => await PingenApiClient!.Letters.DownloadFileContent(new(url)));
+    }
+
+    [Test]
+    public async Task GetFileDownload()
+    {
+        Assert.That(PingenApiClient, Is.Not.Null);
+        const string letterId = "578bb746-52b7-4ef3-95d8-ca7bab0b1af0";
+        const string filePath = "filepath.pdf";
+
+        var res = await PingenApiClient!.Letters.GetFileLocation(letterId);
+        Assert.That(res, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(res.IsSuccess, Is.True);
+            Assert.That(res.ApiError, Is.Null);
+            Assert.That(res.Location, Is.Not.Null);
+        });
+
+        var stream = await PingenApiClient.Letters.DownloadFileContent(res.Location!);
+        await using (var file = File.OpenWrite(filePath))
+            await stream.CopyToAsync(file);
+
+        Assert.That(File.Exists(filePath));
+        File.Delete(filePath);
     }
 }

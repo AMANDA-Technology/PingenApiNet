@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -113,13 +114,22 @@ public interface ILetterService : IConnectorService
     public Task<ApiResult<SingleResult<LetterDataDetailed>>> Update(DataPatch<LetterUpdate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Get file of letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.file">API Doc - Letters file</see>
+    /// Get file of letter. (Redirect URL only) <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.file">API Doc - Letters file</see>
     /// <br/>API returns a 302 Found with the file URL in Location header. Get url from <see cref="ApiResult.Location"/>.
     /// </summary>
-    /// <param name="letterId">ID of the letter to get</param>
+    /// <param name="letterId">ID of the letter to get the file from</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
+    /// <returns><see cref="ApiResult"/> with <see cref="ApiResult.Location"/></returns>
     public Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Download file from URL received by <see cref="GetFileLocation"/> <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.file">API Doc - Letters file</see>
+    /// </summary>
+    /// <param name="fileUrl"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="PingenFileDownloadException"></exception>
+    public Task<MemoryStream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Calculate price for given letter configuration. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.price-calculator">API Doc - Letters price calculator</see>
