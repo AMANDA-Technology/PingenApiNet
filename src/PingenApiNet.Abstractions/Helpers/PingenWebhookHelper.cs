@@ -51,8 +51,9 @@ public static class PingenWebhookHelper
     {
         using var reader = new StreamReader(requestStream);
         var payload = await reader.ReadToEndAsync(cancellationToken);
+        requestStream.Position = 0;
 
-        if (await ValidateWebhook(signingKey, signature, payload, cancellationToken))
+        if (await ValidateWebhook(signingKey, signature, requestStream, cancellationToken))
         {
             return JsonSerializer.Deserialize<WebhookEventData>(payload);
         }
@@ -78,11 +79,11 @@ public static class PingenWebhookHelper
     /// <param name="payload"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<bool> ValidateWebhook(string signingKey, string signature, string payload, [Optional] CancellationToken cancellationToken)
+    public static async Task<bool> ValidateWebhook(string signingKey, string signature, Stream payload, [Optional] CancellationToken cancellationToken)
     {
         var keyByte = Encoding.UTF8.GetBytes(signingKey);
         using var hmacsha256 = new HMACSHA256(keyByte);
-        hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(payload));
+        await hmacsha256.ComputeHashAsync(payload, cancellationToken);
 
         return hmacsha256.Hash != null && signature == ByteToString(hmacsha256.Hash);
     }
