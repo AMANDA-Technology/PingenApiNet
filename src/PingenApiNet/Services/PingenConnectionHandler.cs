@@ -154,7 +154,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
+    public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
         await SetOrUpdateAccessToken();
         var res = await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, dataPost, null, idempotencyKey), cancellationToken);
@@ -169,14 +169,14 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc cref="PatchAsync" />
-    public async Task<ApiResult> PatchAsync(string requestPath, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> PatchAsync(string requestPath, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, null, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc cref="PatchAsync{TResult,TPost}" />
-    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
+    public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
     {
         await SetOrUpdateAccessToken();
         return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, data, null, idempotencyKey), cancellationToken));
@@ -191,7 +191,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="apiRequest"></param>
     /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, T? payload, [Optional] ApiPagingRequest? apiRequest, [Optional] Guid? idempotencyKey) where T : IDataPost
+    private HttpRequestMessage GetHttpRequestMessageWithBody<T>(HttpMethod httpMethod, string requestPath, T? payload, [Optional] ApiRequest? apiRequest, [Optional] string? idempotencyKey) where T : IDataPost
     {
         var httpRequestMessage = GetHttpRequestMessage(httpMethod, requestPath, apiRequest, idempotencyKey);
 
@@ -210,7 +210,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="httpMethod"></param>
     /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] Guid? idempotencyKey)
+    private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] string? idempotencyKey)
     {
         var httpRequestMessage = new HttpRequestMessage { Method = httpMethod };
 
@@ -238,10 +238,10 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="apiRequest"></param>
     /// <param name="idempotencyKey"></param>
     /// <returns></returns>
-    private static IEnumerable<KeyValuePair<string, string>> GetRequestHeaders(ApiRequest? apiRequest, [Optional] Guid? idempotencyKey)
+    private static IEnumerable<KeyValuePair<string, string>> GetRequestHeaders(ApiRequest? apiRequest, [Optional] string? idempotencyKey)
     {
-        if (idempotencyKey.HasValue)
-            yield return new(ApiHeaderNames.IdempotencyKey, idempotencyKey.Value.ToString());
+        if (!string.IsNullOrEmpty(idempotencyKey))
+            yield return new(ApiHeaderNames.IdempotencyKey, idempotencyKey);
 
         if (apiRequest is not null)
         {

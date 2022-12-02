@@ -65,19 +65,19 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Send(DataPatch<LetterSend> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Send(DataPatch<LetterSend> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>($"letters/{data.Id}/send", data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> Cancel(string letterId, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> Cancel(string letterId, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
     }
@@ -95,7 +95,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Update(DataPatch<LetterUpdate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Update(DataPatch<LetterUpdate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>($"letters/{data.Id}", data, idempotencyKey, cancellationToken);
     }
@@ -124,7 +124,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
     }

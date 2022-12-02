@@ -69,7 +69,7 @@ public interface IPingenConnectionHandler
     /// <typeparam name="TResult"></typeparam>
     /// <typeparam name="TPost"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
+    public Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost;
 
     /// <summary>
     /// Base DELETE request
@@ -86,7 +86,7 @@ public interface IPingenConnectionHandler
     /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult> PatchAsync(string requestPath, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult> PatchAsync(string requestPath, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Base PATCH request with payload
@@ -98,5 +98,5 @@ public interface IPingenConnectionHandler
     /// <typeparam name="TResult"></typeparam>
     /// <typeparam name="TPatch"></typeparam>
     /// <returns></returns>
-    public Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch;
+    public Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch;
 }

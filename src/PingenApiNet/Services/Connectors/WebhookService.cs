@@ -61,7 +61,7 @@ public class WebhookService : ConnectorService, IWebhookService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<WebhookData>>> Create(DataPost<WebhookCreate> data, [Optional] Guid? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<WebhookData>>> Create(DataPost<WebhookCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
         return await ConnectionHandler.PostAsync<SingleResult<WebhookData>, DataPost<WebhookCreate>>("webhooks", data, idempotencyKey, cancellationToken);
     }
