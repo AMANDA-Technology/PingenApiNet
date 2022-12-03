@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.DeliveryProducts;
@@ -38,6 +39,7 @@ public interface IDistributionService
 {
     /// <summary>
     /// Get all available delivery products.
+    /// <br/> WARNING: This API endpoint seems not to support filtering and sorting on pingen
     /// </summary>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
@@ -46,9 +48,11 @@ public interface IDistributionService
 
     /// <summary>
     /// Call <see cref="GetDeliveryProductsPage"/> and auto page until end of collection
+    /// <br/> WARNING: This API endpoint seems not to support filtering and sorting on pingen
     /// </summary>
-    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
+    /// <returns>Pages from <see cref="GetDeliveryProductsPage"/> asynchronously</returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<DeliveryProductData>> GetDeliveryProductsPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 }

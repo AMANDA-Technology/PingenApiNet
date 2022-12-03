@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -26,33 +26,32 @@ SOFTWARE.
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Helpers;
+namespace PingenApiNet.Abstractions.Helpers.JsonConverters;
 
 /// <summary>
 /// Pingen date time json converter
 /// </summary>
-public class PingenNullableDateTimeConverter : JsonConverter<DateTime?>
+public sealed class PingenDateTimeNullableConverter : JsonConverter<DateTime?>
 {
-    /// <summary>
-    /// Default pingen date time string format
-    /// </summary>
-    private const string PingenDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
-
-    /// <inheritdoc cref="JsonConverter{T}"/>
+    /// <inheritdoc />
     public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var valueString = reader.GetString();
 
-        if (string.IsNullOrEmpty(valueString)) return null;
-        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value) ? value : null;
+        if (string.IsNullOrEmpty(valueString))
+            return null;
+
+        return DateTime.TryParseExact(valueString, PingenDateTimeConverter.PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value)
+            ? value
+            : null;
     }
 
-    /// <inheritdoc cref="JsonConverter{T}"/>
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
     {
         if (value.HasValue)
         {
-            writer.WriteStringValue(value.Value.ToString(PingenDateTimeFormat));
+            writer.WriteStringValue(value.Value.ToString(PingenDateTimeConverter.PingenDateTimeFormat));
         }
         else
         {

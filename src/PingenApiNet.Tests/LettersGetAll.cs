@@ -23,6 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Letters;
 
 namespace PingenApiNet.Tests;
@@ -38,9 +41,28 @@ public class TestLetters : TestBase
     [Test]
     public async Task GetAllLetters()
     {
+        var apiPagingRequest = new ApiPagingRequest
+        {
+            Sorting = new Dictionary<string, CollectionSortDirection>
+            {
+                [PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.CreatedAt)] = CollectionSortDirection.DESC
+            },
+            Filtering = new(
+                CollectionFilterOperator.And,
+                new KeyValuePair<string, object>[]
+                {
+                    new(CollectionFilterOperator.Or, new KeyValuePair<string, object>[]
+                    {
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "CH"),
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "LI")
+                    }),
+                    new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Status), "valid")
+                })
+        };
+
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient!.Letters.GetPage();
+        var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -49,12 +71,12 @@ public class TestLetters : TestBase
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
-        List<LetterData>? letters = null;
-        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync())
+        var letters = new List<LetterData>();
+        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync(apiPagingRequest))
         {
-            letters ??= new();
             letters.AddRange(page);
         }
         Assert.That(letters, Is.Not.Null);
+        Assert.That(letters, Is.Not.Empty);
     }
 }

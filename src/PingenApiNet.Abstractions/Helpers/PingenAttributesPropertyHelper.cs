@@ -23,40 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Helpers;
 
 /// <summary>
-/// Pingen date time json converter
+/// Static helper for properties of type T
 /// </summary>
-public class PingenDateTimeConverter : JsonConverter<DateTime?>
+/// <typeparam name="T"></typeparam>
+public static class PingenAttributesPropertyHelper<T> where T : IAttributes
 {
     /// <summary>
-    /// Default pingen date time string format
+    /// Get name from json property name attribute of a specific property from type T
     /// </summary>
-    private const string PingenDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
-
-    /// <inheritdoc cref="JsonConverter{T}"/>
-    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    /// <param name="selector"></param>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static string GetJsonPropertyName<TValue>(Expression<Func<T, TValue>> selector)
     {
-        var valueString = reader.GetString();
-
-        if (string.IsNullOrEmpty(valueString)) return DateTime.MinValue;
-        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value) ? value : DateTime.MinValue;
-    }
-
-    /// <inheritdoc cref="JsonConverter{T}"/>
-    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-    {
-        if (value.HasValue)
+        Expression body = selector;
+        if (body is LambdaExpression expression)
         {
-            writer.WriteStringValue(value.Value.ToString(PingenDateTimeFormat));
+            body = expression.Body;
         }
-        else
-        {
-            writer.WriteNullValue();
-        }
+
+        if (body.NodeType != ExpressionType.MemberAccess)
+            throw new InvalidOperationException();
+
+        return ((PropertyInfo)((MemberExpression)body).Member)
+            .CustomAttributes.FirstOrDefault(attributeData => attributeData.AttributeType == typeof(JsonPropertyNameAttribute))
+            ?.ConstructorArguments.First().Value?.ToString() ?? throw new InvalidOperationException();
     }
 }

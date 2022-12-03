@@ -55,7 +55,8 @@ public interface ILetterService : IConnectorService
     /// </summary>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
+    /// <returns>Pages from <see cref="GetPage"/> asynchronously</returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
@@ -158,7 +159,8 @@ public interface ILetterService : IConnectorService
     /// <param name="language">Language for events. Default: "en"</param>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
+    /// <returns>Pages from <see cref="GetEventsPage"/> asynchronously</returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
@@ -176,6 +178,7 @@ public interface ILetterService : IConnectorService
     /// <param name="language">Language for events. Default: "en"</param>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
+    /// <returns>Pages from <see cref="GetIssuesPage"/> asynchronously</returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 }

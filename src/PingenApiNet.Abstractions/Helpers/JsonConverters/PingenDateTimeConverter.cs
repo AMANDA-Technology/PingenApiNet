@@ -23,34 +23,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Exceptions;
-using PingenApiNet.Abstractions.Interfaces.Data;
-using PingenApiNet.Abstractions.Models.Api;
-using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Interfaces.Connectors.Base;
+namespace PingenApiNet.Abstractions.Helpers.JsonConverters;
 
 /// <summary>
-/// Base interface for all connector services for the API
+/// Pingen date time json converter
 /// </summary>
-public interface IConnectorService
+public sealed class PingenDateTimeConverter : JsonConverter<DateTime>
 {
     /// <summary>
-    /// Handle API result, throw on error, return data from <see cref="CollectionResult{TData}"/>
+    /// Default pingen date time string format
     /// </summary>
-    /// <param name="apiResult"></param>
-    /// <typeparam name="TData"></typeparam>
-    /// <returns>List of data from collection result</returns>
-    /// <exception cref="PingenApiErrorException"></exception>
-    public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData;
+    internal const string PingenDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
 
-    /// <summary>
-    /// Handle API result, throw on error, return data from <see cref="SingleResult{TData}"/>
-    /// </summary>
-    /// <param name="apiResult"></param>
-    /// <typeparam name="TData"></typeparam>
-    /// <returns></returns>
-    /// <returns>List of data from collection result</returns>
-    /// <exception cref="PingenApiErrorException"></exception>
-    public TData? HandleResult<TData>(ApiResult<SingleResult<TData>> apiResult) where TData : IData;
+    /// <inheritdoc />
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var valueString = reader.GetString();
+
+        if (string.IsNullOrEmpty(valueString))
+            return DateTime.MinValue;
+
+        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value)
+            ? value
+            : DateTime.MinValue;
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(PingenDateTimeFormat));
+    }
 }

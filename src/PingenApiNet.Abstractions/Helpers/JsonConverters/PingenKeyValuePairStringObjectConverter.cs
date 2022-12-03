@@ -23,11 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Models.Base;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
+namespace PingenApiNet.Abstractions.Helpers.JsonConverters;
 
 /// <summary>
-/// Delivery product data object
+/// Pingen key value pair converter
 /// </summary>
-public sealed record DeliveryProductData : Data<DeliveryProduct>;
+public sealed class PingenKeyValuePairStringObjectConverter : JsonConverter<KeyValuePair<string, object>>
+{
+    /// <inheritdoc />
+    public override KeyValuePair<string, object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var valueString = reader.GetString();
+
+        if (string.IsNullOrEmpty(valueString))
+            return default;
+
+        return JsonSerializer.Deserialize<Dictionary<string, object>>(valueString, options)?.First() ?? default;
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, KeyValuePair<string, object> value, JsonSerializerOptions options)
+    {
+        writer.WriteRawValue(JsonSerializer.Serialize(new Dictionary<string, object>(new[] { value }), options));
+    }
+}

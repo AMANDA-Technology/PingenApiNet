@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.UserAssociations;
@@ -58,5 +59,6 @@ public interface IUserService : IConnectorService
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 }

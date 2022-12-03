@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Helpers.JsonConverters;
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
@@ -87,8 +87,10 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             BaseAddress = new(_configuration.BaseUri)
         };
 
-        _serializerOptions.Converters.Add(new PingenNullableDateTimeConverter());
         _serializerOptions.Converters.Add(new PingenDateTimeConverter());
+        _serializerOptions.Converters.Add(new PingenDateTimeNullableConverter());
+        _serializerOptions.Converters.Add(new PingenKeyValuePairStringObjectConverter());
+        _serializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     }
 
     /// <summary>
@@ -280,10 +282,10 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (apiPagingRequest is not null)
         {
             if (apiPagingRequest.Sorting?.Any() is true)
-                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key}")));
+                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key[..1].ToLower() + entry.Key[1..]}")));
 
-            if (apiPagingRequest.Filtering?.Any() is true)
-                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiPagingRequest.Filtering, options: _serializerOptions));
+            if (apiPagingRequest.Filtering.HasValue)
+                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiPagingRequest.Filtering.Value, options: _serializerOptions));
 
             if (!string.IsNullOrEmpty(apiPagingRequest.Searching))
                 yield return new(ApiQueryParameterNames.Searching, apiPagingRequest.Searching);

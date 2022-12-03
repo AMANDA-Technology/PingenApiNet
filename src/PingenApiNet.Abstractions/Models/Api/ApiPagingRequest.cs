@@ -39,10 +39,10 @@ public sealed record ApiPagingRequest : ApiRequest
     public IEnumerable<KeyValuePair<string, CollectionSortDirection>>? Sorting { get; init; }
 
     /// <summary>
-    /// Possibly nested enumerable of filtering instructions with operator name (<see cref="CollectionFilterOperator"/>) and collection of conditions (array of KeyValuePair{string, object}) or key / value filter comparator (KeyValuePair{string, string}).
+    /// Possibly nested filtering instruction with operator name (<see cref="CollectionFilterOperator"/>) and collection of conditions (Array of KeyValuePair{string, object}) or key / value filter comparator (KeyValuePair{string, string}).
     /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Filtering-collections">API Doc - Filtering</see>
     /// </summary>
-    public IEnumerable<KeyValuePair<string, object>>? Filtering { get; init; }
+    public KeyValuePair<string, object>? Filtering { get; init; }
 
     /// <summary>
     /// Plain blind searches can be done by passing the string to be searched in the parameter q.

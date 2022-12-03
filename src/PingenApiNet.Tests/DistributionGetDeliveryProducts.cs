@@ -23,6 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Exceptions;
+using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
+using PingenApiNet.Abstractions.Models.DeliveryProducts;
+
 namespace PingenApiNet.Tests;
 
 /// <summary>
@@ -36,15 +43,59 @@ public class DistributionGetDeliveryProducts : TestBase
     [Test]
     public async Task GetProducts()
     {
+        // TODO: This tests the serialization of api paging request. It seems to be fine and is accepted by the pingen API, but the distribution products endpoint seems not to support sorting and filtering...
+        var apiPagingRequest = new ApiPagingRequest
+        {
+            Sorting = new Dictionary<string, CollectionSortDirection>
+            {
+                [PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom)] = CollectionSortDirection.DESC
+            },
+            Filtering = new(
+                CollectionFilterOperator.And,
+                new KeyValuePair<string, object>[]
+                {
+                    new(CollectionFilterOperator.Or, new KeyValuePair<string, object>[]
+                    {
+                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "CH"),
+                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "LI")
+                    }),
+                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceCurrency), "CHF"),
+                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom), "<=1")
+                })
+        };
+
+        // Get page
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage();
+        var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(res.IsSuccess, Is.True);
             Assert.That(res.ApiError, Is.Null);
             Assert.That(res.Data?.Data, Is.Not.Null);
+        });
+
+        // Get all pages with filter
+        var deliveryProducts = new List<DeliveryProductData>();
+
+        ApiError? error = null;
+        try
+        {
+            await foreach (var page in PingenApiClient.Distributions.GetDeliveryProductsPageResultsAsync(apiPagingRequest))
+            {
+                deliveryProducts.AddRange(page);
+            }
+        }
+        catch (PingenApiErrorException e)
+        {
+            error = e.ApiResult?.ApiError;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(deliveryProducts, Is.Not.Empty);
+            Assert.That(error, Is.Null);
         });
     }
 }

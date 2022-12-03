@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Runtime.InteropServices;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -51,6 +52,7 @@ public interface IWebhookService
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
+    /// <exception cref="PingenApiErrorException"></exception>
     public IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
