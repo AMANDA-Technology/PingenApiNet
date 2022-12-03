@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Helpers;
 
 namespace PingenApiNet.Abstractions.Models.Api;
 
@@ -40,6 +41,7 @@ public sealed record ApiPagingRequest : ApiRequest
 
     /// <summary>
     /// Possibly nested filtering instruction with operator name (<see cref="CollectionFilterOperator"/>) and collection of conditions (Array of KeyValuePair{string, object}) or key / value filter comparator (KeyValuePair{string, string}).
+    /// <br/>Use <see cref="PingenAttributesPropertyHelper{T}"/>.<see cref="PingenAttributesPropertyHelper{T}.GetJsonPropertyName{TValue}"/> for correct key names, where T is the type of the attributes object in response data
     /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Filtering-collections">API Doc - Filtering</see>
     /// </summary>
     public KeyValuePair<string, object>? Filtering { get; init; }
