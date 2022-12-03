@@ -46,15 +46,15 @@ public sealed class DistributionService : ConnectorService, IDistributionService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProductsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProductsPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: "distribution/delivery-products", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: "distribution/delivery-products", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<DeliveryProductData>> GetDeliveryProductsPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<DeliveryProductData>> GetDeliveryProductsPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetDeliveryProductsPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetDeliveryProductsPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 }

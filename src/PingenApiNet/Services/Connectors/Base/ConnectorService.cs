@@ -74,12 +74,20 @@ public abstract class ConnectorService : IConnectorService
     /// <summary>
     /// Generic auto page async
     /// </summary>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="getPage">Function to get page</param>
     /// <typeparam name="TData"></typeparam>
     /// <returns></returns>
-    protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(Func<ApiPagingRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
+    protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(ApiPagingRequest? apiPagingRequest, Func<ApiPagingRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
     {
-        var apiReRequest = new ApiPagingRequest { PageNumber = 1 };
+        var apiReRequest = new ApiPagingRequest
+        {
+            Sorting = apiPagingRequest?.Sorting,
+            Filtering = apiPagingRequest?.Filtering,
+            Searching = apiPagingRequest?.Searching,
+            PageNumber = apiPagingRequest?.PageNumber ?? 1,
+            PageLimit = apiPagingRequest?.PageLimit
+        };
 
         ApiResult<CollectionResult<TData>> result;
         do

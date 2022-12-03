@@ -53,15 +53,15 @@ public sealed class UserService : ConnectorService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<UserAssociationDataDetailed>>("user/associations", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<UserAssociationDataDetailed>>("user/associations", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetAssociationsPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetAssociationsPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 }

@@ -52,15 +52,15 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 
@@ -130,28 +130,28 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={language}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={language}", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetEventsPage(letterId, language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetEventsPage(letterId, language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={language}", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={language}", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetIssuesPage(language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetIssuesPage(language, apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 }

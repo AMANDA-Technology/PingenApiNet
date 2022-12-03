@@ -45,17 +45,18 @@ public interface ILetterService : IConnectorService
     /// <summary>
     /// Get a collection of letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.list">API Doc - Letters list</see>
     /// </summary>>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetPage"/> and auto page until end of collection
     /// </summary>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<LetterData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Create a new letter. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.create">API Doc - Letters create</see>
@@ -145,34 +146,36 @@ public interface ILetterService : IConnectorService
     /// </summary>>
     /// <param name="letterId">ID of letter to get events</param>
     /// <param name="language">Language for events. Default: "en". Nope, API Doc is wrong!! Culture names required, e.g. 'en-GB'. Use any of <see cref="PingenApiLanguage"/></param>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetEventsPage"/> and auto page until end of collection
     /// </summary>
     /// <param name="letterId">ID of letter to get events</param>
     /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetEventsPageResultsAsync(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Get a collection of issues of all letters. <see href="https://api.v2.pingen.com/documentation#tag/letters.events/operation/letters.issues">API Doc - Letters issues</see>
     /// </summary>>
     /// <param name="language">Language for events. Default: "en"</param>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetIssuesPage"/> and auto page until end of collection
     /// </summary>
     /// <param name="language">Language for events. Default: "en"</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<LetterEventData>> GetIssuesPageResultsAsync(string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 }

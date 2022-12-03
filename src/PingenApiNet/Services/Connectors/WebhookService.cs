@@ -48,15 +48,15 @@ public class WebhookService : ConnectorService, IWebhookService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<WebhookData>>> GetPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<WebhookData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<WebhookData>>("webhooks", apiRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<WebhookData>>("webhooks", apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
     {
-        await foreach (var page in AutoPage(async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+        await foreach (var page in AutoPage(apiPagingRequest, async apiRequest => await GetPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
             yield return page;
     }
 

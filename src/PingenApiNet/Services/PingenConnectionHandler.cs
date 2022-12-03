@@ -140,17 +140,17 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
+        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
 
     /// <inheritdoc />

@@ -40,17 +40,18 @@ public interface IWebhookService
     /// <summary>
     /// Get a collection of webhooks. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.index">API Doc - Webhooks list</see>
     /// </summary>>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<WebhookData>>> GetPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<WebhookData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetPage"/> and auto page until end of collection
     /// </summary>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Create new webhook. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks">API Doc - Webhooks create</see>

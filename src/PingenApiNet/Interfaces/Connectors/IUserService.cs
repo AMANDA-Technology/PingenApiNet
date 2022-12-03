@@ -47,15 +47,16 @@ public interface IUserService : IConnectorService
     /// <summary>
     /// Get collection of associations. <see href="https://api.v2.pingen.com/documentation#tag/user.associations/operation/user.associations.list">API Doc - Users associations</see>
     /// </summary>>
-    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Call <see cref="GetAssociationsPage"/> and auto page until end of collection
     /// </summary>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API (where page number is the first page to start auto paging until end of collection)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([Optional] CancellationToken cancellationToken);
+    public IAsyncEnumerable<IEnumerable<UserAssociationDataDetailed>> GetAssociationsPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 }
