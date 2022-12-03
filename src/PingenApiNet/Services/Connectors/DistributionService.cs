@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -45,8 +46,15 @@ public sealed class DistributionService : ConnectorService, IDistributionService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProducts([Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProductsPage([Optional] ApiPagingRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: $"distribution/delivery-products", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: "distribution/delivery-products", apiRequest, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEnumerable<DeliveryProductData>> GetDeliveryProductsPageResultsAsync([EnumeratorCancellation] [Optional] CancellationToken cancellationToken)
+    {
+        await foreach (var page in AutoPage(async apiRequest => await GetDeliveryProductsPage(apiRequest, cancellationToken)).WithCancellation(cancellationToken))
+            yield return page;
     }
 }

@@ -38,7 +38,7 @@ public class DistributionGetDeliveryProducts : TestBase
     {
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient!.Distributions.GetDeliveryProducts();
+        var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage();
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
