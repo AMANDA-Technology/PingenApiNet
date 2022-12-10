@@ -44,7 +44,7 @@ public class PingenWebhookValidationErrorException : Exception
     /// </summary>
     /// <param name="webhookEventData"></param>
     /// <param name="message"></param>
-    public PingenWebhookValidationErrorException(WebhookEventData webhookEventData, string message) : base(message)
+    public PingenWebhookValidationErrorException(WebhookEventData? webhookEventData, string message) : base(message)
     {
         WebhookEventData = webhookEventData;
     }
@@ -55,7 +55,7 @@ public class PingenWebhookValidationErrorException : Exception
     /// <param name="webhookEventData"></param>
     /// <param name="message"></param>
     /// <param name="inner"></param>
-    public PingenWebhookValidationErrorException(WebhookEventData webhookEventData, string message, Exception inner) : base(message, inner)
+    public PingenWebhookValidationErrorException(WebhookEventData? webhookEventData, string message, Exception inner) : base(message, inner)
     {
         WebhookEventData = webhookEventData;
     }

@@ -26,7 +26,6 @@ SOFTWARE.
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Base;
@@ -38,12 +37,12 @@ using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 namespace PingenApiNet.Abstractions.Helpers;
 
 /// <summary>
-///
+/// Helper methods for Pingen Webhooks
 /// </summary>
 public static class PingenWebhookHelper
 {
     /// <summary>
-    ///
+    /// Validate webhook signature and get data from stream (request body)
     /// </summary>
     /// <param name="signingKey"></param>
     /// <param name="signature"></param>
@@ -63,19 +62,7 @@ public static class PingenWebhookHelper
         requestStream.Position = 0;
 
         if (!await ValidateWebhook(signingKey, signature, requestStream, cancellationToken))
-        {
-            throw new PingenWebhookValidationErrorException(
-                PingenSerialisationHelper.Deserialize<WebhookEventData>(payload)
-                ?? new WebhookEventData
-                {
-                    Id = string.Empty,
-                    Type = PingenApiDataType.letters,
-                    Links = null!,
-                    Attributes = null!,
-                    Relationships = null!
-                },
-                "Validation of webhook signature failed");
-        }
+            throw new PingenWebhookValidationErrorException(PingenSerialisationHelper.Deserialize<WebhookEventData>(payload), "Validation of webhook signature failed");
 
         var webhookEventData = PingenSerialisationHelper.Deserialize<SingleResult<WebhookEventData>>(payload);
         PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
@@ -83,24 +70,23 @@ public static class PingenWebhookHelper
         PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<LetterEvent>? letterEventData);
 
         return (webhookEventData?.Data, organisationData, letterData, letterEventData);
-
     }
 
     /// <summary>
-    ///
+    /// Validate webhook signature
     /// </summary>
     /// <param name="signingKey"></param>
     /// <param name="signature"></param>
-    /// <param name="payload"></param>
+    /// <param name="requestStream"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<bool> ValidateWebhook(string signingKey, string signature, Stream payload, [Optional] CancellationToken cancellationToken)
+    public static async Task<bool> ValidateWebhook(string signingKey, string signature, Stream requestStream, [Optional] CancellationToken cancellationToken)
     {
         var keyByte = Encoding.UTF8.GetBytes(signingKey);
-        using var hmacsha256 = new HMACSHA256(keyByte);
-        await hmacsha256.ComputeHashAsync(payload, cancellationToken);
+        using var hmacSha256 = new HMACSHA256(keyByte);
+        await hmacSha256.ComputeHashAsync(requestStream, cancellationToken);
 
-        return hmacsha256.Hash != null && signature == ByteToString(hmacsha256.Hash);
+        return hmacSha256.Hash != null && signature == ByteToString(hmacSha256.Hash);
     }
 
     /// <summary>
