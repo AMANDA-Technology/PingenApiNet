@@ -1,0 +1,122 @@
+{
+  "data": {
+    "type": "webhook_issues",
+    "id": "05d6253a-77ee-410b-b601-72ae929e00b1",
+    "attributes": {
+      "reason": "Printing failed",
+      "url": "https:\/\/webhook.site\/66fc5913-5d2f-40f2-b2c5-7a58f9b64d8f",
+      "created_at": "2022-12-03T09:09:01+0100"
+    },
+    "relationships": {
+      "organisation": {
+        "links": {
+          "related": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+        },
+        "data": {
+          "type": "organisations",
+          "id": "ed247161-6368-4278-abc7-32158472dc50"
+        }
+      },
+      "letter": {
+        "links": {
+          "related": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/letters\/295e1b48-7766-44bc-955e-b3e97ee2f3be"
+        },
+        "data": {
+          "type": "letters",
+          "id": "295e1b48-7766-44bc-955e-b3e97ee2f3be"
+        }
+      },
+      "event": {
+        "data": {
+          "type": "letters_events",
+          "id": "4a8840ae-e801-49be-9b5d-d3b0e9b46add"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "organisations",
+      "id": "ed247161-6368-4278-abc7-32158472dc50",
+      "attributes": {
+        "name": "AMDANDA Technology GmbH",
+        "status": "active",
+        "plan": "free",
+        "billing_mode": "prepaid",
+        "billing_currency": "CHF",
+        "billing_balance": 199996.35,
+        "default_country": "CH",
+        "default_address_position": "left",
+        "data_retention_addresses": 6,
+        "data_retention_pdf": 1,
+        "color": "#0758FF",
+        "created_at": "2022-11-20T20:33:23+0100",
+        "updated_at": "2022-11-28T23:12:17+0100"
+      },
+      "links": {
+        "self": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+      }
+    },
+    {
+      "type": "letters",
+      "id": "295e1b48-7766-44bc-955e-b3e97ee2f3be",
+      "attributes": {
+        "status": "unprintable",
+        "file_original_name": "sample_simulate_unprintable.pdf",
+        "file_pages": 2,
+        "address": "herr\nmanuel gysin\nsolecht 42\n3303 jegenstorf\nschweiz",
+        "address_position": "left",
+        "country": "CH",
+        "delivery_product": "postag_b",
+        "print_mode": "simplex",
+        "print_spectrum": "grayscale",
+        "price_currency": "CHF",
+        "price_value": 0,
+        "paper_types": [
+          "normal",
+          "qr"
+        ],
+        "fonts": [
+          {
+            "name": "Verdana",
+            "is_embedded": true
+          },
+          {
+            "name": "Verdana-Bold",
+            "is_embedded": true
+          },
+          {
+            "name": "ArialMT",
+            "is_embedded": true
+          },
+          {
+            "name": "Arial-BoldMT",
+            "is_embedded": true
+          }
+        ],
+        "tracking_number": null,
+        "submitted_at": "2022-12-03T09:08:07+0100",
+        "created_at": "2022-11-29T00:04:06+0100",
+        "updated_at": "2022-12-03T09:08:08+0100"
+      },
+      "links": {
+        "self": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/letters\/295e1b48-7766-44bc-955e-b3e97ee2f3be"
+      }
+    },
+    {
+      "type": "letters_events",
+      "id": "4a8840ae-e801-49be-9b5d-d3b0e9b46add",
+      "attributes": {
+        "code": "rejected_from_printcenter",
+        "name": "Printing failed",
+        "producer": "Printcenter",
+        "location": "",
+        "has_image": false,
+        "data": [],
+        "emitted_at": "2022-12-03T09:08:08+0100",
+        "created_at": "2022-12-03T09:08:08+0100",
+        "updated_at": "2022-12-03T09:08:08+0100"
+      }
+    }
+  ]
+}

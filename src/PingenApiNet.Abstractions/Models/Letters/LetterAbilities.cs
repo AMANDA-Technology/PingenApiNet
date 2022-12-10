@@ -51,7 +51,9 @@ public sealed record LetterAbilities(
     [property: JsonPropertyName("submit")] PingenApiAbility Submit,
     [property: JsonPropertyName("send-simplex")] PingenApiAbility SendSimplex,
     [property: JsonPropertyName("edit")] PingenApiAbility Edit,
+    // ReSharper disable once InconsistentNaming
     [property: JsonPropertyName("get-pdf-raw")] PingenApiAbility GetPdfRaw,
+    // ReSharper disable once InconsistentNaming
     [property: JsonPropertyName("get-pdf-validation")] PingenApiAbility GetPdfValidation,
     [property: JsonPropertyName("change-paper-type")] PingenApiAbility ChangePaperType,
     [property: JsonPropertyName("change-window-position")] PingenApiAbility ChangeWindowPosition,

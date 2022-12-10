@@ -24,31 +24,28 @@ SOFTWARE.
 */
 
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api;
-using PingenApiNet.Abstractions.Models.Api.Embedded;
-using PingenApiNet.Abstractions.Models.DeliveryProducts;
+using PingenApiNet.Abstractions.Models.Letters;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Tests.Tests;
 
 /// <summary>
 ///
 /// </summary>
-public class DistributionGetDeliveryProducts : TestBase
+public class TestLetters : TestBase
 {
     /// <summary>
     ///
     /// </summary>
     [Test]
-    public async Task GetProducts()
+    public async Task GetAllLetters()
     {
-        // TODO: This tests the serialization of api paging request. It seems to be fine and is accepted by the pingen API, but the distribution products endpoint seems not to support sorting and filtering...
         var apiPagingRequest = new ApiPagingRequest
         {
             Sorting = new Dictionary<string, CollectionSortDirection>
             {
-                [PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom)] = CollectionSortDirection.DESC
+                [PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.CreatedAt)] = CollectionSortDirection.DESC
             },
             Filtering = new(
                 CollectionFilterOperator.And,
@@ -56,18 +53,16 @@ public class DistributionGetDeliveryProducts : TestBase
                 {
                     new(CollectionFilterOperator.Or, new KeyValuePair<string, object>[]
                     {
-                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "CH"),
-                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "LI")
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "CH"),
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "LI")
                     }),
-                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceCurrency), "CHF"),
-                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom), "<=1")
+                    new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Status), "valid")
                 })
         };
 
-        // Get page
         Assert.That(PingenApiClient, Is.Not.Null);
 
-        var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
+        var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
         Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -76,26 +71,32 @@ public class DistributionGetDeliveryProducts : TestBase
             Assert.That(res.Data?.Data, Is.Not.Null);
         });
 
-        // Get all pages with filter
-        var deliveryProducts = new List<DeliveryProductData>();
-
-        ApiError? error = null;
-        try
+        var letters = new List<LetterData>();
+        await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync(apiPagingRequest))
         {
-            await foreach (var page in PingenApiClient.Distributions.GetDeliveryProductsPageResultsAsync(apiPagingRequest))
-            {
-                deliveryProducts.AddRange(page);
-            }
+            letters.AddRange(page);
         }
-        catch (PingenApiErrorException e)
-        {
-            error = e.ApiResult?.ApiError;
-        }
+        Assert.That(letters, Is.Not.Null);
+        Assert.That(letters, Is.Not.Empty);
+    }
 
+    /// <summary>
+    ///
+    /// </summary>
+    [Test]
+    public async Task GetLetter()
+    {
+        const string letterId = "0e738359-799e-4e23-9666-0a7dfe6096b4";
+
+        Assert.That(PingenApiClient, Is.Not.Null);
+
+        var res = await PingenApiClient!.Letters.Get(letterId);
+        Assert.That(res, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(deliveryProducts, Is.Not.Empty);
-            Assert.That(error, Is.Null);
+            Assert.That(res.IsSuccess, Is.True);
+            Assert.That(res.ApiError, Is.Null);
+            Assert.That(res.Data?.Data, Is.Not.Null);
         });
     }
 }

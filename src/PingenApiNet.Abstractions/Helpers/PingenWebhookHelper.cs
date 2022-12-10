@@ -26,9 +26,13 @@ SOFTWARE.
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Exceptions;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.LetterEvents;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 namespace PingenApiNet.Abstractions.Helpers;
@@ -45,30 +49,41 @@ public static class PingenWebhookHelper
     /// <param name="signature"></param>
     /// <param name="requestStream"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>webhook event, included organisation, included letter, included letter event</returns>
     /// <exception cref="PingenWebhookValidationErrorException"></exception>
-    public static async Task<WebhookEventData?> ValidateWebhookAndGetData(string signingKey, string signature, Stream requestStream, [Optional] CancellationToken cancellationToken)
+    public static async Task<(
+        WebhookEventData? webhookEventData,
+        Data<Organisation>? organisationData,
+        Data<Letter>? letterData,
+        Data<LetterEvent>? letterEventData)>
+        ValidateWebhookAndGetData(string signingKey, string signature, Stream requestStream, [Optional] CancellationToken cancellationToken)
     {
         using var reader = new StreamReader(requestStream);
         var payload = await reader.ReadToEndAsync(cancellationToken);
         requestStream.Position = 0;
 
-        if (await ValidateWebhook(signingKey, signature, requestStream, cancellationToken))
+        if (!await ValidateWebhook(signingKey, signature, requestStream, cancellationToken))
         {
-            return JsonSerializer.Deserialize<WebhookEventData>(payload);
+            throw new PingenWebhookValidationErrorException(
+                PingenSerialisationHelper.Deserialize<WebhookEventData>(payload)
+                ?? new WebhookEventData
+                {
+                    Id = string.Empty,
+                    Type = PingenApiDataType.letters,
+                    Links = null!,
+                    Attributes = null!,
+                    Relationships = null!
+                },
+                "Validation of webhook signature failed");
         }
 
-        throw new PingenWebhookValidationErrorException(
-            JsonSerializer.Deserialize<WebhookEventData>(payload) ??
-            new WebhookEventData
-            {
-                Id = string.Empty,
-                Type = PingenApiDataType.letters,
-                Links = null!,
-                Attributes = null!,
-                Relationships = null!
-            },
-            "Validation of webhook signature failed");
+        var webhookEventData = PingenSerialisationHelper.Deserialize<SingleResult<WebhookEventData>>(payload);
+        PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
+        PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Letter>? letterData);
+        PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<LetterEvent>? letterEventData);
+
+        return (webhookEventData?.Data, organisationData, letterData, letterEventData);
+
     }
 
     /// <summary>

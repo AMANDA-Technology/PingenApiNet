@@ -26,10 +26,9 @@ SOFTWARE.
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Web;
 using PingenApiNet.Abstractions.Enums.Api;
-using PingenApiNet.Abstractions.Helpers.JsonConverters;
+using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
@@ -62,12 +61,6 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private string _organisationId;
 
     /// <summary>
-    /// Json serializer options with default settings and custom converters
-    /// </summary>
-    /// <returns></returns>
-    private readonly JsonSerializerOptions _serializerOptions = new();
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
     /// </summary>
     /// <param name="configuration"></param>
@@ -86,11 +79,6 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         {
             BaseAddress = new(_configuration.BaseUri)
         };
-
-        _serializerOptions.Converters.Add(new PingenDateTimeConverter());
-        _serializerOptions.Converters.Add(new PingenDateTimeNullableConverter());
-        _serializerOptions.Converters.Add(new PingenKeyValuePairStringObjectConverter());
-        _serializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     }
 
     /// <summary>
@@ -119,7 +107,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
         if (!response.IsSuccessStatusCode)
         {
-            var authenticationError = await JsonSerializer.DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync(), options: _serializerOptions);
+            var authenticationError = await PingenSerialisationHelper.DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync());
 
             if (authenticationError is null)
                 throw new("Invalid authentication error received");
@@ -128,7 +116,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         }
 
         // Try to get token
-        _accessToken = await JsonSerializer.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync(), options: _serializerOptions);
+        _accessToken = await PingenSerialisationHelper.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync());
         if (_accessToken == null) throw new("Invalid access token object received");
 
         // Set to base client
@@ -199,7 +187,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
         httpRequestMessage.Content = payload is null
             ? null
-            : new StringContent(JsonSerializer.Serialize(new{ data = payload }, options: _serializerOptions), new MediaTypeHeaderValue("application/vnd.api+json"));
+            : new StringContent(PingenSerialisationHelper.Serialize(new{ data = payload }), new MediaTypeHeaderValue("application/vnd.api+json"));
 
         return httpRequestMessage;
     }
@@ -285,7 +273,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
                 yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key[..1].ToLower() + entry.Key[1..]}")));
 
             if (apiPagingRequest.Filtering.HasValue)
-                yield return new(ApiQueryParameterNames.Filtering, JsonSerializer.Serialize(apiPagingRequest.Filtering.Value, options: _serializerOptions));
+                yield return new(ApiQueryParameterNames.Filtering, PingenSerialisationHelper.Serialize(apiPagingRequest.Filtering.Value));
 
             if (!string.IsNullOrEmpty(apiPagingRequest.Searching))
                 yield return new(ApiQueryParameterNames.Searching, apiPagingRequest.Searching);
@@ -319,9 +307,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
+            ApiError = isSuccess ? null : PingenSerialisationHelper.Deserialize<ApiError>(content),
             Location = (Uri?) headers[ApiHeaderNames.Location],
-            Data = httpResponseMessage.IsSuccessStatusCode ? JsonSerializer.Deserialize<T>(content, options: _serializerOptions) : default
+            Data = httpResponseMessage.IsSuccessStatusCode ? PingenSerialisationHelper.Deserialize<T>(content) : default
         };
     }
 
@@ -345,7 +333,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
-            ApiError = isSuccess ? null : JsonSerializer.Deserialize<ApiError>(content, options: _serializerOptions),
+            ApiError = isSuccess ? null : PingenSerialisationHelper.Deserialize<ApiError>(content),
             Location = (Uri?) headers[ApiHeaderNames.Location]
         };
     }

@@ -27,7 +27,7 @@ using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Exceptions;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Tests.Tests;
 
 /// <summary>
 ///

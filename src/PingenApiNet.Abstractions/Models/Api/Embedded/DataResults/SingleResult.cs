@@ -32,9 +32,14 @@ namespace PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 /// Generic response of single object endpoint
 /// </summary>
 /// <param name="Data">Data object requested from endpoint</param>
-/// <param name="Included">Additionally requested includes</param>
 /// <typeparam name="TData"></typeparam>
 public sealed record SingleResult<TData>(
-    [property: JsonPropertyName("data")] TData Data,
-    [property: JsonPropertyName("included")] IList<object> Included // TODO: Implement type for Included?
-) : IDataResult<TData> where TData : IData;
+    [property: JsonPropertyName("data")] TData Data
+) : IDataResult<TData> where TData : IData
+{
+    /// <summary>
+    /// Additionally requested includes
+    /// </summary>
+    [JsonPropertyName("included")]
+    public IList<object>? Included { get; init; } // TODO: Implement type for Included?
+}

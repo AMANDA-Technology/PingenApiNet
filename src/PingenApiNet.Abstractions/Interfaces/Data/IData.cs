@@ -35,7 +35,7 @@ public interface IData
     /// <summary>
     /// Data links object
     /// </summary>
-    public DataLinks Links { get; init; }
+    public DataLinks? Links { get; init; }
 }
 
 /// <summary>

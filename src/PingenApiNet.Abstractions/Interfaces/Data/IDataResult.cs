@@ -30,6 +30,10 @@ namespace PingenApiNet.Abstractions.Interfaces.Data;
 /// </summary>
 public interface IDataResult
 {
+    /// <summary>
+    /// Optionally included data objects from API
+    /// </summary>
+    public IList<object>? Included { get; init; }
 }
 
 /// <summary>

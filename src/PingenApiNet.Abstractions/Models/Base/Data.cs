@@ -34,7 +34,7 @@ public record Data : DataIdentity, IData
 {
     /// <inheritdoc />
     [JsonPropertyName("links")]
-    public required DataLinks Links { get; init; }
+    public DataLinks? Links { get; init; }
 }
 
 /// <inheritdoc cref="IData{TAttributes}" />
