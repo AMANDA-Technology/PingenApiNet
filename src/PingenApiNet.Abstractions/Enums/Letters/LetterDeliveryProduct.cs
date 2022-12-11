@@ -23,104 +23,81 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-// ReSharper disable InconsistentNaming
-
 namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
 /// Letter delivery product. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
+/// <br/>NOTE: This list is adjusted from what delivery products are available on pingen. API Doc seems to be wrong.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum LetterDeliveryProduct
+public static class LetterDeliveryProduct
 {
-    /// <summary>
-    /// Delivery product fast
-    /// </summary>
-    fast,
-
-    /// <summary>
-    /// Delivery product cheap
-    /// </summary>
-    cheap,
-
-    /// <summary>
-    /// Delivery product bulk
-    /// </summary>
-    bulk,
-
-    /// <summary>
-    /// Delivery product premium
-    /// </summary>
-    premium,
-
-    /// <summary>
-    /// Delivery product registered
-    /// </summary>
-    registered,
-
     /// <summary>
     /// Delivery product AT Post economy
     /// </summary>
-    atpost_economy,
+    public const string AtPostEconomy = "atpost_economy";
 
     /// <summary>
     /// Delivery product AT Post priority
     /// </summary>
-    atpost_priority,
+    public const string AtPostPriority = "atpost_priority";
 
     /// <summary>
     /// Delivery product Post AG A
     /// </summary>
-    postag_a,
+    public const string PostAgA = "postag_a";
 
     /// <summary>
     /// Delivery product Post AG B
     /// </summary>
-    postag_b,
+    public const string PostAgB = "postag_b";
 
     /// <summary>
     /// Delivery product Post AG B2
     /// </summary>
-    postag_b2,
+    public const string PostAgB2 = "postag_b2";
 
     /// <summary>
     /// Delivery product Post AG Registered
     /// </summary>
-    postag_registered,
+    public const string PostAgRegistered = "postag_registered";
 
     /// <summary>
     /// Delivery product Post AG A-Plus
     /// </summary>
-    postag_aplus,
+    public const string PostAgAPlus = "postag_aplus";
 
     /// <summary>
     /// Delivery product DP AG standard
     /// </summary>
-    dpag_standard,
+    public const string DpAgStandard = "dpag_standard";
 
     /// <summary>
     /// Delivery product DP AG economy
     /// </summary>
-    dpag_economy,
+    public const string DpAgEconomy = "dpag_economy";
 
     /// <summary>
     /// Delivery product Ind post mail
     /// </summary>
-    indpost_mail,
+    public const string IndPostMail = "indpost_mail";
 
     /// <summary>
     /// Delivery product Ind post speed mail
     /// </summary>
-    indpost_speedmail,
+    public const string IndPostSpeedMail = "indpost_speedmail";
 
     /// <summary>
     /// Delivery product NL post priority
     /// </summary>
-    nlpost_priority,
+    public const string NlPostPriority = "nlpost_priority";
 
     /// <summary>
-    /// Delivery product DHL priority
+    /// Delivery product DHL Europe priority
     /// </summary>
-    dhl_priority
+    public const string DhlEuropePriority = "dhl_europe_priority";
+
+    /// <summary>
+    /// Delivery product DHL World priority
+    /// </summary>
+    public const string DhlWorldPriority = "dhl_world_priority";
 }

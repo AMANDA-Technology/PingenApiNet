@@ -81,7 +81,6 @@ public class TestGetFileUploadData : TestBase
                 FileUrlSignature = res.Data.Data.Attributes.UrlSignature,
                 AddressPosition = LetterAddressPosition.left,
                 AutoSend = false,
-                DeliveryProduct = LetterDeliveryProduct.cheap,
                 PrintMode = LetterPrintMode.simplex,
                 PrintSpectrum = LetterPrintSpectrum.grayscale,
                 MetaData = new()
@@ -119,6 +118,7 @@ public class TestGetFileUploadData : TestBase
 
         var letterFromRemote = await PingenApiClient.Letters.Get(resLetter.Data!.Data.Id);
         Assert.That(letterFromRemote, Is.Not.Null);
+
         var letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.EnGB);
         Assert.That(letterEvents, Is.Not.Null);
     }

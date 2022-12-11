@@ -59,8 +59,8 @@ public sealed record LetterPriceConfiguration
     public required LetterPrintSpectrum PrintSpectrum { get; init; }
 
     /// <summary>
-    /// Delivery product
+    /// Delivery product (Should be any of <see cref="LetterDeliveryProduct"/>)
     /// </summary>
     [JsonPropertyName("delivery_product")]
-    public required LetterDeliveryProduct DeliveryProduct { get; init; }
+    public required string DeliveryProduct { get; init; }
 }

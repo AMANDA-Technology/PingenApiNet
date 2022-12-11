@@ -66,10 +66,11 @@ public sealed record LetterCreate
     public required bool AutoSend { get; init; }
 
     /// <summary>
-    /// Delivery product
+    /// Delivery product. "fast" "cheap" "bulk" "premium" "registered"
+    /// <br/>NOTE: This abstract product selection seems not to make sense here. Just select the correct product ID when sending the letter!
     /// </summary>
     [JsonPropertyName("delivery_product")]
-    public required LetterDeliveryProduct DeliveryProduct { get; init; }
+    public readonly string DeliveryProduct = "cheap";
 
     /// <summary>
     /// Print mode

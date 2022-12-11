@@ -36,10 +36,10 @@ namespace PingenApiNet.Abstractions.Models.Letters.Views;
 public sealed record LetterSend
 {
     /// <summary>
-    /// Delivery product
+    /// Delivery product (Should be any of <see cref="LetterDeliveryProduct"/>)
     /// </summary>
     [JsonPropertyName("delivery_product")]
-    public required LetterDeliveryProduct DeliveryProduct { get; init; }
+    public required string DeliveryProduct { get; init; }
 
     /// <summary>
     /// Print mode

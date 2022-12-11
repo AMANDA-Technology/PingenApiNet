@@ -39,7 +39,7 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <param name="Address"></param>
 /// <param name="AddressPosition"></param>
 /// <param name="Country"></param>
-/// <param name="DeliveryProduct"></param>
+/// <param name="DeliveryProduct">Should be any of <see cref="LetterDeliveryProduct"/></param>
 /// <param name="PrintMode"></param>
 /// <param name="PrintSpectrum"></param>
 /// <param name="PriceCurrency"></param>
@@ -57,7 +57,7 @@ public sealed record Letter(
     [property: JsonPropertyName("address")] string Address,
     [property: JsonPropertyName("address_position")] LetterAddressPosition AddressPosition,
     [property: JsonPropertyName("country")] string Country,
-    [property: JsonPropertyName("delivery_product")] LetterDeliveryProduct DeliveryProduct,
+    [property: JsonPropertyName("delivery_product")] string DeliveryProduct,
     [property: JsonPropertyName("print_mode")] LetterPrintMode PrintMode,
     [property: JsonPropertyName("print_spectrum")] LetterPrintSpectrum PrintSpectrum,
     [property: JsonPropertyName("price_currency")] string PriceCurrency,
