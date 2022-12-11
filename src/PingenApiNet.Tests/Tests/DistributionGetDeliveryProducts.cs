@@ -54,11 +54,6 @@ public class DistributionGetDeliveryProducts : TestBase
                 CollectionFilterOperator.And,
                 new KeyValuePair<string, object>[]
                 {
-                    /*new(CollectionFilterOperator.Or, new KeyValuePair<string, object>[]
-                    {
-                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "CH"),
-                        new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.Country), "LI")
-                    }),*/
                     new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceCurrency), "CHF"),
                     new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom), "<=1")
                 })

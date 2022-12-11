@@ -29,10 +29,17 @@ using PingenApiNet.Abstractions.Interfaces.Data;
 namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
 
 /// <summary>
-/// Delivery product
+/// Delivery product (No API Doc available!)
 /// </summary>
+/// <param name="Countries"></param>
+/// <param name="Name"></param>
+/// <param name="FullName"></param>
+/// <param name="DeliveryTimeDays"></param>
+/// <param name="Features"></param>
+/// <param name="PriceCurrency"></param>
+/// <param name="PriceStartingFrom"></param>
 public sealed record DeliveryProduct(
-    [property: JsonPropertyName("country")] string Country,
+    [property: JsonPropertyName("countries")] IReadOnlyList<string>? Countries,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("full_name")] string FullName,
     [property: JsonPropertyName("delivery_time_days")] IReadOnlyList<int?> DeliveryTimeDays,
