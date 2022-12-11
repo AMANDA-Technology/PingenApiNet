@@ -33,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <summary>
 /// Letter
 /// </summary>
-/// <param name="Status"></param>
+/// <param name="Status">Probably any of <see cref="LetterStates"/>, but there is nothing about it in API Doc...</param>
 /// <param name="FileOriginalName"></param>
 /// <param name="FilePages"></param>
 /// <param name="Address"></param>

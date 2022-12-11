@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.LetterEvents;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
 namespace PingenApiNet.Abstractions.Models.LetterEvents;
@@ -31,7 +32,7 @@ namespace PingenApiNet.Abstractions.Models.LetterEvents;
 /// <summary>
 /// Letter event
 /// </summary>
-/// <param name="Code"></param>
+/// <param name="Code">Probably any of <see cref="LetterEventCodes"/>, but there is nothing about it in API Doc...</param>
 /// <param name="Name"></param>
 /// <param name="Producer"></param>
 /// <param name="Location"></param>
