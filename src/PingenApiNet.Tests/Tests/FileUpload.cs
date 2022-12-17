@@ -81,6 +81,7 @@ public class TestGetFileUploadData : TestBase
                 FileUrlSignature = res.Data.Data.Attributes.UrlSignature,
                 AddressPosition = LetterAddressPosition.left,
                 AutoSend = false,
+                DeliveryProduct = "cheap",
                 PrintMode = LetterPrintMode.simplex,
                 PrintSpectrum = LetterPrintSpectrum.grayscale,
                 MetaData = new()

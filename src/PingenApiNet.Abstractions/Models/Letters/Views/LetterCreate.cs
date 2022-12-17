@@ -67,10 +67,9 @@ public sealed record LetterCreate
 
     /// <summary>
     /// Delivery product. "fast" "cheap" "bulk" "premium" "registered"
-    /// <br/>NOTE: This abstract product selection seems not to make sense here. Just select the correct product ID when sending the letter!
     /// </summary>
     [JsonPropertyName("delivery_product")]
-    public readonly string DeliveryProduct = "cheap";
+    public required string DeliveryProduct { get; init; }
 
     /// <summary>
     /// Print mode
