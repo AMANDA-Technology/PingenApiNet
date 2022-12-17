@@ -52,10 +52,4 @@ public sealed record LetterSend
     /// </summary>
     [JsonPropertyName("print_spectrum")]
     public required LetterPrintSpectrum PrintSpectrum { get; init; }
-
-    /// <summary>
-    /// Meta data
-    /// </summary>
-    [JsonPropertyName("meta_data")]
-    public LetterMetaData? MetaData { get; init; }
 }

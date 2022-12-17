@@ -159,8 +159,7 @@ public class TestGetFileUploadData : TestBase
             {
                 DeliveryProduct = LetterDeliveryProduct.PostAgA,
                 PrintMode = LetterPrintMode.simplex,
-                PrintSpectrum = LetterPrintSpectrum.color,
-                MetaData = letterMetaData
+                PrintSpectrum = LetterPrintSpectrum.color
             },
             Id = letterId
         });
