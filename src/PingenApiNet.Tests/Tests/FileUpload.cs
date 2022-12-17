@@ -26,6 +26,8 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Exceptions;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Letters.Embedded;
 
 namespace PingenApiNet.Tests.Tests;
 
@@ -55,6 +57,7 @@ public class TestGetFileUploadData : TestBase
     [Test]
     public async Task GetUploadDataAndCreateLetter()
     {
+        const string fileName = "sample.pdf";
         Assert.That(PingenApiClient, Is.Not.Null);
 
         var res = await PingenApiClient!.Files.GetPath();
@@ -67,16 +70,38 @@ public class TestGetFileUploadData : TestBase
         });
 
         MemoryStream stream = new();
-        await File.OpenRead("Assets/sample_simulate_unprintable.pdf").CopyToAsync(stream);
+        await File.OpenRead($"Assets/{fileName}").CopyToAsync(stream);
         var uploadRes = await PingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
         Assert.That(uploadRes, Is.True);
+
+        var letterMetaData = new LetterMetaData
+        {
+            Recipient = new()
+            {
+                Name = "manuel gysin",
+                Street = "solecht",
+                Number = "42",
+                Zip = "3303",
+                City = "jegenstorf",
+                Country = "CH"
+            },
+            Sender = new()
+            {
+                Name = "Monika Muster",
+                Street = "Musterstrasse ",
+                Number = "12",
+                Zip = "1212",
+                City = "Musterhausen",
+                Country = "CH"
+            }
+        };
 
         var resLetter = await PingenApiClient.Letters.Create(new()
         {
             Attributes = new()
             {
-                FileOriginalName = "sample_simulate_unprintable.pdf",
+                FileOriginalName = fileName,
                 FileUrl = res.Data.Data.Attributes.Url,
                 FileUrlSignature = res.Data.Data.Attributes.UrlSignature,
                 AddressPosition = LetterAddressPosition.left,
@@ -84,27 +109,7 @@ public class TestGetFileUploadData : TestBase
                 DeliveryProduct = "cheap",
                 PrintMode = LetterPrintMode.simplex,
                 PrintSpectrum = LetterPrintSpectrum.grayscale,
-                MetaData = new()
-                {
-                    Recipient = new()
-                    {
-                        Name = "manuel gysin",
-                        Street = "solecht",
-                        Number = "42",
-                        Zip = "3303",
-                        City = "jegenstorf",
-                        Country = "CH"
-                    },
-                    Sender = new()
-                    {
-                        Name = "Monika Muster",
-                        Street = "Musterstrasse ",
-                        Number = "12",
-                        Zip = "1212",
-                        City = "Musterhausen",
-                        Country = "CH"
-                    }
-                }
+                MetaData = letterMetaData
             },
             Type = PingenApiDataType.letters
         });
@@ -117,11 +122,51 @@ public class TestGetFileUploadData : TestBase
             Assert.That(resLetter.Data?.Data, Is.Not.Null);
         });
 
-        var letterFromRemote = await PingenApiClient.Letters.Get(resLetter.Data!.Data.Id);
+        var letterId = resLetter.Data!.Data.Id;
+
+        var letterFromRemote = await PingenApiClient.Letters.Get(letterId);
         Assert.That(letterFromRemote, Is.Not.Null);
 
-        var letterEvents = await PingenApiClient.Letters.GetEventsPage(resLetter.Data.Data.Id, PingenApiLanguage.EnGB);
+        var letterEvents = await PingenApiClient.Letters.GetEventsPage(letterId, PingenApiLanguage.EnGB);
         Assert.That(letterEvents, Is.Not.Null);
+
+        const int attempts = 300;
+        const int delaySeconds = 1;
+        LetterDataDetailed? letter = null;
+        for (var attempt = 1; attempt <= attempts; attempt++)
+        {
+            var resultGetLetter = await PingenApiClient.Letters.Get(letterId);
+            if (resultGetLetter.IsSuccess)
+            {
+                var status = resultGetLetter.Data?.Data.Attributes.Status;
+                if (status == LetterStates.Valid)
+                {
+                    letter = resultGetLetter.Data!.Data;
+                    break;
+                }
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+        }
+
+        Assert.That(letter, Is.Not.Null);
+        Assert.That(letter!.Attributes.Status, Is.EqualTo(LetterStates.Valid));
+
+        var resSendLetter = await PingenApiClient.Letters.Send(new()
+        {
+            Type = PingenApiDataType.letters,
+            Attributes = new()
+            {
+                DeliveryProduct = LetterDeliveryProduct.PostAgA,
+                PrintMode = LetterPrintMode.simplex,
+                PrintSpectrum = LetterPrintSpectrum.color,
+                MetaData = letterMetaData
+            },
+            Id = letterId
+        });
+
+        Assert.That(resSendLetter, Is.Not.Null);
+        Assert.That(resSendLetter.IsSuccess, Is.True);
     }
 
     [Test]
