@@ -45,7 +45,7 @@ public class TestLetters : TestBase
         {
             Sorting = new Dictionary<string, CollectionSortDirection>
             {
-                [PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.CreatedAt)] = CollectionSortDirection.DESC
+                [PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(letter => letter.CreatedAt)] = CollectionSortDirection.DESC
             },
             Filtering = new(
                 CollectionFilterOperator.And,
@@ -53,10 +53,10 @@ public class TestLetters : TestBase
                 {
                     new(CollectionFilterOperator.Or, new KeyValuePair<string, object>[]
                     {
-                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "CH"),
-                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Country), "LI")
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(letter => letter.Country), "CH"),
+                        new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(letter => letter.Country), "LI")
                     }),
-                    new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(product => product.Status), "valid")
+                    new(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(letter => letter.Status), "valid")
                 })
         };
 
