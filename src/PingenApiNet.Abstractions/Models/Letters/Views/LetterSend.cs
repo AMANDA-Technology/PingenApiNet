@@ -54,7 +54,7 @@ public sealed record LetterSend
     public required LetterPrintSpectrum PrintSpectrum { get; init; }
 
     /// <summary>
-    /// Meta data (need to be set when "registered" product used
+    /// Meta data (need to be set when "registered" product used)
     /// </summary>
     [JsonPropertyName("meta_data")]
     public LetterMetaData? MetaData { get; init; }
