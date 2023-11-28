@@ -1,6 +1,6 @@
 # PingenApiNet
 
-Unofficial API client implementation for the Pingen v2 API. See [API Doc](https://api.v2.pingen.com/documentation). (used version 2.0.0)
+Unofficial API client implementation for the Pingen v2 API. See [API Doc](https://api.pingen.com/documentation). (used version 2.0.0)
 
 With a special thanks to Pingen GmbH for the handy Online Postal Service for sending letters digitally. See [Pingen website](https://www.pingen.ch/).
 
@@ -162,7 +162,7 @@ Register pingen services. You can inject the client by interface IPingenApiClien
 ```c#
 services.AddPingenServices(new PingenConfiguration
 {
-    BaseUri = "https://api-staging.v2.pingen.com",
+    BaseUri = "https://api-staging.pingen.com",
     IdentityUri = "https://identity-staging.pingen.com",
     ClientId = /****/,
     ClientSecret = /****/,

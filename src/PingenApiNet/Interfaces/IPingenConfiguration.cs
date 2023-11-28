@@ -31,27 +31,27 @@ namespace PingenApiNet.Interfaces;
 public interface IPingenConfiguration
 {
     /// <summary>
-    /// Base URI for accessing the service. <see href="https://api.v2.pingen.com/documentation#section/Basics/Environments">API Doc - Environments</see>
+    /// Base URI for accessing the service. <see href="https://api.pingen.com/documentation#section/Basics/Environments">API Doc - Environments</see>
     /// </summary>
     public string BaseUri { get; set; }
 
     /// <summary>
-    /// Identity URI to obtain access token. <see href="https://api.v2.pingen.com/documentation#section/Basics/Environments">API Doc - Environments</see>
+    /// Identity URI to obtain access token. <see href="https://api.pingen.com/documentation#section/Basics/Environments">API Doc - Environments</see>
     /// </summary>
     public string IdentityUri { get; set; }
 
     /// <summary>
-    /// Generated client id. <see href="https://api.v2.pingen.com/documentation#section/Authentication">API Doc - Authentication</see>
+    /// Generated client id. <see href="https://api.pingen.com/documentation#section/Authentication">API Doc - Authentication</see>
     /// </summary>
     public string ClientId { get; set; }
 
     /// <summary>
-    /// Generated client secret. <see href="https://api.v2.pingen.com/documentation#section/Authentication">API Doc - Authentication</see>
+    /// Generated client secret. <see href="https://api.pingen.com/documentation#section/Authentication">API Doc - Authentication</see>
     /// </summary>
     public string ClientSecret { get; set; }
 
     /// <summary>
-    /// Default organisation ID to use. Can be changed later using <see cref="IPingenApiClient.SetOrganisationId"/>. <see href="https://api.v2.pingen.com/documentation#section/Quickstart">API Doc - Quickstart</see>
+    /// Default organisation ID to use. Can be changed later using <see cref="IPingenApiClient.SetOrganisationId"/>. <see href="https://api.pingen.com/documentation#section/Quickstart">API Doc - Quickstart</see>
     /// </summary>
     public string DefaultOrganisationId { get; set; }
 

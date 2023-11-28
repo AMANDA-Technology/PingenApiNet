@@ -31,12 +31,12 @@ using PingenApiNet.Abstractions.Models.Files;
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen letter service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
+/// Pingen letter service endpoint. <see href="https://api.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
 /// </summary>
 public interface IFilesService
 {
     /// <summary>
-    /// Get details for file upload. <see href="https://api.v2.pingen.com/documentation#tag/misc.files/operation/files.file-upload">API Doc - Files details</see>
+    /// Get details for file upload. <see href="https://api.pingen.com/documentation#tag/misc.files/operation/files.file-upload">API Doc - Files details</see>
     /// </summary>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>

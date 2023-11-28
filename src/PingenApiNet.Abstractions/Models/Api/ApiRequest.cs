@@ -30,7 +30,7 @@ namespace PingenApiNet.Abstractions.Models.Api;
 /// </summary>
 public record ApiRequest
 {
-    // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+    // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+    // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
     // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
 }

@@ -28,7 +28,7 @@ using PingenApiNet.Interfaces.Connectors;
 namespace PingenApiNet.Interfaces;
 
 /// <summary>
-/// Connector service to call Pingen REST API. <see href="https://api.v2.pingen.com/documentation">API Doc</see>
+/// Connector service to call Pingen REST API. <see href="https://api.pingen.com/documentation">API Doc</see>
 /// </summary>
 public interface IPingenApiClient
 {
@@ -39,27 +39,27 @@ public interface IPingenApiClient
     public void SetOrganisationId(string organisationId);
 
     /// <summary>
-    /// Pingen letters connector. <see href="https://api.v2.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
+    /// Pingen letters connector. <see href="https://api.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
     /// </summary>
     public ILetterService Letters { get; set; }
 
     /// <summary>
-    /// Pingen users connector. <see href="https://api.v2.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
+    /// Pingen users connector. <see href="https://api.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
     /// </summary>
     public IUserService Users { get; set; }
 
     /// <summary>
-    /// Pingen organisations connector. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
+    /// Pingen organisations connector. <see href="https://api.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
     /// </summary>
     public IOrganisationService Organisations { get; set; }
 
     /// <summary>
-    /// Pingen webhooks connector. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
+    /// Pingen webhooks connector. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
     /// </summary>
     public IWebhookService Webhooks { get; set; }
 
     /// <summary>
-    /// Pingen files connector. <see href="https://api.v2.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
+    /// Pingen files connector. <see href="https://api.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
     /// </summary>
     public IFilesService Files { get; set; }
 

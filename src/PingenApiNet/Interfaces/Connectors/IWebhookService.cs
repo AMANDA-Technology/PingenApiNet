@@ -34,12 +34,12 @@ using PingenApiNet.Abstractions.Models.Webhooks.Views;
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen webhook service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
+/// Pingen webhook service endpoint. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
 /// </summary>
 public interface IWebhookService
 {
     /// <summary>
-    /// Get a collection of webhooks. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.index">API Doc - Webhooks list</see>
+    /// Get a collection of webhooks. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.index">API Doc - Webhooks list</see>
     /// </summary>>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
@@ -56,16 +56,16 @@ public interface IWebhookService
     public IAsyncEnumerable<IEnumerable<WebhookData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Create new webhook. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks">API Doc - Webhooks create</see>
+    /// Create new webhook. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks">API Doc - Webhooks create</see>
     /// </summary>
     /// <param name="data">Data for POST</param>
-    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
+    /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<WebhookData>>> Create(DataPost<WebhookCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Get details of a webhook. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.show">API Doc - Webhooks show</see>
+    /// Get details of a webhook. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.show">API Doc - Webhooks show</see>
     /// </summary>
     /// <param name="webhookId">ID of the webhook to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
@@ -73,7 +73,7 @@ public interface IWebhookService
     public Task<ApiResult<SingleResult<WebhookData>>> Get(string webhookId, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Delete a webhook. <see href="https://api.v2.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.destroy">API Doc - Webhooks delete</see>
+    /// Delete a webhook. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.destroy">API Doc - Webhooks delete</see>
     /// </summary>
     /// <param name="webhookId">ID of the webhook to delete</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>

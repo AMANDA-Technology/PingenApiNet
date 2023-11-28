@@ -26,7 +26,7 @@ SOFTWARE.
 namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-/// Letter paper type. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.price-calculator">API Doc - Letters price calculator</see>
+/// Letter paper type. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.price-calculator">API Doc - Letters price calculator</see>
 /// </summary>
 public static class LetterPaperTypes
 {

@@ -33,12 +33,12 @@ using PingenApiNet.Interfaces.Connectors.Base;
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen organisation service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
+/// Pingen organisation service endpoint. <see href="https://api.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
 /// </summary>
 public interface IOrganisationService : IConnectorService
 {
     /// <summary>
-    /// Get collection of organisations. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general/operation/organisations.index">API Doc - Organisations list</see>
+    /// Get collection of organisations. <see href="https://api.pingen.com/documentation#tag/organisations.general/operation/organisations.index">API Doc - Organisations list</see>
     /// </summary>>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
@@ -55,7 +55,7 @@ public interface IOrganisationService : IConnectorService
     public IAsyncEnumerable<IEnumerable<OrganisationData>> GetPageResultsAsync([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Get details of an organisation. <see href="https://api.v2.pingen.com/documentation#tag/organisations.general/operation/organisations.show">API Doc - Organisations show</see>
+    /// Get details of an organisation. <see href="https://api.pingen.com/documentation#tag/organisations.general/operation/organisations.show">API Doc - Organisations show</see>
     /// </summary>
     /// <param name="organisationId">ID of the organisation to get</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>

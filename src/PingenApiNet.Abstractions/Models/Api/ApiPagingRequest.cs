@@ -35,20 +35,20 @@ public sealed record ApiPagingRequest : ApiRequest
 {
     /// <summary>
     /// Enumerable of sort instructions with property name and sort direction, where the order is relevant.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Sorting-collections">API Doc - Sorting</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Sorting-collections">API Doc - Sorting</see>
     /// </summary>
     public IEnumerable<KeyValuePair<string, CollectionSortDirection>>? Sorting { get; init; }
 
     /// <summary>
     /// Possibly nested filtering instruction with operator name (<see cref="CollectionFilterOperator"/>) and collection of conditions (Array of KeyValuePair{string, object}) or key / value filter comparator (KeyValuePair{string, string}).
     /// <br/>Use <see cref="PingenAttributesPropertyHelper{T}"/>.<see cref="PingenAttributesPropertyHelper{T}.GetJsonPropertyName{TValue}"/> for correct key names, where T is the type of the attributes object in response data
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Filtering-collections">API Doc - Filtering</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Filtering-collections">API Doc - Filtering</see>
     /// </summary>
     public KeyValuePair<string, object>? Filtering { get; init; }
 
     /// <summary>
     /// Plain blind searches can be done by passing the string to be searched in the parameter q.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Searching-collections">API Doc - Searching</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Searching-collections">API Doc - Searching</see>
     /// </summary>
     public string? Searching { get; init; }
 
@@ -56,7 +56,7 @@ public sealed record ApiPagingRequest : ApiRequest
     /// Every collection endpoint accepts the two parameters page[number] and page[limit].
     /// The default limit 20, the maximum is 100 objects per page. Using them together enables you to do simple paging.
     /// In every collection response you will furthermore receive the full URLs of the previous, next and last page (if available).
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Paginating-collections">API Doc - Paginating</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Paginating-collections">API Doc - Paginating</see>
     /// </summary>
     public int? PageNumber { get; init; }
 
@@ -64,7 +64,7 @@ public sealed record ApiPagingRequest : ApiRequest
     /// Every collection endpoint accepts the two parameters page[number] and page[limit].
     /// The default limit 20, the maximum is 100 objects per page. Using them together enables you to do simple paging.
     /// In every collection response you will furthermore receive the full URLs of the previous, next and last page (if available).
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Paginating-collections">API Doc - Paginating</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Paginating-collections">API Doc - Paginating</see>
     /// </summary>
     public int? PageLimit { get; init; }
 }

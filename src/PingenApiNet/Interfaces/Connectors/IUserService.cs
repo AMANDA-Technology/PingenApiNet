@@ -34,19 +34,19 @@ using PingenApiNet.Interfaces.Connectors.Base;
 namespace PingenApiNet.Interfaces.Connectors;
 
 /// <summary>
-/// Pingen user service endpoint. <see href="https://api.v2.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
+/// Pingen user service endpoint. <see href="https://api.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
 /// </summary>
 public interface IUserService : IConnectorService
 {
     /// <summary>
-    /// Get details of the authenticated user. <see href="https://api.v2.pingen.com/documentation#tag/user.general/operation/users.show">API Doc - Users show</see>
+    /// Get details of the authenticated user. <see href="https://api.pingen.com/documentation#tag/user.general/operation/users.show">API Doc - Users show</see>
     /// </summary>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<UserDataDetailed>>> Get([Optional] CancellationToken cancellationToken);
 
     /// <summary>
-    /// Get collection of associations. <see href="https://api.v2.pingen.com/documentation#tag/user.associations/operation/user.associations.list">API Doc - Users associations</see>
+    /// Get collection of associations. <see href="https://api.pingen.com/documentation#tag/user.associations/operation/user.associations.list">API Doc - Users associations</see>
     /// </summary>>
     /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>

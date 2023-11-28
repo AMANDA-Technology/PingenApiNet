@@ -29,7 +29,7 @@ using System.Text.Json.Serialization;
 namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-/// Letter address position. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
+/// Letter address position. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LetterAddressPosition

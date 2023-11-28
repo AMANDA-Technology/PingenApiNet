@@ -40,37 +40,37 @@ public record ApiResult
 
     /// <summary>
     /// UUID. Can be used for support inquiries.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
+    /// <see href="https://api.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
     /// </summary>
     public Guid RequestId { get; init; }
 
     /// <summary>
     /// The number of allowed requests in the current period.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
+    /// <see href="https://api.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
     /// </summary>
     public int RateLimitLimit { get; init; }
 
     /// <summary>
     /// The number of remaining requests in the current period.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
+    /// <see href="https://api.pingen.com/documentation#section/Basics/HTTP-methods-and-headers">API Doc - HTTP</see>
     /// </summary>
     public int RateLimitRemaining { get; init; }
 
     /// <summary>
     /// The timestamp when the current period expires and the request can be retried.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Basics/Throttling-Rate-limiting">API Doc - Throttling</see>
+    /// <see href="https://api.pingen.com/documentation#section/Basics/Throttling-Rate-limiting">API Doc - Throttling</see>
     /// </summary>
     public DateTime? RateLimitReset { get; init; }
 
     /// <summary>
     /// The number of seconds you have to wait until you can retry (and the current period expires).
-    /// <see href="https://api.v2.pingen.com/documentation#section/Basics/Throttling-Rate-limiting">API Doc - Throttling</see>
+    /// <see href="https://api.pingen.com/documentation#section/Basics/Throttling-Rate-limiting">API Doc - Throttling</see>
     /// </summary>
     public int? RetryAfter { get; init; }
 
     /// <summary>
     /// You can determine if an idempotent API call was replayed by inspecting the Idempotent-Replayed header for the value true.
-    /// <see href="https://api.v2.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see>
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see>
     /// </summary>
     public bool IdempotentReplayed { get; init; }
 

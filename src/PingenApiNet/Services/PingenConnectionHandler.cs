@@ -248,9 +248,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     {
         if (apiRequest is not null)
         {
-            // TODO: Add Sparse fieldsets? https://api.v2.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+            // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
-            // TODO: Add Including relationships? https://api.v2.pingen.com/documentation#section/Advanced/Including-relationships
+            // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
 
             if (apiRequest is not ApiPagingRequest apiPagingRequest)
                 yield break;
