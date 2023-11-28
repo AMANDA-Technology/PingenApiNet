@@ -26,10 +26,10 @@ SOFTWARE.
 namespace PingenApiNet.Abstractions.Enums.Letters;
 
 /// <summary>
-/// Letter delivery product. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
+/// Letter delivery product to be used at Letters/Send endpoint. <see href="https://api.v2.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// <br/>NOTE: This list is adjusted from what delivery products are available on pingen. API Doc seems to be wrong.
 /// </summary>
-public static class LetterDeliveryProduct
+public static class LetterSendDeliveryProduct
 {
     /// <summary>
     /// Delivery product AT Post economy

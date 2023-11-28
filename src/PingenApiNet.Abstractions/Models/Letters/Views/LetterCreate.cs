@@ -66,7 +66,8 @@ public sealed record LetterCreate
     public required bool AutoSend { get; init; }
 
     /// <summary>
-    /// Delivery product. "fast" "cheap" "bulk" "premium" "registered"
+    /// Delivery product. (Should be any of <see cref="LetterCreateDeliveryProduct"/>)
+    /// NOTE: A more specific product can be used later at Letters/Send endpoint
     /// </summary>
     [JsonPropertyName("delivery_product")]
     public required string DeliveryProduct { get; init; }
@@ -84,7 +85,8 @@ public sealed record LetterCreate
     public required LetterPrintSpectrum PrintSpectrum { get; init; }
 
     /// <summary>
-    /// Meta data (need to be set when "registered" product used)
+    /// Meta data
+    /// <br/> NOTE: This must only be set when <see cref="LetterSendDeliveryProduct.PostAgRegistered"/> or <see cref="LetterSendDeliveryProduct.PostAgAPlus"/> product used. Otherwise the API can fail at address validation when Zip code has more than 4 characters.
     /// </summary>
     [JsonPropertyName("meta_data")]
     public LetterMetaData? MetaData { get; init; }

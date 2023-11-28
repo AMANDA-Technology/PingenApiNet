@@ -39,7 +39,7 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <param name="Address"></param>
 /// <param name="AddressPosition"></param>
 /// <param name="Country"></param>
-/// <param name="DeliveryProduct">Should be any of <see cref="LetterDeliveryProduct"/></param>
+/// <param name="DeliveryProduct">Should be any of <see cref="LetterSendDeliveryProduct"/></param>
 /// <param name="PrintMode"></param>
 /// <param name="PrintSpectrum"></param>
 /// <param name="PriceCurrency"></param>

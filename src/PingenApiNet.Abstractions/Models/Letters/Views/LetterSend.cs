@@ -36,7 +36,7 @@ namespace PingenApiNet.Abstractions.Models.Letters.Views;
 public sealed record LetterSend
 {
     /// <summary>
-    /// Delivery product (Should be any of <see cref="LetterDeliveryProduct"/>)
+    /// Delivery product (Should be any of <see cref="LetterSendDeliveryProduct"/>)
     /// </summary>
     [JsonPropertyName("delivery_product")]
     public required string DeliveryProduct { get; init; }
@@ -54,7 +54,8 @@ public sealed record LetterSend
     public required LetterPrintSpectrum PrintSpectrum { get; init; }
 
     /// <summary>
-    /// Meta data (need to be set when "registered" product used)
+    /// Meta data
+    /// <br/> NOTE: This must only be set when <see cref="LetterSendDeliveryProduct.PostAgRegistered"/> or <see cref="LetterSendDeliveryProduct.PostAgAPlus"/> product used. Otherwise the API can fail at address validation when Zip code has more than 4 characters.
     /// </summary>
     [JsonPropertyName("meta_data")]
     public LetterMetaData? MetaData { get; init; }

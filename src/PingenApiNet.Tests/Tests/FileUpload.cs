@@ -106,7 +106,7 @@ public class TestGetFileUploadData : TestBase
                 FileUrlSignature = res.Data.Data.Attributes.UrlSignature,
                 AddressPosition = LetterAddressPosition.left,
                 AutoSend = false,
-                DeliveryProduct = "cheap",
+                DeliveryProduct = LetterCreateDeliveryProduct.Cheap,
                 PrintMode = LetterPrintMode.simplex,
                 PrintSpectrum = LetterPrintSpectrum.grayscale,
                 MetaData = letterMetaData
@@ -157,7 +157,7 @@ public class TestGetFileUploadData : TestBase
             Type = PingenApiDataType.letters,
             Attributes = new()
             {
-                DeliveryProduct = LetterDeliveryProduct.PostAgA,
+                DeliveryProduct = LetterSendDeliveryProduct.PostAgA,
                 PrintMode = LetterPrintMode.simplex,
                 PrintSpectrum = LetterPrintSpectrum.color,
                 MetaData = letterMetaData

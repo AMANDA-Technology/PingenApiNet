@@ -43,10 +43,10 @@ var resultCreateLetter = await _pingenApiClient.Letters.Create(new()
         FileUrlSignature = resultFilePath.Data.Data.Attributes.UrlSignature,
         AddressPosition = LetterAddressPosition.left,
         AutoSend = false,
-        DeliveryProduct = "cheap",
+        DeliveryProduct = LetterCreateDeliveryProduct.Cheap, // A more specific product can be used later at Letters/Send endpoint
         PrintMode = LetterPrintMode.simplex,
         PrintSpectrum = LetterPrintSpectrum.color,
-        MetaData = new()
+        MetaData = new() // This must only be set when "postag_registered" or "postag_registered" product used. Otherwise the API can fail at address validation when Zip code has more than 4 characters.
         {
             Recipient = new()
             {
@@ -88,7 +88,7 @@ if (resultGetLetter.IsSuccess
         Type = PingenApiDataType.letters,
         Attributes = new()
         {
-            DeliveryProduct = deliveryProduct.Id,
+            DeliveryProduct = LetterSendDeliveryProduct.PostAgA
             PrintMode = LetterPrintMode.simplex,
             PrintSpectrum = LetterPrintSpectrum.color,
             MetaData = // Use from sample above at Letters.Create
