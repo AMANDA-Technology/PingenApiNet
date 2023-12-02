@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers.JsonConverters;
 using PingenApiNet.Abstractions.Interfaces.Data;
@@ -52,12 +53,15 @@ public static class PingenSerialisationHelper
     /// <returns></returns>
     private static JsonSerializerOptions SerializerOptions()
     {
-        var a = new JsonSerializerOptions();
-        a.Converters.Add(new PingenDateTimeConverter());
-        a.Converters.Add(new PingenDateTimeNullableConverter());
-        a.Converters.Add(new PingenKeyValuePairStringObjectConverter());
-        a.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-        return a;
+        var options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+        };
+        options.Converters.Add(new PingenDateTimeConverter());
+        options.Converters.Add(new PingenDateTimeNullableConverter());
+        options.Converters.Add(new PingenKeyValuePairStringObjectConverter());
+        return options;
     }
 
     /// <summary>
