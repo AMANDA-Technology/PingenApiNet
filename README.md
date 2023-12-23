@@ -14,6 +14,8 @@ With a special thanks to Pingen GmbH for the handy Online Postal Service for sen
 
 [![CodeQL](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml)
 
+[![BuildNuGetAndPublish](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/main.yml/badge.svg)](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/main.yml)
+
 ### Usage
 
 #### 1. Create and send a letter
