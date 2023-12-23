@@ -28,7 +28,7 @@ namespace PingenApiNet.Abstractions.Exceptions;
 /// <summary>
 /// Represents errors that occur from pingen file download
 /// </summary>
-public class PingenFileDownloadException : Exception
+public class PingenFileDownloadException : ApplicationException
 {
     /// <summary>
     /// Error code
