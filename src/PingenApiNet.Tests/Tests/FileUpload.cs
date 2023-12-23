@@ -173,7 +173,7 @@ public class TestGetFileUploadData : TestBase
     public async Task GetLetterEvents()
     {
         Assert.That(PingenApiClient, Is.Not.Null);
-        const string letterId = "578bb746-52b7-4ef3-95d8-ca7bab0b1af0";
+        const string letterId = "1540e30d-84cd-4425-bcc1-c3aff196d4da";
 
         foreach (var language in new[]
                  {
@@ -208,7 +208,7 @@ public class TestGetFileUploadData : TestBase
     public async Task GetFileDownload()
     {
         Assert.That(PingenApiClient, Is.Not.Null);
-        const string letterId = "578bb746-52b7-4ef3-95d8-ca7bab0b1af0";
+        const string letterId = "1540e30d-84cd-4425-bcc1-c3aff196d4da";
         const string filePath = "filepath.pdf";
 
         var res = await PingenApiClient!.Letters.GetFileLocation(letterId);

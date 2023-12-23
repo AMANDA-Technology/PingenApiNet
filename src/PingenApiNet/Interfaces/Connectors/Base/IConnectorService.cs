@@ -42,7 +42,7 @@ public interface IConnectorService
     /// <typeparam name="TData"></typeparam>
     /// <returns>List of data from collection result</returns>
     /// <exception cref="PingenApiErrorException"></exception>
-    public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData;
+    public IList<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData;
 
     /// <summary>
     /// Handle API result, throw on error, return data from <see cref="SingleResult{TData}"/>

@@ -56,6 +56,6 @@ public static class PingenAttributesPropertyHelper<T> where T : IAttributes
 
         return ((PropertyInfo)((MemberExpression)body).Member)
             .CustomAttributes.FirstOrDefault(attributeData => attributeData.AttributeType == typeof(JsonPropertyNameAttribute))
-            ?.ConstructorArguments.First().Value?.ToString() ?? throw new InvalidOperationException();
+            ?.ConstructorArguments[0].Value?.ToString() ?? throw new InvalidOperationException();
     }
 }

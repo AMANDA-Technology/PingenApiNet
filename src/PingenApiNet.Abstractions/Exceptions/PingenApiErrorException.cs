@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Runtime.Serialization;
 using PingenApiNet.Abstractions.Models.Api;
 
 namespace PingenApiNet.Abstractions.Exceptions;
@@ -31,8 +30,7 @@ namespace PingenApiNet.Abstractions.Exceptions;
 /// <summary>
 /// Represents errors that occur from Pingen API responses
 /// </summary>
-[Serializable]
-public class PingenApiErrorException : Exception
+public class PingenApiErrorException : ApplicationException
 {
     /// <summary>
     /// API Result
@@ -67,22 +65,5 @@ public class PingenApiErrorException : Exception
     public PingenApiErrorException(ApiResult apiResult, string message, Exception inner) : base(message, inner)
     {
         ApiResult = apiResult;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
-    /// </summary>
-    /// <param name="info"></param>
-    /// <param name="context"></param>
-    protected PingenApiErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        ApiResult = info.GetValue(nameof(ApiResult), typeof(ApiResult)) as ApiResult;
-    }
-
-    /// <inheritdoc />
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-        info.AddValue(nameof(ApiResult), ApiResult);
     }
 }

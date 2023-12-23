@@ -50,14 +50,14 @@ public abstract class ConnectorService : IConnectorService
     }
 
     /// <inheritdoc />
-    public List<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
+    public IList<TData> HandleResult<TData>(ApiResult<CollectionResult<TData>> apiResult) where TData : IData
     {
         if (!apiResult.IsSuccess)
             throw new PingenApiErrorException(apiResult);
 
         return apiResult.Data is null
-            ? new()
-            : apiResult.Data.Data.ToList();
+            ? []
+            : apiResult.Data.Data;
     }
 
     /// <inheritdoc />

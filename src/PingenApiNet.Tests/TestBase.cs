@@ -16,11 +16,11 @@ public class TestBase
     [SetUp]
     public void Setup()
     {
-        var baseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new("Missing PingenApiNet__BaseUri");
-        var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new("Missing PingenApiNet__IdentityUri");
-        var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new("Missing PingenApiNet__ClientId");
-        var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new("Missing PingenApiNet__ClientSecret");
-        var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new("Missing PingenApiNet__OrganisationId");
+        var baseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new InvalidOperationException("Missing PingenApiNet__BaseUri");
+        var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new InvalidOperationException("Missing PingenApiNet__IdentityUri");
+        var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientId");
+        var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientSecret");
+        var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new InvalidOperationException("Missing PingenApiNet__OrganisationId");
         var connectionHandler = new PingenConnectionHandler(
             new PingenConfiguration
             {

@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Runtime.Serialization;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 namespace PingenApiNet.Abstractions.Exceptions;
@@ -31,13 +30,21 @@ namespace PingenApiNet.Abstractions.Exceptions;
 /// <summary>
 ///
 /// </summary>
-[Serializable]
-public class PingenWebhookValidationErrorException : Exception
+public class PingenWebhookValidationErrorException : ApplicationException
 {
     /// <summary>
     /// API Result
     /// </summary>
     public WebhookEventData? WebhookEventData { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PingenWebhookValidationErrorException"/> class
+    /// </summary>
+    /// <param name="webhookEventData"></param>
+    public PingenWebhookValidationErrorException(WebhookEventData? webhookEventData)
+    {
+        WebhookEventData = webhookEventData;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenWebhookValidationErrorException"/> class
@@ -58,22 +65,5 @@ public class PingenWebhookValidationErrorException : Exception
     public PingenWebhookValidationErrorException(WebhookEventData? webhookEventData, string message, Exception inner) : base(message, inner)
     {
         WebhookEventData = webhookEventData;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
-    /// </summary>
-    /// <param name="info"></param>
-    /// <param name="context"></param>
-    protected PingenWebhookValidationErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        WebhookEventData = info.GetValue(nameof(WebhookEventData), typeof(WebhookEventData)) as WebhookEventData;
-    }
-
-    /// <inheritdoc />
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-        info.AddValue(nameof(Models.Webhooks.WebhookEvents.WebhookEventData), WebhookEventData);
     }
 }

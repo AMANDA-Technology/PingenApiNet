@@ -23,14 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Runtime.Serialization;
-
 namespace PingenApiNet.Abstractions.Exceptions;
 
 /// <summary>
 /// Represents errors that occur from pingen file download
 /// </summary>
-[Serializable]
 public class PingenFileDownloadException : Exception
 {
     /// <summary>
@@ -66,22 +63,5 @@ public class PingenFileDownloadException : Exception
     public PingenFileDownloadException(string? errorCode, string message, Exception inner) : base(message, inner)
     {
         ErrorCode = errorCode;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
-    /// </summary>
-    /// <param name="info"></param>
-    /// <param name="context"></param>
-    protected PingenFileDownloadException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        ErrorCode = info.GetValue(nameof(ErrorCode), typeof(string)) as string;
-    }
-
-    /// <inheritdoc />
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-        info.AddValue(nameof(ErrorCode), ErrorCode);
     }
 }

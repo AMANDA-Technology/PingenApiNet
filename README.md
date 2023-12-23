@@ -182,12 +182,12 @@ private async Task<(WebhookEventData WebhookEventData, Data<Organisation> Organi
 
     // Ensure signature header received
     if (!Request.Headers.TryGetValue("Signature", out var signature))
-        throw new("Missing 'Signature' header");
+        throw new InvalidOperationException("Missing 'Signature' header");
 
     // Validate webhook body and get data
     var (webhookEventData, organisationData, letterData, eventData) = await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, /*your signature*/, Request.Body);
     if (webhookEventData is null)
-        throw new("Failed to parse WebhookEventData from body, resulted as NULL");
+        throw new InvalidOperationException("Failed to parse WebhookEventData from body, resulted as NULL");
 
     return (webhookEventData, organisationData, letterData, eventData);
 }

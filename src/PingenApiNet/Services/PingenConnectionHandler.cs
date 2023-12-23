@@ -110,14 +110,14 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             var authenticationError = await PingenSerialisationHelper.DeserializeAsync<AuthenticationError>(await response.Content.ReadAsStreamAsync());
 
             if (authenticationError is null)
-                throw new("Invalid authentication error received");
+                throw new InvalidOperationException("Invalid authentication error received");
 
-            throw new($"Failed to obtain token with error: {authenticationError.Message}");
+            throw new InvalidOperationException($"Failed to obtain token with error: {authenticationError.Message}");
         }
 
         // Try to get token
         _accessToken = await PingenSerialisationHelper.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync());
-        if (_accessToken == null) throw new("Invalid access token object received");
+        if (_accessToken == null) throw new InvalidOperationException("Invalid access token object received");
 
         // Set to base client
         _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
