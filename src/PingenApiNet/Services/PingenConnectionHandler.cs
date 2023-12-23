@@ -69,11 +69,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         _configuration = configuration;
         _organisationId = configuration.DefaultOrganisationId;
 
-        if (!_configuration.BaseUri.EndsWith("/"))
-            _configuration.BaseUri += "/";
+        if (!_configuration.BaseUri.EndsWith('/'))
+            _configuration.BaseUri += '/';
 
-        if (!_configuration.IdentityUri.EndsWith("/"))
-            _configuration.IdentityUri += "/";
+        if (!_configuration.IdentityUri.EndsWith('/'))
+            _configuration.IdentityUri += '/';
 
         _client = new(new HttpClientHandler { AllowAutoRedirect = false })
         {
