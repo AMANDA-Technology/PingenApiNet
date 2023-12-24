@@ -244,7 +244,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="apiRequest"></param>
     /// <returns></returns>
-    private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest? apiRequest)
+    private static IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest? apiRequest)
     {
         if (apiRequest is null)
             yield break;
@@ -265,7 +265,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="apiPagingRequest"></param>
     /// <returns></returns>
-    private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiPagingRequest? apiPagingRequest)
+    private static IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiPagingRequest? apiPagingRequest)
     {
         if (apiPagingRequest is null)
             yield break;
