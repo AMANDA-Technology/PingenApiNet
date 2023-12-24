@@ -57,10 +57,10 @@ public record ApiResult
     public int RateLimitRemaining { get; init; }
 
     /// <summary>
-    /// The timestamp when the current period expires and the request can be retried.
+    /// The timestamp when the current period expires and the request can be retried. (in UTC)
     /// <see href="https://api.pingen.com/documentation#section/Basics/Throttling-Rate-limiting">API Doc - Throttling</see>
     /// </summary>
-    public DateTime? RateLimitReset { get; init; }
+    public DateTimeOffset? RateLimitReset { get; init; }
 
     /// <summary>
     /// The number of seconds you have to wait until you can retry (and the current period expires).

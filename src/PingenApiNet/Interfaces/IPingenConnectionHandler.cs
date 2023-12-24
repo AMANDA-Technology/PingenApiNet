@@ -32,7 +32,7 @@ namespace PingenApiNet.Interfaces;
 /// <summary>
 /// Connection handler to call Pingen REST API
 /// </summary>
-public interface IPingenConnectionHandler
+public interface IPingenConnectionHandler : IDisposable
 {
     /// <summary>
     /// Change the organisation ID to use for upcoming requests

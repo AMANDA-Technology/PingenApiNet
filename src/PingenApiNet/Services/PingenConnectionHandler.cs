@@ -246,18 +246,18 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiRequest? apiRequest)
     {
-        if (apiRequest is not null)
-        {
-            // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+        if (apiRequest is null)
+            yield break;
 
-            // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
+        // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
-            if (apiRequest is not ApiPagingRequest apiPagingRequest)
-                yield break;
+        // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
 
-            foreach (var keyValuePair in GetQueryParameters(apiPagingRequest))
-                yield return keyValuePair;
-        }
+        if (apiRequest is not ApiPagingRequest apiPagingRequest)
+            yield break;
+
+        foreach (var keyValuePair in GetQueryParameters(apiPagingRequest))
+            yield return keyValuePair;
     }
 
     /// <summary>
@@ -267,23 +267,23 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private IEnumerable<KeyValuePair<string, string>> GetQueryParameters(ApiPagingRequest? apiPagingRequest)
     {
-        if (apiPagingRequest is not null)
-        {
-            if (apiPagingRequest.Sorting?.Any() is true)
-                yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key[..1].ToLower() + entry.Key[1..]}")));
+        if (apiPagingRequest is null)
+            yield break;
 
-            if (apiPagingRequest.Filtering.HasValue)
-                yield return new(ApiQueryParameterNames.Filtering, PingenSerialisationHelper.Serialize(apiPagingRequest.Filtering.Value));
+        if (apiPagingRequest.Sorting?.Any() is true)
+            yield return new(ApiQueryParameterNames.Sorting, string.Join(',', apiPagingRequest.Sorting.Select(entry => $"{(entry.Value is CollectionSortDirection.DESC ? "-" : string.Empty)}{entry.Key[..1].ToLower() + entry.Key[1..]}")));
 
-            if (!string.IsNullOrEmpty(apiPagingRequest.Searching))
-                yield return new(ApiQueryParameterNames.Searching, apiPagingRequest.Searching);
+        if (apiPagingRequest.Filtering.HasValue)
+            yield return new(ApiQueryParameterNames.Filtering, PingenSerialisationHelper.Serialize(apiPagingRequest.Filtering.Value));
 
-            if (apiPagingRequest.PageNumber.HasValue)
-                yield return new(ApiQueryParameterNames.PageNumber, apiPagingRequest.PageNumber.Value.ToString());
+        if (!string.IsNullOrEmpty(apiPagingRequest.Searching))
+            yield return new(ApiQueryParameterNames.Searching, apiPagingRequest.Searching);
 
-            if (apiPagingRequest.PageLimit.HasValue)
-                yield return new(ApiQueryParameterNames.PageLimit, apiPagingRequest.PageLimit.Value.ToString());
-        }
+        if (apiPagingRequest.PageNumber.HasValue)
+            yield return new(ApiQueryParameterNames.PageNumber, apiPagingRequest.PageNumber.Value.ToString());
+
+        if (apiPagingRequest.PageLimit.HasValue)
+            yield return new(ApiQueryParameterNames.PageLimit, apiPagingRequest.PageLimit.Value.ToString());
     }
 
     /// <summary>
@@ -292,7 +292,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="httpResponseMessage"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    private async Task<ApiResult<T>> GetApiResult<T>(HttpResponseMessage httpResponseMessage) where T : IDataResult
+    private static async Task<ApiResult<T>> GetApiResult<T>(HttpResponseMessage httpResponseMessage) where T : IDataResult
     {
         var isSuccess = httpResponseMessage.IsSuccessStatusCode || httpResponseMessage.StatusCode is HttpStatusCode.Found;
         var headers = GetResponseHeaders(httpResponseMessage);
@@ -304,7 +304,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
             RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
             RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
-            RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
+            RateLimitReset = (DateTimeOffset?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : PingenSerialisationHelper.Deserialize<ApiError>(content),
@@ -318,7 +318,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     /// <param name="httpResponseMessage"></param>
     /// <returns></returns>
-    private async Task<ApiResult> GetApiResult(HttpResponseMessage httpResponseMessage)
+    private static async Task<ApiResult> GetApiResult(HttpResponseMessage httpResponseMessage)
     {
         var isSuccess = httpResponseMessage.IsSuccessStatusCode || httpResponseMessage.StatusCode is HttpStatusCode.Found;
         var headers = GetResponseHeaders(httpResponseMessage);
@@ -330,7 +330,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             RequestId = (Guid) (headers[ApiHeaderNames.RequestId] ?? Guid.Empty),
             RateLimitLimit = (int) (headers[ApiHeaderNames.RateLimitLimit] ?? 0),
             RateLimitRemaining = (int) (headers[ApiHeaderNames.RateLimitRemaining] ?? 0),
-            RateLimitReset = (DateTime?) headers[ApiHeaderNames.RateLimitReset],
+            RateLimitReset = (DateTimeOffset?) headers[ApiHeaderNames.RateLimitReset],
             RetryAfter = (int?) headers[ApiHeaderNames.RetryAfter],
             IdempotentReplayed = (bool) (headers[ApiHeaderNames.IdempotentReplayed] ?? false),
             ApiError = isSuccess ? null : PingenSerialisationHelper.Deserialize<ApiError>(content),
@@ -359,8 +359,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
                 ? rateLimitRemaining
                 : 0,
 
-            [ApiHeaderNames.RateLimitReset] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RateLimitReset, out values) && DateTime.TryParse(values.First(), out var rateLimitReset)
-                ? rateLimitReset
+            [ApiHeaderNames.RateLimitReset] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RateLimitReset, out values) && long.TryParse(values.First(), out var rateLimitResetUnix)
+                ? DateTimeOffset.FromUnixTimeSeconds(rateLimitResetUnix)
                 : null,
 
             [ApiHeaderNames.RetryAfter] = httpResponseMessage.Headers.TryGetValues(ApiHeaderNames.RetryAfter, out values) && int.TryParse(values.First(), out var retryAfter)
@@ -379,5 +379,11 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
                 ? values.First()
                 : string.Empty
         };
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _client.Dispose();
     }
 }

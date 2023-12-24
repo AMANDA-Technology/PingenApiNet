@@ -3,35 +3,58 @@
 namespace PingenApiNet.Tests;
 
 /// <summary>
-///
+/// Base class for all pingen API tests
 /// </summary>
 public class TestBase
 {
+    /// <summary>
+    /// Pingen configuration
+    /// </summary>
+    private IPingenConfiguration? _pingenConfiguration;
+
+    /// <summary>
+    /// Default instance of pingen API client
+    /// </summary>
     protected IPingenApiClient? PingenApiClient;
 
     /// <summary>
-    ///
+    /// Setup
     /// </summary>
     /// <exception cref="Exception"></exception>
     [SetUp]
     public void Setup()
     {
-        var baseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new InvalidOperationException("Missing PingenApiNet__BaseUri");
-        var identityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new InvalidOperationException("Missing PingenApiNet__IdentityUri");
-        var clientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientId");
-        var clientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientSecret");
-        var organisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new InvalidOperationException("Missing PingenApiNet__OrganisationId");
-        var connectionHandler = new PingenConnectionHandler(
-            new PingenConfiguration
-            {
-                BaseUri = baseUri,
-                IdentityUri = identityUri,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                DefaultOrganisationId = organisationId
-            });
+        _pingenConfiguration = new PingenConfiguration
+        {
+            BaseUri = Environment.GetEnvironmentVariable("PingenApiNet__BaseUri") ?? throw new InvalidOperationException("Missing PingenApiNet__BaseUri"),
+            IdentityUri = Environment.GetEnvironmentVariable("PingenApiNet__IdentityUri") ?? throw new InvalidOperationException("Missing PingenApiNet__IdentityUri"),
+            ClientId = Environment.GetEnvironmentVariable("PingenApiNet__ClientId") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientId"),
+            ClientSecret = Environment.GetEnvironmentVariable("PingenApiNet__ClientSecret") ?? throw new InvalidOperationException("Missing PingenApiNet__ClientSecret"),
+            DefaultOrganisationId = Environment.GetEnvironmentVariable("PingenApiNet__OrganisationId") ?? throw new InvalidOperationException("Missing PingenApiNet__OrganisationId")
+        };
 
-        PingenApiClient = new PingenApiClient(
+        PingenApiClient = CreateClient();
+    }
+
+    /// <summary>
+    /// Teardown
+    /// </summary>
+    [TearDown]
+    public void Teardown()
+    {
+        PingenApiClient?.Dispose();
+    }
+
+    /// <summary>
+    /// Create a new pingen API client
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    protected PingenApiClient CreateClient()
+    {
+        var connectionHandler = new PingenConnectionHandler(_pingenConfiguration!);
+
+        return new(
             connectionHandler,
             new LetterService(connectionHandler),
             new UserService(connectionHandler),

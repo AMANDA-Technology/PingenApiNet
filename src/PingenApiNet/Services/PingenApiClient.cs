@@ -80,4 +80,10 @@ public sealed class PingenApiClient : IPingenApiClient
 
     /// <inheritdoc />
     public IDistributionService Distributions { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _pingenConnectionHandler.Dispose();
+    }
 }
