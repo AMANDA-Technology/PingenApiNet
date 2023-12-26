@@ -150,7 +150,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             return;
 
         if (!_isEnteredAuthenticationSemaphore)
-            throw new("Login is not allowed without entering the authentication semaphore");
+            throw new InvalidOperationException("Login is not allowed without entering the authentication semaphore");
 
         // Create client and set header
         using var identityClient = new HttpClient();
