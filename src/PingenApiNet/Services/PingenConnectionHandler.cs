@@ -57,14 +57,24 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private readonly HttpClient _client;
 
     /// <summary>
+    /// The organisation ID to use for all request at /organisations/{organisationId}/*
+    /// </summary>
+    private string? _organisationId;
+
+    /// <summary>
     /// Access token for authenticated requests
     /// </summary>
     private static AccessToken? _accessToken;
 
     /// <summary>
-    /// The organisation ID to use for all request at /organisations/{organisationId}/*
+    /// Semaphore to ensure that only one thread tries to re-/authenticate at a time
     /// </summary>
-    private string? _organisationId;
+    private static readonly SemaphoreSlim AuthenticationSemaphore = new(1, 1);
+
+    /// <summary>
+    /// Indicates if the authentication semaphore has been entered or not
+    /// </summary>
+    private bool _isEnteredAuthenticationSemaphore;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
@@ -103,8 +113,44 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private async Task SetOrUpdateAccessToken()
     {
         // Only update if needed
-        if (_accessToken?.ExpiresAt.AddSeconds(-60) > DateTime.Now)
+        if (IsAuthorized())
             return;
+
+        // Wait for semaphore entrance
+        if (!await AuthenticationSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+        {
+            throw new InvalidOperationException("Authentication semaphore entrance timeout");
+        }
+        try
+        {
+            _isEnteredAuthenticationSemaphore = true;
+            await Login();
+        }
+        finally
+        {
+            AuthenticationSemaphore.Release();
+            _isEnteredAuthenticationSemaphore = false;
+        }
+    }
+
+    /// <summary>
+    /// Check if access token is set and not expired
+    /// </summary>
+    /// <returns></returns>
+    private static bool IsAuthorized() => _accessToken is not null && _accessToken.ExpiresAt.AddMinutes(-1) > DateTime.Now;
+
+    /// <summary>
+    /// Re-/Authenticate, save access token and authorize the http client
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    private async Task Login()
+    {
+        // Preconditions
+        if (IsAuthorized())
+            return;
+
+        if (!_isEnteredAuthenticationSemaphore)
+            throw new("Login is not allowed without entering the authentication semaphore");
 
         // Create client and set header
         using var identityClient = new HttpClient();
@@ -132,7 +178,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
         // Try to get token
         _accessToken = await PingenSerialisationHelper.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync());
-        if (_accessToken is null)
+        if (!IsAuthorized())
             throw new InvalidOperationException("Invalid access token object received");
 
         // Authorize http client
@@ -145,10 +191,10 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// </summary>
     private bool TryAuthorizeHttpClient()
     {
-        if (_accessToken is null)
+        if (!IsAuthorized())
             return false;
 
-        _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken!.Token);
         return true;
     }
 
@@ -237,7 +283,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         var httpRequestMessage = new HttpRequestMessage { Method = httpMethod };
 
         var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!,
-            NonOrganisationEndpoints.Any(requestPath.StartsWith)
+            Array.Exists(NonOrganisationEndpoints, requestPath.StartsWith)
                 ? requestPath
                 : $"{OrganisationsEndpoints.Single(_organisationId)}/{requestPath}"));
 

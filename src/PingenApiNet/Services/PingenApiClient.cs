@@ -32,7 +32,7 @@ namespace PingenApiNet.Services;
 public sealed class PingenApiClient : IPingenApiClient
 {
     /// <summary>
-    /// Private instance of connection handler used for all Services
+    /// Instance of connection handler used for all services
     /// </summary>
     private readonly IPingenConnectionHandler _pingenConnectionHandler;
 
