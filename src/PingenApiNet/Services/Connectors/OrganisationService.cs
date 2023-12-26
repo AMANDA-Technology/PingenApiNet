@@ -31,6 +31,7 @@ using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services.Connectors;
 
@@ -48,7 +49,7 @@ public sealed class OrganisationService : ConnectorService, IOrganisationService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<OrganisationData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<OrganisationData>>("organisations", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<OrganisationData>>(OrganisationsEndpoints.Root, apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -61,6 +62,6 @@ public sealed class OrganisationService : ConnectorService, IOrganisationService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(string organisationId, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<OrganisationDataDetailed>>(requestPath: $"organisations/{organisationId}", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<OrganisationDataDetailed>>(requestPath: OrganisationsEndpoints.Single(organisationId), cancellationToken: cancellationToken);
     }
 }

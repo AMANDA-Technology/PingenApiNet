@@ -32,6 +32,7 @@ using PingenApiNet.Abstractions.Models.Users;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services.Connectors;
 
@@ -49,13 +50,13 @@ public sealed class UserService : ConnectorService, IUserService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<UserDataDetailed>>> Get([Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<UserDataDetailed>>("user", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<UserDataDetailed>>(UsersEndpoints.Root, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<UserAssociationDataDetailed>>> GetAssociationsPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<UserAssociationDataDetailed>>("user/associations", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<UserAssociationDataDetailed>>(UsersEndpoints.Associations, apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />

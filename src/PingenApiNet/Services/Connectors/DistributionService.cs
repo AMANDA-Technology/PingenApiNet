@@ -31,6 +31,7 @@ using PingenApiNet.Abstractions.Models.DeliveryProducts;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services.Connectors;
 
@@ -48,7 +49,7 @@ public sealed class DistributionService : ConnectorService, IDistributionService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<DeliveryProductData>>> GetDeliveryProductsPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: "distribution/delivery-products", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<DeliveryProductData>>(requestPath: DistributionEndpoints.DeliveryProducts, apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />

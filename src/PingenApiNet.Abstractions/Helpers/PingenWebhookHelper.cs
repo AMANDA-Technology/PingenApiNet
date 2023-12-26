@@ -86,7 +86,7 @@ public static class PingenWebhookHelper
         using var hmacSha256 = new HMACSHA256(keyByte);
         await hmacSha256.ComputeHashAsync(requestStream, cancellationToken);
 
-        return hmacSha256.Hash != null && signature == ByteToString(hmacSha256.Hash);
+        return hmacSha256.Hash is not null && signature == ByteToString(hmacSha256.Hash);
     }
 
     /// <summary>

@@ -37,6 +37,7 @@ using PingenApiNet.Abstractions.Models.Letters.Views;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services.Connectors;
 
@@ -54,7 +55,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterData>>("letters", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterData>>(LettersEndpoints.Root, apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -67,43 +68,43 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate>>("letters", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate>>(LettersEndpoints.Root, data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Send(DataPatch<LetterSend> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>($"letters/{data.Id}/send", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>(LettersEndpoints.Send(data.Id), data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> Cancel(string letterId, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PatchAsync($"letters/{letterId}/cancel", idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync(LettersEndpoints.Cancel(letterId), idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: $"letters/{letterId}", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: LettersEndpoints.Single(letterId), cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> Delete(string letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.DeleteAsync($"letters/{letterId}", cancellationToken);
+        return await ConnectionHandler.DeleteAsync(LettersEndpoints.Single(letterId), cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Update(DataPatch<LetterUpdate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>($"letters/{data.Id}", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>(LettersEndpoints.Single(data.Id), data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync(requestPath: $"letters/{letterId}/file", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync(requestPath: LettersEndpoints.File(letterId), cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
@@ -126,13 +127,13 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<LetterPriceData>>> CalculatePrice(DataPost<LetterPriceConfiguration> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>("letters/price-calculator", data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>(LettersEndpoints.PriceCalculator, data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterEventData>>> GetEventsPage(string letterId, string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/{letterId}/events?language={language}", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>(LettersEndpoints.Events(letterId, language), apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -145,7 +146,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult<CollectionResult<LetterEventData>>> GetIssuesPage(string language, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>($"letters/issues?language={language}", apiPagingRequest, cancellationToken);
+        return await ConnectionHandler.GetAsync<CollectionResult<LetterEventData>>(LettersEndpoints.Issues(language), apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />

@@ -30,6 +30,7 @@ using PingenApiNet.Abstractions.Models.Files;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services.Connectors;
 
@@ -47,7 +48,7 @@ public sealed class FilesService : ConnectorService, IFilesService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: "file-upload", cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: FileUploadEndpoints.FileUpload, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

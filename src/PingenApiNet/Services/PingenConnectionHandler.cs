@@ -34,12 +34,18 @@ using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Models;
+using PingenApiNet.Services.Connectors.Endpoints;
 
 namespace PingenApiNet.Services;
 
 /// <inheritdoc />
 public sealed class PingenConnectionHandler : IPingenConnectionHandler
 {
+    /// <summary>
+    /// Endpoints that do not use organisation ID in path
+    /// </summary>
+    private static readonly string[] NonOrganisationEndpoints = [FileUploadEndpoints.FileUpload, UsersEndpoints.Root, OrganisationsEndpoints.Root];
+
     /// <summary>
     /// Pingen configuration for connection handler
     /// </summary>
@@ -53,12 +59,12 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <summary>
     /// Access token for authenticated requests
     /// </summary>
-    private AccessToken? _accessToken;
+    private static AccessToken? _accessToken;
 
     /// <summary>
     /// The organisation ID to use for all request at /organisations/{organisationId}/*
     /// </summary>
-    private string _organisationId;
+    private string? _organisationId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
@@ -66,19 +72,28 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <param name="configuration"></param>
     public PingenConnectionHandler(IPingenConfiguration configuration)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(configuration.BaseUri);
+        ArgumentException.ThrowIfNullOrWhiteSpace(configuration.IdentityUri);
+
+        // Configure
         _configuration = configuration;
         _organisationId = configuration.DefaultOrganisationId;
 
+        // Normalize base urls
         if (!_configuration.BaseUri.EndsWith('/'))
             _configuration.BaseUri += '/';
 
         if (!_configuration.IdentityUri.EndsWith('/'))
             _configuration.IdentityUri += '/';
 
+        // Create a new http client for instance
         _client = new(new HttpClientHandler { AllowAutoRedirect = false })
         {
             BaseAddress = new(_configuration.BaseUri)
         };
+
+        // Try authorize when static access token is set
+        TryAuthorizeHttpClient();
     }
 
     /// <summary>
@@ -117,10 +132,24 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
         // Try to get token
         _accessToken = await PingenSerialisationHelper.DeserializeAsync<AccessToken>(await response.Content.ReadAsStreamAsync());
-        if (_accessToken == null) throw new InvalidOperationException("Invalid access token object received");
+        if (_accessToken is null)
+            throw new InvalidOperationException("Invalid access token object received");
 
-        // Set to base client
+        // Authorize http client
+        if (!TryAuthorizeHttpClient())
+            throw new InvalidOperationException("Failed to authorize http client");
+    }
+
+    /// <summary>
+    /// Set authorization to http client
+    /// </summary>
+    private bool TryAuthorizeHttpClient()
+    {
+        if (_accessToken is null)
+            return false;
+
         _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken.Token);
+        return true;
     }
 
     /// <inheritdoc />
@@ -202,12 +231,16 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] string? idempotencyKey)
     {
+        if (string.IsNullOrWhiteSpace(_organisationId))
+            throw new InvalidOperationException("Organisation ID has not been set");
+
         var httpRequestMessage = new HttpRequestMessage { Method = httpMethod };
 
         var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!,
-            requestPath.StartsWith("file-upload") || requestPath.StartsWith("user") || requestPath.StartsWith("organisations") // TODO: Another solution to decide if request path is under organisation id
+            NonOrganisationEndpoints.Any(requestPath.StartsWith)
                 ? requestPath
-                : $"organisations/{_organisationId}/{requestPath}"));
+                : $"{OrganisationsEndpoints.Single(_organisationId)}/{requestPath}"));
+
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
         foreach (var (key, value) in GetRequestHeaders(apiRequest, idempotencyKey))
