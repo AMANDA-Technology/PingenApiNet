@@ -14,7 +14,7 @@ With a special thanks to Pingen GmbH for the handy Online Postal Service for sen
 
 [![CodeQL](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml)
 
-[![CodeQL](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/codeql-analysis.yml)
+[![SonarCloud](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/sonar-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/PingenApiNet/actions/workflows/sonar-analysis.yml)
 
 ### Usage
 
