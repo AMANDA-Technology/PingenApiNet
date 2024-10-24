@@ -34,12 +34,12 @@ namespace PingenApiNet.Abstractions.Enums.Batches;
 public enum BatchGroupingType
 {
     /// <summary>
-    /// Batch is provided as an archive containing individual PDFs.
+    /// Batch is provided as an archive.
     /// </summary>
     zip,
 
     /// <summary>
-    /// Batch is provided as a concatenated PDF of all letters.
+    /// Batch is provided as a merged PDF of all letters.
     /// </summary>
     merge
 }
