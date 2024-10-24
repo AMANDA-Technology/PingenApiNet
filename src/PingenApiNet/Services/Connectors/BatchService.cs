@@ -49,6 +49,6 @@ public sealed class BatchService : ConnectorService, IBatchService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<BatchDataDetailed>>> Create(DataPost<BatchCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PostAsync<SingleResult<BatchDataDetailed>, DataPost<BatchCreate>>(LettersEndpoints.Root, data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<BatchDataDetailed>, DataPost<BatchCreate>>(BatchesEndpoints.Root, data, idempotencyKey, cancellationToken);
     }
 }

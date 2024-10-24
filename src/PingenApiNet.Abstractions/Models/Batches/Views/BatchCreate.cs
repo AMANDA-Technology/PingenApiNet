@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Batches;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 
@@ -33,6 +34,18 @@ namespace PingenApiNet.Abstractions.Models.Batches.Views;
 /// </summary>
 public sealed record BatchCreate
 {
+    /// <summary>
+    /// Name of the batch [ 5 .. 100 ] characters
+    /// </summary>
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    /// <summary>
+    /// Icon
+    /// </summary>
+    [JsonPropertyName("icon")]
+    public required BatchIcon Icon { get; init; }
+
     /// <summary>
     /// Filename [ 5 .. 255 ] characters
     /// </summary>
@@ -58,8 +71,32 @@ public sealed record BatchCreate
     public required LetterAddressPosition AddressPosition { get; init; }
 
     /// <summary>
-    /// Auto send
+    /// Grouping type
     /// </summary>
-    [JsonPropertyName("auto_send")]
-    public required bool AutoSend { get; init; }
+    [JsonPropertyName("grouping_type")]
+    public required BatchGroupingType GroupingType { get; init; }
+
+    /// <summary>
+    /// Grouping options type
+    /// </summary>
+    [JsonPropertyName("grouping_options_split_type")]
+    public required BatchGroupingOptionsSplitType GroupingOptionsSplitType { get; init; }
+
+    /// <summary>
+    /// Grouping options split size [ 1 .. 10 ]
+    /// </summary>
+    [JsonPropertyName("grouping_options_split_size")]
+    public int? GroupingOptionsSplitSize { get; init; }
+
+    /// <summary>
+    /// Grouping options split separator [ 1 .. 20 ] characters
+    /// </summary>
+    [JsonPropertyName("grouping_options_split_separator")]
+    public string? GroupingOptionsSplitSeparator { get; init; }
+
+    /// <summary>
+    /// Grouping options split position
+    /// </summary>
+    [JsonPropertyName("grouping_options_split_position")]
+    public BatchGroupingOptionsSplitPosition? GroupingOptionsSplitPosition { get; init; }
 }
