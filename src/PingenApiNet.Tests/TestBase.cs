@@ -57,6 +57,7 @@ public class TestBase
         return new(
             connectionHandler,
             new LetterService(connectionHandler),
+            new BatchService(connectionHandler),
             new UserService(connectionHandler),
             new OrganisationService(connectionHandler),
             new WebhookService(connectionHandler),

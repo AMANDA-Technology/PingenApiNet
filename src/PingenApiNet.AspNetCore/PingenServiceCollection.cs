@@ -70,6 +70,7 @@ public static class PingenServiceCollection
         services.AddSingleton(pingenConfiguration);
         services.AddScoped<IPingenConnectionHandler, PingenConnectionHandler>();
         services.AddScoped<ILetterService, LetterService>();
+        services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOrganisationService, OrganisationService>();
         services.AddScoped<IWebhookService, WebhookService>();
