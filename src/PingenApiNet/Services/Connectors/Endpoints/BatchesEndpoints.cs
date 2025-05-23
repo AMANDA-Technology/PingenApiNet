@@ -33,4 +33,11 @@ internal static class BatchesEndpoints
     /// Root path of distributions
     /// </summary>
     internal const string Root = "batches";
+
+    /// <summary>
+    /// Endpoint to access a specific batch
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    internal static string Single(string id) => $"{Root}/{id}";
 }

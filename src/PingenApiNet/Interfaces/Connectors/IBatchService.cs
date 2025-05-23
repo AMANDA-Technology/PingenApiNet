@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
@@ -48,4 +48,12 @@ public interface IBatchService
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult<SingleResult<BatchDataDetailed>>> Create(DataPost<BatchCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get details of a batch. <see href="https://api.pingen.com/documentation#tag/batches.general/operation/batches.show">API Doc - Get details of a batch</see>
+    /// </summary>
+    /// <param name="batchId">ID of the batch to get</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<SingleResult<BatchDataDetailed>>> Get(string batchId, [Optional] CancellationToken cancellationToken);
 }

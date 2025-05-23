@@ -28,6 +28,7 @@ using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Batches;
 using PingenApiNet.Abstractions.Models.Batches.Views;
+using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
@@ -49,6 +50,12 @@ public sealed class BatchService : ConnectorService, IBatchService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<BatchDataDetailed>>> Create(DataPost<BatchCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PostAsync<SingleResult<BatchDataDetailed>, DataPost<BatchCreate>>(BatchesEndpoints.Root, data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<BatchDataDetailed>, DataPost<BatchCreate>>(requestPath: BatchesEndpoints.Root, data, idempotencyKey, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult<SingleResult<BatchDataDetailed>>> Get(string batchId, [Optional] CancellationToken cancellationToken)
+    {
+        return await ConnectionHandler.GetAsync<SingleResult<BatchDataDetailed>>(requestPath: BatchesEndpoints.Single(batchId), cancellationToken: cancellationToken);
     }
 }
