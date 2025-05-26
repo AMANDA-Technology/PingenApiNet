@@ -28,7 +28,6 @@ using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Batches;
 using PingenApiNet.Abstractions.Models.Batches.Views;
-using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services.Connectors.Base;
@@ -45,6 +44,12 @@ public sealed class BatchService : ConnectorService, IBatchService
     /// <param name="connectionHandler"></param>
     public BatchService(IPingenConnectionHandler connectionHandler) : base(connectionHandler)
     {
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult<CollectionResult<BatchData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
+    {
+        return await ConnectionHandler.GetAsync<CollectionResult<BatchData>>(BatchesEndpoints.Root, apiPagingRequest, cancellationToken);
     }
 
     /// <inheritdoc />

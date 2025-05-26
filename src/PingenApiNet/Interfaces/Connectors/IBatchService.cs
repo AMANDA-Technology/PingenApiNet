@@ -37,6 +37,14 @@ namespace PingenApiNet.Interfaces.Connectors;
 public interface IBatchService
 {
     /// <summary>
+    /// Get a collection of batches. <see href="https://api.pingen.com/documentation#tag/batches.general/operation/batches.list">API Doc - Batches list</see>
+    /// </summary>>
+    /// <param name="apiPagingRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult<CollectionResult<BatchData>>> GetPage([Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
     /// Create a new batch. <see href="https://api.pingen.com/documentation#tag/batches.general/operation/batches.create">API Doc - Batches create</see>
     /// <br/>Important: The 3-Step Process to Create a new batch
     /// <br/>1. Make a GET Request to the (File upload) endpoint to request an upload url. Use <see cref="IFilesService.GetPath"/> on <see cref="IPingenApiClient.Files"/>
