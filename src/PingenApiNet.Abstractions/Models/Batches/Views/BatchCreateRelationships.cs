@@ -38,7 +38,7 @@ public record BatchCreateRelationships : IRelationships
     /// <summary>
     /// Preset relationship
     /// </summary>
-    [JsonPropertyName("present")]
+    [JsonPropertyName("preset")]
     public required RelatedSingleInput Preset { get; init; }
 
     /// <summary>
