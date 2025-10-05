@@ -3,6 +3,7 @@ MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
 Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
+Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +30,7 @@ using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers.JsonConverters;
 using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.Batches;
 using PingenApiNet.Abstractions.Models.DeliveryProducts;
 using PingenApiNet.Abstractions.Models.Files;
 using PingenApiNet.Abstractions.Models.LetterEvents;
@@ -102,6 +104,7 @@ public static class PingenSerialisationHelper
     public static Dictionary<PingenApiDataType, Type> PingenApiDataTypeMapping => new()
     {
         [PingenApiDataType.letters] = typeof(Letter),
+        [PingenApiDataType.batches] = typeof(Batch),
         [PingenApiDataType.organisations] = typeof(Organisation),
         [PingenApiDataType.letter_price_calculator] = typeof(LetterPrice),
         [PingenApiDataType.letters_events] = typeof(LetterEvent),

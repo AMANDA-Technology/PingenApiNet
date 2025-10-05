@@ -1,8 +1,6 @@
 ﻿/*
 MIT License
 
-Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
-Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
 Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,84 +22,98 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Enums.Api;
+namespace PingenApiNet.Abstractions.Enums.Batches;
 
 /// <summary>
-/// Pingen API data type to identify the kind of data transported in requests
+/// Batch icon
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PingenApiDataType
+public enum BatchIcon
 {
     /// <summary>
-    /// Data type letters
+    /// Campaign
     /// </summary>
-    letters,
+    campaign,
 
     /// <summary>
-    /// Data type letters
+    /// Megaphone
     /// </summary>
-    batches,
+    megaphone,
 
     /// <summary>
-    /// Data type organisations
+    /// Wave-hand
     /// </summary>
-    organisations,
+    [EnumMember(Value = "wave-hand")]
+    waveHand,
 
     /// <summary>
-    /// Data type letter_price_calculator
+    /// Flash
     /// </summary>
-    letter_price_calculator,
+    flash,
 
     /// <summary>
-    /// Data type letters_events
+    /// Rocket
     /// </summary>
-    letters_events,
+    rocket,
 
     /// <summary>
-    /// Data type users
+    /// Bell
     /// </summary>
-    users,
+    bell,
 
     /// <summary>
-    /// Data type associations
+    /// Percent-tag
     /// </summary>
-    associations,
+    [EnumMember(Value = "percent-tag")]
+    percentTag,
 
     /// <summary>
-    /// Data type webhooks
+    /// Percent-badge
     /// </summary>
-    webhooks,
+    [EnumMember(Value = "percent-badge")]
+    percentBadge,
 
     /// <summary>
-    /// Data type file_uploads
+    /// Present
     /// </summary>
-    file_uploads,
+    present,
 
     /// <summary>
-    /// Data type webhook_issues
+    /// Receipt
     /// </summary>
-    webhook_issues,
+    receipt,
 
     /// <summary>
-    /// Data type webhook_sent
+    /// Document
     /// </summary>
-    webhook_sent,
+    document,
 
     /// <summary>
-    /// Data type webhook_undeliverable
+    /// Information
     /// </summary>
-    webhook_undeliverable,
+    information,
 
     /// <summary>
-    /// Data type delivery products
+    /// Calendar
     /// </summary>
-    delivery_products,
+    calendar,
 
     /// <summary>
-    /// Data type presets
+    /// Newspaper
     /// </summary>
-    presets
+    newspaper,
+
+    /// <summary>
+    /// Crown
+    /// </summary>
+    crown,
+
+    /// <summary>
+    /// Virus
+    /// </summary>
+    virus
 }

@@ -41,6 +41,7 @@ public sealed class PingenApiClient : IPingenApiClient
     /// </summary>
     public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler,
         ILetterService letterService,
+        IBatchService batchService,
         IUserService userService,
         IOrganisationService organisationService,
         IWebhookService webhooks,
@@ -50,6 +51,7 @@ public sealed class PingenApiClient : IPingenApiClient
         _pingenConnectionHandler = pingenConnectionHandler;
 
         Letters = letterService;
+        Batches = batchService;
         Users = userService;
         Organisations = organisationService;
         Webhooks = webhooks;
@@ -65,6 +67,9 @@ public sealed class PingenApiClient : IPingenApiClient
 
     /// <inheritdoc />
     public ILetterService Letters { get; set; }
+
+    /// <inheritdoc />
+    public IBatchService Batches { get; set; }
 
     /// <inheritdoc />
     public IUserService Users { get; set; }

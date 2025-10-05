@@ -16,6 +16,7 @@
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageId>Extended.PingenApiNet.AspNetCore</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
