@@ -28,6 +28,7 @@ using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
+using PingenApiNet.Abstractions.Models.Letters.Views;
 
 namespace PingenApiNet.Tests.Tests;
 
@@ -111,7 +112,8 @@ public class TestGetFileUploadData : TestBase
                 PrintSpectrum = LetterPrintSpectrum.grayscale,
                 MetaData = letterMetaData
             },
-            Type = PingenApiDataType.letters
+            Type = PingenApiDataType.letters,
+            Relationships = LetterCreateRelationships.Create("1234567890")
         });
 
         Assert.That(resLetter, Is.Not.Null);

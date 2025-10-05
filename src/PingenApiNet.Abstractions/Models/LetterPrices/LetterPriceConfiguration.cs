@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.LetterPrices;
@@ -32,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.LetterPrices;
 /// <summary>
 /// Letter configuration for price calculator to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public sealed record LetterPriceConfiguration
+public sealed record LetterPriceConfiguration : IAttributes
 {
     /// <summary>
     /// Country

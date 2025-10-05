@@ -67,7 +67,8 @@ var resultCreateLetter = await _pingenApiClient.Letters.Create(new()
             }
         }
     },
-    Type = PingenApiDataType.letters
+    Type = PingenApiDataType.letters,
+    Relationships = LetterCreateRelationships.Create("1234567890") // Optionally add a preset via relationships
 }, $"Letters.Create.{outgoing.Id}"); // Optionally, idempotency key
 
 if (!resultCreateLetter.IsSuccess)

@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Letters.Views;
@@ -32,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.Letters.Views;
 /// <summary>
 /// Letter update (edit) object to send via <see cref="DataPatch{TAttributes}"/> to the API
 /// </summary>
-public sealed record LetterUpdate
+public sealed record LetterUpdate : IAttributes
 {
     /// <summary>
     /// Paper types. Paper types. Use values from <see cref="LetterPaperTypes"/>

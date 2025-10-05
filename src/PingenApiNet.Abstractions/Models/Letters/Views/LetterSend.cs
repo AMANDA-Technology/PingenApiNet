@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
 
@@ -33,7 +34,7 @@ namespace PingenApiNet.Abstractions.Models.Letters.Views;
 /// <summary>
 /// Letter send object to send via <see cref="DataPatch{TAttributes}"/> to the API
 /// </summary>
-public sealed record LetterSend
+public sealed record LetterSend : IAttributes
 {
     /// <summary>
     /// Delivery product (Should be any of <see cref="LetterSendDeliveryProduct"/>)

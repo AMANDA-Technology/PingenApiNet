@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -24,17 +24,37 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
 
-namespace PingenApiNet.Abstractions.Models.Api.Embedded;
+namespace PingenApiNet.Abstractions.Models.Letters.Views;
 
 /// <summary>
-/// Generic data PATCH object with attributes based on type to send to the API
+/// Letter-create relationships
 /// </summary>
-public sealed record DataPatch<TAttributes> : DataPost<TAttributes>, IDataPatch
-    where TAttributes : IAttributes
+public record LetterCreateRelationships : IRelationships
 {
-    /// <inheritdoc />
-    [JsonPropertyName("id")]
-    public required string Id { get; init; }
+    /// <summary>
+    /// Preset relationship
+    /// </summary>
+    [JsonPropertyName("present")]
+    public required RelatedSingleInput Preset { get; init; }
+
+    /// <summary>
+    /// Create a new instance of <see cref="LetterCreateRelationships"/> for the given preset id.
+    /// </summary>
+    /// <param name="presetId"></param>
+    /// <returns></returns>
+    public static LetterCreateRelationships Create(string presetId) => new()
+    {
+        Preset = new()
+        {
+            Data = new()
+            {
+                Id = presetId,
+                Type = PingenApiDataType.presets
+            }
+        }
+    };
 }

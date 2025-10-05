@@ -34,6 +34,7 @@ namespace PingenApiNet.Abstractions.Models.Api.Embedded;
 /// </summary>
 /// <typeparam name="TAttributes"></typeparam>
 public record DataPost<TAttributes> : IDataPost
+    where TAttributes : IAttributes
 {
     /// <inheritdoc />
     [JsonPropertyName("type")]
@@ -44,4 +45,20 @@ public record DataPost<TAttributes> : IDataPost
     /// </summary>
     [JsonPropertyName("attributes")]
     public required TAttributes Attributes { get; init; }
+}
+
+/// <summary>
+/// Generic data POST object with attributes and relationships based on type to send to the API
+/// </summary>
+/// <typeparam name="TAttributes"></typeparam>
+/// <typeparam name="TRelationships"></typeparam>
+public record DataPost<TAttributes, TRelationships> : DataPost<TAttributes>
+    where TAttributes : IAttributes
+    where TRelationships : IRelationships
+{
+    /// <summary>
+    /// Relationships based on type
+    /// </summary>
+    [JsonPropertyName("relationships")]
+    public TRelationships? Relationships { get; init; }
 }
