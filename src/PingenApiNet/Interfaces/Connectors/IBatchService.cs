@@ -55,7 +55,7 @@ public interface IBatchService
     /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<BatchDataDetailed>>> Create(DataPost<BatchCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<BatchDataDetailed>>> Create(DataPost<BatchCreate, BatchCreateRelationships> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Get details of a batch. <see href="https://api.pingen.com/documentation#tag/batches.general/operation/batches.show">API Doc - Get details of a batch</see>

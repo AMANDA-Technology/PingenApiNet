@@ -25,6 +25,7 @@ SOFTWARE.
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Batches;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Batches.Views;
@@ -32,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.Batches.Views;
 /// <summary>
 /// Batch create object to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public sealed record BatchCreate
+public sealed record BatchCreate : IAttributes
 {
     /// <summary>
     /// Name of the batch [ 5 .. 100 ] characters
