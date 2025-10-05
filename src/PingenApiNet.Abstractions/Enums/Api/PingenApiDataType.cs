@@ -41,7 +41,7 @@ public enum PingenApiDataType
     letters,
 
     /// <summary>
-    /// Data type letters
+    /// Data type batches
     /// </summary>
     batches,
 
