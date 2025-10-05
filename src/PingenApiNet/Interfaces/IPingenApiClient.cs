@@ -3,6 +3,7 @@ MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
 Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
+Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +43,11 @@ public interface IPingenApiClient : IDisposable
     /// Pingen letters connector. <see href="https://api.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
     /// </summary>
     public ILetterService Letters { get; set; }
+
+    /// <summary>
+    /// Pingen batches connector. <see href="https://api.pingen.com/documentation#tag/batches.general">API Doc - Batches General</see>
+    /// </summary>
+    public IBatchService Batches { get; set; }
 
     /// <summary>
     /// Pingen users connector. <see href="https://api.pingen.com/documentation#tag/user.general">API Doc - Users General</see>

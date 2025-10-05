@@ -1,8 +1,6 @@
 ﻿/*
 MIT License
 
-Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
-Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
 Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,81 +25,31 @@ SOFTWARE.
 using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
 
-namespace PingenApiNet.Abstractions.Enums.Api;
+namespace PingenApiNet.Abstractions.Enums.Batches;
 
 /// <summary>
-/// Pingen API data type to identify the kind of data transported in requests
+/// Batch grouping split type options
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PingenApiDataType
+public enum BatchGroupingOptionsSplitType
 {
     /// <summary>
-    /// Data type letters
+    /// File
     /// </summary>
-    letters,
+    file,
 
     /// <summary>
-    /// Data type batches
+    /// Page
     /// </summary>
-    batches,
+    page,
 
     /// <summary>
-    /// Data type organisations
+    /// Custom
     /// </summary>
-    organisations,
+    custom,
 
     /// <summary>
-    /// Data type letter_price_calculator
+    /// QR-invoice
     /// </summary>
-    letter_price_calculator,
-
-    /// <summary>
-    /// Data type letters_events
-    /// </summary>
-    letters_events,
-
-    /// <summary>
-    /// Data type users
-    /// </summary>
-    users,
-
-    /// <summary>
-    /// Data type associations
-    /// </summary>
-    associations,
-
-    /// <summary>
-    /// Data type webhooks
-    /// </summary>
-    webhooks,
-
-    /// <summary>
-    /// Data type file_uploads
-    /// </summary>
-    file_uploads,
-
-    /// <summary>
-    /// Data type webhook_issues
-    /// </summary>
-    webhook_issues,
-
-    /// <summary>
-    /// Data type webhook_sent
-    /// </summary>
-    webhook_sent,
-
-    /// <summary>
-    /// Data type webhook_undeliverable
-    /// </summary>
-    webhook_undeliverable,
-
-    /// <summary>
-    /// Data type delivery products
-    /// </summary>
-    delivery_products,
-
-    /// <summary>
-    /// Data type presets
-    /// </summary>
-    presets
+    qr_invoice
 }
