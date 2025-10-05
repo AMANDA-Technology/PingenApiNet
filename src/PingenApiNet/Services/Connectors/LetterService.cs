@@ -66,9 +66,9 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate, LetterCreateRelationships> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate>>(LettersEndpoints.Root, data, idempotencyKey, cancellationToken);
+        return await ConnectionHandler.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(LettersEndpoints.Root, data, idempotencyKey, cancellationToken);
     }
 
     /// <inheritdoc />

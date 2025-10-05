@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Letters;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
 
@@ -33,7 +34,7 @@ namespace PingenApiNet.Abstractions.Models.Letters.Views;
 /// <summary>
 /// Letter create object to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public sealed record LetterCreate
+public sealed record LetterCreate : IAttributes
 {
     /// <summary>
     /// Filename [ 5 .. 255 ] characters

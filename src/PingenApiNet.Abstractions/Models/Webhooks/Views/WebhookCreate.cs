@@ -25,6 +25,7 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Interfaces.Data;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Webhooks.Views;
@@ -32,7 +33,7 @@ namespace PingenApiNet.Abstractions.Models.Webhooks.Views;
 /// <summary>
 /// Letter create object to send via <see cref="DataPost{TAttributes}"/> to the API
 /// </summary>
-public sealed record WebhookCreate
+public sealed record WebhookCreate : IAttributes
 {
     /// <summary>
     /// Webhook event category

@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -24,17 +24,18 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Base;
 
-namespace PingenApiNet.Abstractions.Models.Api.Embedded;
+namespace PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
 
 /// <summary>
-/// Generic data PATCH object with attributes based on type to send to the API
+/// Relation to a single object for input
 /// </summary>
-public sealed record DataPatch<TAttributes> : DataPost<TAttributes>, IDataPatch
-    where TAttributes : IAttributes
+public sealed record RelatedSingleInput
 {
-    /// <inheritdoc />
-    [JsonPropertyName("id")]
-    public required string Id { get; init; }
+    /// <summary>
+    /// Data object or the relation
+    /// </summary>
+    [JsonPropertyName("data")]
+    public required DataIdentity Data { get; init; }
 }

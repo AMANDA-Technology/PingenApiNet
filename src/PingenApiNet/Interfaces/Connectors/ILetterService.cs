@@ -70,7 +70,7 @@ public interface ILetterService : IConnectorService
     /// <param name="idempotencyKey">Optional, unique request identifier for idempotency. To be able to safely retry these kind of API calls, you can set the HTTP Header Idempotency-Key with any unique 1-64 character string. <see href="https://api.pingen.com/documentation#section/Advanced/Idempotency">API Doc - Idempotency</see></param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Create(DataPost<LetterCreate, LetterCreateRelationships> data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Send a letter. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.send">API Doc - Letters send</see>

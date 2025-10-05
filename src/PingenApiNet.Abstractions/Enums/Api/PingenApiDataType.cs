@@ -98,5 +98,10 @@ public enum PingenApiDataType
     /// <summary>
     /// Data type delivery products
     /// </summary>
-    delivery_products
+    delivery_products,
+
+    /// <summary>
+    /// Data type presets
+    /// </summary>
+    presets
 }

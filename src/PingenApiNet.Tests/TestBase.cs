@@ -5,7 +5,7 @@ namespace PingenApiNet.Tests;
 /// <summary>
 /// Base class for all pingen API tests
 /// </summary>
-public class TestBase
+public abstract class TestBase
 {
     /// <summary>
     /// Pingen configuration
