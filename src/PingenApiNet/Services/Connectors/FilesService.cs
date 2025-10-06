@@ -52,9 +52,9 @@ public sealed class FilesService : ConnectorService, IFilesService
     }
 
     /// <inheritdoc />
-    public async Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken)
+    public async Task<bool> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken)
     {
         using var httpClient = new HttpClient();
-        return (await httpClient.PutAsync(fileUploadData.Attributes.Url, new ByteArrayContent(data.ToArray()), cancellationToken)).IsSuccessStatusCode;
+        return (await httpClient.PutAsync(fileUploadData.Attributes.Url, new StreamContent(data), cancellationToken)).IsSuccessStatusCode;
     }
 }
