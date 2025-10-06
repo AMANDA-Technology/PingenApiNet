@@ -131,7 +131,7 @@ public interface ILetterService : IConnectorService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="PingenFileDownloadException"></exception>
-    public Task<MemoryStream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken);
+    public Task<Stream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Calculate price for given letter configuration. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.price-calculator">API Doc - Letters price calculator</see>
