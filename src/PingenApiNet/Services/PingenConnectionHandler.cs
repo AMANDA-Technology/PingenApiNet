@@ -54,7 +54,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <summary>
     /// Holds the http client with some basic settings, to be used for all connectors
     /// </summary>
-    private readonly HttpClient _client;
+    private static HttpClient? _client;
 
     /// <summary>
     /// The organisation ID to use for all request at /organisations/{organisationId}/*
@@ -96,11 +96,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (!_configuration.IdentityUri.EndsWith('/'))
             _configuration.IdentityUri += '/';
 
-        // Create a new http client for instance
-        _client = new(new HttpClientHandler { AllowAutoRedirect = false })
-        {
-            BaseAddress = new(_configuration.BaseUri)
-        };
+        // Configure http client
+        _client ??= new(new HttpClientHandler { AllowAutoRedirect = false });
+        _client.BaseAddress = new(_configuration.BaseUri);
 
         // Try authorize when static access token is set
         TryAuthorizeHttpClient();
@@ -158,13 +156,12 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
 
         // Send request and validate
-        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", new FormUrlEncodedContent(new[]
-        {
-            new KeyValuePair<string, string>("grant_type", "client_credentials"),
-            new KeyValuePair<string, string>("client_id", _configuration.ClientId),
-            new KeyValuePair<string, string>("client_secret", _configuration.ClientSecret),
-            //new KeyValuePair<string, string>("scope", "client-id-source"),
-        }));
+        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", new FormUrlEncodedContent([
+            new("grant_type", "client_credentials"),
+            new("client_id", _configuration.ClientId),
+            new("client_secret", _configuration.ClientSecret)
+            //new("scope", "client-id-source"),
+        ]));
 
         if (!response.IsSuccessStatusCode)
         {
@@ -189,8 +186,10 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <summary>
     /// Set authorization to http client
     /// </summary>
-    private bool TryAuthorizeHttpClient()
+    private static bool TryAuthorizeHttpClient()
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         if (!IsAuthorized())
             return false;
 
@@ -207,6 +206,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
@@ -214,6 +215,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
@@ -221,6 +224,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         var res = await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, dataPost, null, idempotencyKey), cancellationToken);
         return await GetApiResult<TResult>(res);
@@ -229,6 +234,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public async Task<ApiResult> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath), cancellationToken));
     }
@@ -236,6 +243,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc cref="PatchAsync" />
     public async Task<ApiResult> PatchAsync(string requestPath, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, null, idempotencyKey), cancellationToken));
     }
@@ -243,6 +252,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc cref="PatchAsync{TResult,TPost}" />
     public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         await SetOrUpdateAccessToken();
         return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, data, null, idempotencyKey), cancellationToken));
     }
@@ -277,6 +288,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] string? idempotencyKey)
     {
+        ArgumentNullException.ThrowIfNull(_client);
+
         if (string.IsNullOrWhiteSpace(_organisationId))
             throw new InvalidOperationException("Organisation ID has not been set");
 
@@ -463,6 +476,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public void Dispose()
     {
-        _client.Dispose();
+        _client?.Dispose();
+        _client = null;
     }
 }
