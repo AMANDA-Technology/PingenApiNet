@@ -108,7 +108,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<MemoryStream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken)
+    public async Task<Stream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken)
     {
         using var httpClient = new HttpClient();
         var fileContentResponse = await httpClient.GetAsync(fileUrl, cancellationToken);
@@ -120,8 +120,8 @@ public sealed class LetterService : ConnectorService, ILetterService
             throw new PingenFileDownloadException(xml.SelectSingleNode("/Error/Code/text()")?.Value ?? string.Empty);
         }
 
-        await fileContentResponse.Content.LoadIntoBufferAsync();
-        return (MemoryStream) await fileContentResponse.Content.ReadAsStreamAsync(cancellationToken);
+        await fileContentResponse.Content.LoadIntoBufferAsync(cancellationToken);
+        return await fileContentResponse.Content.ReadAsStreamAsync(cancellationToken);
     }
 
     /// <inheritdoc />

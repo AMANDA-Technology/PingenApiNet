@@ -46,8 +46,8 @@ public interface IFilesService
     /// Upload a file to URL received in result from <see cref="GetPath"/>
     /// </summary>
     /// <param name="fileUploadData">Result from <see cref="GetPath"/></param>
-    /// <param name="data">Binary file to upload as memory stream</param>
+    /// <param name="data">Binary file to upload as stream</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<bool> UploadFile(FileUploadData fileUploadData, MemoryStream data, [Optional] CancellationToken cancellationToken);
+    public Task<bool> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken);
 }
