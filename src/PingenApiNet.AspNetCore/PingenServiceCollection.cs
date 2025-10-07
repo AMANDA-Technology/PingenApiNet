@@ -68,7 +68,8 @@ public static class PingenServiceCollection
     public static IServiceCollection AddPingenServices(this IServiceCollection services, IPingenConfiguration pingenConfiguration)
     {
         services.AddSingleton(pingenConfiguration);
-        services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
+        services.AddHttpClient<IPingenConnectionHandler, PingenConnectionHandler>();
+
         services.AddScoped<ILetterService, LetterService>();
         services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IUserService, UserService>();

@@ -1,4 +1,5 @@
-﻿using PingenApiNet.Services.Connectors;
+﻿using System.Net.Http;
+using PingenApiNet.Services.Connectors;
 
 namespace PingenApiNet.Tests;
 
@@ -52,7 +53,7 @@ public abstract class TestBase
     /// <exception cref="InvalidOperationException"></exception>
     protected PingenApiClient CreateClient()
     {
-        var connectionHandler = new PingenConnectionHandler(_pingenConfiguration!);
+        var connectionHandler = new PingenConnectionHandler(_pingenConfiguration!, new HttpClient());
 
         return new(
             connectionHandler,
