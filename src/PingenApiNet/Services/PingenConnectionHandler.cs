@@ -52,9 +52,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     private readonly IPingenConfiguration _configuration;
 
     /// <summary>
-    /// Holds the http client with some basic settings, to be used for all connectors
+    /// Pingen http clients
     /// </summary>
-    private static HttpClient? _client;
+    private readonly PingenHttpClients _httpClients;
 
     /// <summary>
     /// The organisation ID to use for all request at /organisations/{organisationId}/*
@@ -80,25 +80,15 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// Initializes a new instance of the <see cref="PingenConnectionHandler"/> class.
     /// </summary>
     /// <param name="configuration"></param>
-    public PingenConnectionHandler(IPingenConfiguration configuration)
+    /// <param name="httpClients"></param>
+    public PingenConnectionHandler(IPingenConfiguration configuration, PingenHttpClients httpClients)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(configuration.BaseUri);
         ArgumentException.ThrowIfNullOrWhiteSpace(configuration.IdentityUri);
 
-        // Configure
-        _configuration = configuration;
-        _organisationId = configuration.DefaultOrganisationId;
-
-        // Normalize base urls
-        if (!_configuration.BaseUri.EndsWith('/'))
-            _configuration.BaseUri += '/';
-
-        if (!_configuration.IdentityUri.EndsWith('/'))
-            _configuration.IdentityUri += '/';
-
-        // Configure http client
-        _client ??= new(new HttpClientHandler { AllowAutoRedirect = false });
-        _client.BaseAddress = new(_configuration.BaseUri);
+        _configuration = configuration.Normalize();
+        _organisationId = _configuration.DefaultOrganisationId;
+        _httpClients = httpClients;
 
         // Try authorize when static access token is set
         TryAuthorizeHttpClient();
@@ -150,13 +140,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (!_isEnteredAuthenticationSemaphore)
             throw new InvalidOperationException("Login is not allowed without entering the authentication semaphore");
 
-        // Create client and set header
-        using var identityClient = new HttpClient();
-        identityClient.DefaultRequestHeaders.Accept.Clear();
-        identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
-
         // Send request and validate
-        var response = await identityClient.PostAsync($"{_configuration.IdentityUri}auth/access-tokens", new FormUrlEncodedContent([
+        var response = await _httpClients.Identity.PostAsync("auth/access-tokens", new FormUrlEncodedContent([
             new("grant_type", "client_credentials"),
             new("client_id", _configuration.ClientId),
             new("client_secret", _configuration.ClientSecret)
@@ -186,14 +171,12 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <summary>
     /// Set authorization to http client
     /// </summary>
-    private static bool TryAuthorizeHttpClient()
+    private bool TryAuthorizeHttpClient()
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         if (!IsAuthorized())
             return false;
 
-        _client.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken!.Token);
+        _httpClients.Api.DefaultRequestHeaders.Authorization = new("Bearer", _accessToken!.Token);
         return true;
     }
 
@@ -206,57 +189,48 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
+        return await GetApiResult<TResult>(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
+        return await GetApiResult(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
     }
 
     /// <inheritdoc />
     public async Task<ApiResult<TResult>> PostAsync<TResult, TPost>(string requestPath, TPost dataPost, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPost : IDataPost
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        var res = await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, dataPost, null, idempotencyKey), cancellationToken);
-        return await GetApiResult<TResult>(res);
+        return await GetApiResult<TResult>(await _httpClients.Api.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Post, requestPath, dataPost, null, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc />
     public async Task<ApiResult> DeleteAsync(string requestPath, [Optional] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath), cancellationToken));
+        return await GetApiResult(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Delete, requestPath), cancellationToken));
     }
 
     /// <inheritdoc cref="PatchAsync" />
     public async Task<ApiResult> PatchAsync(string requestPath, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        return await GetApiResult(await _client.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, null, idempotencyKey), cancellationToken));
+        return await GetApiResult(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Patch, requestPath, null, idempotencyKey), cancellationToken));
     }
 
     /// <inheritdoc cref="PatchAsync{TResult,TPost}" />
     public async Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         await SetOrUpdateAccessToken();
-        return await GetApiResult<TResult>(await _client.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, data, null, idempotencyKey), cancellationToken));
+        return await GetApiResult<TResult>(await _httpClients.Api.SendAsync(GetHttpRequestMessageWithBody(HttpMethod.Patch, requestPath, data, null, idempotencyKey), cancellationToken));
     }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> SendExternalRequestAsync(HttpRequestMessage request, [Optional] CancellationToken cancellationToken) =>
+        await _httpClients.External.SendAsync(request, cancellationToken);
 
     /// <summary>
     /// Get http request message to send to the API (with body as json from data with type T)
@@ -288,14 +262,12 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <returns></returns>
     private HttpRequestMessage GetHttpRequestMessage(HttpMethod httpMethod, string requestPath, [Optional] ApiRequest? apiRequest, [Optional] string? idempotencyKey)
     {
-        ArgumentNullException.ThrowIfNull(_client);
-
         if (string.IsNullOrWhiteSpace(_organisationId))
             throw new InvalidOperationException("Organisation ID has not been set");
 
         var httpRequestMessage = new HttpRequestMessage { Method = httpMethod };
 
-        var uriBuilder = new UriBuilder(new Uri(_client.BaseAddress!,
+        var uriBuilder = new UriBuilder(new Uri(_httpClients.Api.BaseAddress!,
             Array.Exists(NonOrganisationEndpoints, requestPath.StartsWith)
                 ? requestPath
                 : $"{OrganisationsEndpoints.Single(_organisationId)}/{requestPath}"));
@@ -471,12 +443,5 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
                 ? values.First()
                 : string.Empty
         };
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _client?.Dispose();
-        _client = null;
     }
 }

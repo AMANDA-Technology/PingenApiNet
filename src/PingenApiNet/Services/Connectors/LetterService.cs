@@ -44,8 +44,6 @@ namespace PingenApiNet.Services.Connectors;
 /// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.ILetterService" />
 public sealed class LetterService : ConnectorService, ILetterService
 {
-    private static readonly HttpClient FilesClient = new();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LetterService"/> class.
     /// </summary>
@@ -112,7 +110,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<Stream> DownloadFileContent(Uri fileUrl, [Optional] CancellationToken cancellationToken)
     {
-        var fileContentResponse = await FilesClient.GetAsync(fileUrl, cancellationToken);
+        var fileContentResponse = await ConnectionHandler.SendExternalRequestAsync(new(HttpMethod.Get, fileUrl), cancellationToken);
         if (!fileContentResponse.IsSuccessStatusCode)
         {
             var errorContent = await fileContentResponse.Content.ReadAsStringAsync(cancellationToken);

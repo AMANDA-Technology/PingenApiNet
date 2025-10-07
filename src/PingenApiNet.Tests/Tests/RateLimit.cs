@@ -44,7 +44,7 @@ public class RateLimit : TestBase
             ParallelDelays(10, 2), cts.Token, async (delay, cancellationToken) =>
             {
                 var lastRemaining = int.MaxValue;
-                using var client = CreateClient();
+                var client = CreateClient();
 
                 while (!cancellationToken.IsCancellationRequested)
                 {

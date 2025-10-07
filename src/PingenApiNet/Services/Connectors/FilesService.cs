@@ -37,8 +37,6 @@ namespace PingenApiNet.Services.Connectors;
 /// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.IFilesService" />
 public sealed class FilesService : ConnectorService, IFilesService
 {
-    private static readonly HttpClient FilesClient = new();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FilesService"/> class.
     /// </summary>
@@ -56,6 +54,9 @@ public sealed class FilesService : ConnectorService, IFilesService
     /// <inheritdoc />
     public async Task<bool> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken)
     {
-        return (await FilesClient.PutAsync(fileUploadData.Attributes.Url, new StreamContent(data), cancellationToken)).IsSuccessStatusCode;
+        return (await ConnectionHandler.SendExternalRequestAsync(new(HttpMethod.Put, fileUploadData.Attributes.Url)
+        {
+            Content = new StreamContent(data)
+        }, cancellationToken)).IsSuccessStatusCode;
     }
 }

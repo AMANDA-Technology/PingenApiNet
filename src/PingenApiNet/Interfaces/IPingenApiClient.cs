@@ -31,7 +31,7 @@ namespace PingenApiNet.Interfaces;
 /// <summary>
 /// Connector service to call Pingen REST API. <see href="https://api.pingen.com/documentation">API Doc</see>
 /// </summary>
-public interface IPingenApiClient : IDisposable
+public interface IPingenApiClient
 {
     /// <summary>
     /// Change the organisation ID to use for upcoming requests

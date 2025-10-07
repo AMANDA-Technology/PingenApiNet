@@ -32,7 +32,7 @@ namespace PingenApiNet.Interfaces;
 /// <summary>
 /// Connection handler to call Pingen REST API
 /// </summary>
-public interface IPingenConnectionHandler : IDisposable
+public interface IPingenConnectionHandler
 {
     /// <summary>
     /// Change the organisation ID to use for upcoming requests
@@ -99,4 +99,12 @@ public interface IPingenConnectionHandler : IDisposable
     /// <typeparam name="TPatch"></typeparam>
     /// <returns></returns>
     public Task<ApiResult<TResult>> PatchAsync<TResult, TPatch>(string requestPath, TPatch data, [Optional] string? idempotencyKey, [Optional] CancellationToken cancellationToken) where TResult : IDataResult where TPatch : IDataPatch;
+
+    /// <summary>
+    /// Send an external request. This is not an API call, but a request to an absolute URL without authentication or other pre-configured headers.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<HttpResponseMessage> SendExternalRequestAsync(HttpRequestMessage request, [Optional] CancellationToken cancellationToken);
 }

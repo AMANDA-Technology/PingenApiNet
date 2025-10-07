@@ -37,7 +37,7 @@ namespace PingenApiNet.AspNetCore;
 public static class PingenServiceCollection
 {
     /// <summary>
-    /// Adds the configuration, handler and rest service to the services
+    /// Adds the configuration, handler and services to the service collection.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="baseUri"></param>
@@ -59,7 +59,7 @@ public static class PingenServiceCollection
     }
 
     /// <summary>
-    /// Adds the configuration, handler and rest service to the services
+    /// Adds the configuration, handler and services to the service collection.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="pingenConfiguration"></param>
@@ -68,7 +68,19 @@ public static class PingenServiceCollection
     public static IServiceCollection AddPingenServices(this IServiceCollection services, IPingenConfiguration pingenConfiguration)
     {
         services.AddSingleton(pingenConfiguration);
-        services.AddSingleton<IPingenConnectionHandler, PingenConnectionHandler>();
+        services.AddHttpClient(PingenHttpClients.Names.Identity, identityClient =>
+        {
+            identityClient.BaseAddress = new(pingenConfiguration.IdentityUri);
+            identityClient.DefaultRequestHeaders.Accept.Clear();
+            identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
+        });
+        services.AddHttpClient(PingenHttpClients.Names.Api, apiClient =>
+        {
+            apiClient.BaseAddress = new(pingenConfiguration.BaseUri);
+        }).ConfigurePrimaryHttpMessageHandler(p => new HttpClientHandler { AllowAutoRedirect = false });
+        services.AddHttpClient(PingenHttpClients.Names.Files);
+        services.AddScoped<PingenHttpClients>(sp => new(sp.GetRequiredService<IHttpClientFactory>()));
+        services.AddScoped<IPingenConnectionHandler, PingenConnectionHandler>();
         services.AddScoped<ILetterService, LetterService>();
         services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IUserService, UserService>();

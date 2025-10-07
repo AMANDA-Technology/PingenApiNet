@@ -61,3 +61,24 @@ public interface IPingenConfiguration
     /// </summary>
     public Dictionary<string, string>? WebhookSigningKeys { get; set; }
 }
+
+/// <summary>
+/// Extension methods for <see cref="IPingenConfiguration"/>.
+/// </summary>
+public static class PingenConfigurationExtension
+{
+    /// <summary>
+    /// Normalize configuration.
+    /// </summary>
+    /// <param name="configuration"></param>
+    public static IPingenConfiguration Normalize(this IPingenConfiguration configuration)
+    {
+        if (!configuration.BaseUri.EndsWith('/'))
+            configuration.BaseUri += '/';
+
+        if (!configuration.IdentityUri.EndsWith('/'))
+            configuration.IdentityUri += '/';
+
+        return configuration;
+    }
+}

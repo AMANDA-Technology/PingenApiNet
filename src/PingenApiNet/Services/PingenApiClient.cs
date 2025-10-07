@@ -39,7 +39,8 @@ public sealed class PingenApiClient : IPingenApiClient
     /// <summary>
     /// Initializes a new instance of the <see cref="PingenApiClient"/> class.
     /// </summary>
-    public PingenApiClient(IPingenConnectionHandler pingenConnectionHandler,
+    public PingenApiClient(
+        IPingenConnectionHandler pingenConnectionHandler,
         ILetterService letterService,
         IBatchService batchService,
         IUserService userService,
@@ -85,10 +86,4 @@ public sealed class PingenApiClient : IPingenApiClient
 
     /// <inheritdoc />
     public IDistributionService Distributions { get; set; }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _pingenConnectionHandler.Dispose();
-    }
 }

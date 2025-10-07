@@ -42,7 +42,7 @@ public abstract class TestBase
     [TearDown]
     public void Teardown()
     {
-        PingenApiClient?.Dispose();
+        // Nothing to do here
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public abstract class TestBase
     /// <exception cref="InvalidOperationException"></exception>
     protected PingenApiClient CreateClient()
     {
-        var connectionHandler = new PingenConnectionHandler(_pingenConfiguration!);
+        var connectionHandler = new PingenConnectionHandler(_pingenConfiguration!, PingenHttpClients.Create(_pingenConfiguration!));
 
         return new(
             connectionHandler,
