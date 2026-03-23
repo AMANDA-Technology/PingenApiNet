@@ -48,7 +48,7 @@ public sealed class FilesService : ConnectorService, IFilesService
     /// <inheritdoc />
     public async Task<ApiResult<SingleResult<FileUploadData>>> GetPath([Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: FileUploadEndpoints.FileUpload, cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<FileUploadData>>(requestPath: FileUploadEndpoints.FileUpload, apiPagingRequest: null, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

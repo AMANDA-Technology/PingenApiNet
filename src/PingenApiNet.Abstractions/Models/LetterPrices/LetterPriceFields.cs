@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,26 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Enums.Api;
-
-namespace PingenApiNet.Abstractions.Models.Api;
+namespace PingenApiNet.Abstractions.Models.LetterPrices;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Available sparse fieldset field names for the LetterPrice resource.
+/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
+/// to request only specific attributes in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
 /// </summary>
-public record ApiRequest
+public static class LetterPriceFields
 {
-    /// <summary>
-    /// Sparse fieldsets allow clients to request only specific fields in the response, reducing payload size.
-    /// Each entry maps a <see cref="PingenApiDataType"/> to the field names to include.
-    /// Serialized as <c>fields[type]=field1,field2</c> query parameters per JSON:API specification.
-    /// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
-    /// </summary>
-    public IEnumerable<KeyValuePair<PingenApiDataType, IEnumerable<string>>>? SparseFieldsets { get; init; }
+    /// <summary>Currency of the price</summary>
+    public const string Currency = "currency";
 
-    /// <summary>
-    /// Enumerable of relationship names to include in the response (JSON:API include parameter).
-    /// <see href="https://api.pingen.com/documentation#section/Advanced/Including-relationships">API Doc - Including relationships</see>
-    /// </summary>
-    public IEnumerable<string>? Include { get; init; }
+    /// <summary>Price amount</summary>
+    public const string Price = "price";
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,26 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using PingenApiNet.Abstractions.Enums.Api;
-
-namespace PingenApiNet.Abstractions.Models.Api;
+namespace PingenApiNet.Abstractions.Models.Users;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Available sparse fieldset field names for the User resource.
+/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
+/// to request only specific attributes in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
 /// </summary>
-public record ApiRequest
+public static class UserFields
 {
-    /// <summary>
-    /// Sparse fieldsets allow clients to request only specific fields in the response, reducing payload size.
-    /// Each entry maps a <see cref="PingenApiDataType"/> to the field names to include.
-    /// Serialized as <c>fields[type]=field1,field2</c> query parameters per JSON:API specification.
-    /// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
-    /// </summary>
-    public IEnumerable<KeyValuePair<PingenApiDataType, IEnumerable<string>>>? SparseFieldsets { get; init; }
+    /// <summary>User's email address</summary>
+    public const string Email = "email";
 
-    /// <summary>
-    /// Enumerable of relationship names to include in the response (JSON:API include parameter).
-    /// <see href="https://api.pingen.com/documentation#section/Advanced/Including-relationships">API Doc - Including relationships</see>
-    /// </summary>
-    public IEnumerable<string>? Include { get; init; }
+    /// <summary>User's first name</summary>
+    public const string FirstName = "first_name";
+
+    /// <summary>User's last name</summary>
+    public const string LastName = "last_name";
+
+    /// <summary>User account status</summary>
+    public const string Status = "status";
+
+    /// <summary>User's preferred language code</summary>
+    public const string Language = "language";
+
+    /// <summary>Timestamp when the user was created</summary>
+    public const string CreatedAt = "created_at";
+
+    /// <summary>Timestamp when the user was last updated</summary>
+    public const string UpdatedAt = "updated_at";
 }

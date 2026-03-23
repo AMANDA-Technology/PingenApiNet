@@ -68,9 +68,10 @@ public interface IWebhookService
     /// Get details of a webhook. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.show">API Doc - Webhooks show</see>
     /// </summary>
     /// <param name="webhookId">ID of the webhook to get</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API (e.g. sparse fieldsets)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<WebhookData>>> Get(string webhookId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<WebhookData>>> Get(string webhookId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Delete a webhook. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks/operation/webhooks.destroy">API Doc - Webhooks delete</see>

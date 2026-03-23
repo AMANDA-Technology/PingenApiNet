@@ -51,6 +51,16 @@ public interface IPingenConnectionHandler
     public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
 
     /// <summary>
+    /// Base GET request with base API request (e.g. for sparse fieldsets on single-resource endpoints)
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <typeparam name="TResult"></typeparam>
+    /// <returns></returns>
+    public Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult;
+
+    /// <summary>
     /// Base GET request
     /// </summary>
     /// <param name="requestPath">Relative request path</param>
@@ -58,6 +68,15 @@ public interface IPingenConnectionHandler
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
     public Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Base GET request with base API request (e.g. for sparse fieldsets on single-resource endpoints)
+    /// </summary>
+    /// <param name="requestPath">Relative request path</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API</param>
+    /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
+    /// <returns></returns>
+    public Task<ApiResult> GetAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Base POST request with payload

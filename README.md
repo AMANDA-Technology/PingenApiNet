@@ -220,3 +220,47 @@ var result = await _pingenApiClient.Letters.GetPage(new ApiPagingRequest
 | `LetterEventIncludes` | `Letter` |
 | `WebhookIncludes` | `Organisation` |
 | `WebhookEventIncludes` | `Organisation`, `Letter`, `Event` |
+
+#### 8. Using sparse fieldsets
+
+Reduce response payload size by requesting only the specific fields you need using the `SparseFieldsets` property on `ApiRequest` / `ApiPagingRequest`. Each entry maps a `PingenApiDataType` to the list of field names to include. Use the static `*Fields` helper classes to discover available fields per resource type.
+
+```c#
+// Fetch a single page of letters, returning only status and created_at
+var result = await _pingenApiClient.Letters.GetPage(new ApiPagingRequest
+{
+    SparseFieldsets =
+    [
+        new(PingenApiDataType.letters, [LetterFields.Status, LetterFields.CreatedAt])
+    ]
+});
+```
+
+Combine sparse fieldsets with the include parameter to also control fields on sideloaded relationships:
+
+```c#
+var result = await _pingenApiClient.Letters.GetPage(new ApiPagingRequest
+{
+    SparseFieldsets =
+    [
+        new(PingenApiDataType.letters, [LetterFields.Status, LetterFields.Address, LetterFields.CreatedAt]),
+        new(PingenApiDataType.organisations, [OrganisationFields.Name])
+    ],
+    Include = [LetterIncludes.Organisation]
+});
+```
+
+**Available field helpers:**
+
+| Class | Resource type | Key constants |
+|---|---|---|
+| `LetterFields` | `PingenApiDataType.letters` | `Status`, `FileOriginalName`, `FilePages`, `Address`, `AddressPosition`, `Country`, `DeliveryProduct`, `PrintMode`, `PrintSpectrum`, `PriceCurrency`, `PriceValue`, `PaperTypes`, `Fonts`, `TrackingNumber`, `SubmittedAt`, `CreatedAt`, `UpdatedAt` |
+| `BatchFields` | `PingenApiDataType.batches` | `Name`, `Icon`, `Status`, `FileOriginalName`, `LetterCount`, `AddressPosition`, `PrintMode`, `PrintSpectrum`, `PriceCurrency`, `PriceValue`, `SubmittedAt`, `CreatedAt`, `UpdatedAt` |
+| `OrganisationFields` | `PingenApiDataType.organisations` | `Name`, `Status`, `Plan`, `BillingMode`, `BillingCurrency`, `BillingBalance`, `DefaultCountry`, `DefaultAddressPosition`, `DataRetentionAddresses`, `DataRetentionPdf`, `Color`, `CreatedAt`, `UpdatedAt` |
+| `UserFields` | `PingenApiDataType.users` | `Email`, `FirstName`, `LastName`, `Status`, `Language`, `CreatedAt`, `UpdatedAt` |
+| `UserAssociationFields` | `PingenApiDataType.associations` | `Role`, `Status`, `CreatedAt`, `UpdatedAt` |
+| `WebhookFields` | `PingenApiDataType.webhooks` | `EventCategory`, `Url`, `SigningKey` |
+| `LetterEventFields` | `PingenApiDataType.letters_events` | `Code`, `Name`, `Producer`, `Location`, `HasImage`, `Data`, `EmittedAt`, `CreatedAt`, `UpdatedAt` |
+| `WebhookEventFields` | `PingenApiDataType.webhook_issues` / `webhook_sent` / `webhook_undeliverable` | `Reason`, `Url`, `CreatedAt` |
+| `DeliveryProductFields` | `PingenApiDataType.delivery_products` | `Countries`, `Name`, `FullName`, `DeliveryTimeDays`, `Features`, `PriceCurrency`, `PriceStartingFrom` |
+| `LetterPriceFields` | `PingenApiDataType.letter_price_calculator` | `Currency`, `Price` |

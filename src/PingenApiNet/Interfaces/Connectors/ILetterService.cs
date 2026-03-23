@@ -94,9 +94,10 @@ public interface ILetterService : IConnectorService
     /// Get details of a letter. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letters show</see>
     /// </summary>
     /// <param name="letterId">ID of the letter to get</param>
+    /// <param name="apiRequest">Optional, Request meta information to send to the API (e.g. sparse fieldsets)</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
     /// <returns></returns>
-    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] CancellationToken cancellationToken);
+    public Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken);
 
     /// <summary>
     /// Delete a letter. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.delete">API Doc - Letters delete</see>

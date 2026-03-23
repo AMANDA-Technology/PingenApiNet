@@ -48,9 +48,9 @@ public sealed class UserService : ConnectorService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<UserDataDetailed>>> Get([Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<UserDataDetailed>>> Get([Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<UserDataDetailed>>(UsersEndpoints.Root, cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<UserDataDetailed>>(UsersEndpoints.Root, apiRequest: apiRequest, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

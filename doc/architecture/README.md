@@ -11,7 +11,7 @@ PingenApiNet is a .NET 9 API client library published as three NuGet packages. I
 
 - **Library, not application** — there is no executable entry point. All packages are consumed by downstream ASP.NET Core applications or other .NET services.
 - **Zero-dependency abstractions** — `PingenApiNet.Abstractions` has no NuGet dependencies, making it safe to reference in domain projects without pulling in HTTP or DI concerns.
-- **Integration and offline unit tests** — offline tests verify model correctness and helper constants without API calls; integration tests call the real staging API and require environment variables with valid credentials.
+- **Integration-only tests** — no unit tests exist. Tests call the real staging API and require environment variables with valid credentials.
 - **OAuth 2.0 client credentials flow** — token is acquired and refreshed automatically; callers never handle bearer tokens directly.
 
 ## Tech Stack
