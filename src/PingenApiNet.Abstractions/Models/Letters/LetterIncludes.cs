@@ -39,7 +39,7 @@ public static class LetterIncludes
     public const string Organisation = "organisation";
 
     /// <summary>
-    /// Include the events associated with the letter.
+    /// Include the batch the letter belongs to.
     /// </summary>
-    public const string Events = "events";
+    public const string Batch = "batch";
 }

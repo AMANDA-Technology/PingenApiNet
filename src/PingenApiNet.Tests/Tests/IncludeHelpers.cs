@@ -27,11 +27,8 @@ using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Batches;
 using PingenApiNet.Abstractions.Models.LetterEvents;
 using PingenApiNet.Abstractions.Models.Letters;
-using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.UserAssociations;
-using PingenApiNet.Abstractions.Models.Users;
 using PingenApiNet.Abstractions.Models.Webhooks;
-using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 namespace PingenApiNet.Tests.Tests;
 
@@ -49,7 +46,7 @@ public class IncludeHelpers
         Assert.Multiple(() =>
         {
             Assert.That(LetterIncludes.Organisation, Is.EqualTo("organisation"));
-            Assert.That(LetterIncludes.Events, Is.EqualTo("events"));
+            Assert.That(LetterIncludes.Batch, Is.EqualTo("batch"));
         });
     }
 
@@ -59,33 +56,7 @@ public class IncludeHelpers
     [Test]
     public void BatchIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.Multiple(() =>
-        {
-            Assert.That(BatchIncludes.Organisation, Is.EqualTo("organisation"));
-            Assert.That(BatchIncludes.Events, Is.EqualTo("events"));
-        });
-    }
-
-    /// <summary>
-    /// Verifies OrganisationIncludes constant values match relationship JSON property names
-    /// </summary>
-    [Test]
-    public void OrganisationIncludes_ConstantsMatchRelationshipNames()
-    {
-        Assert.That(OrganisationIncludes.Associations, Is.EqualTo("associations"));
-    }
-
-    /// <summary>
-    /// Verifies UserIncludes constant values match relationship JSON property names
-    /// </summary>
-    [Test]
-    public void UserIncludes_ConstantsMatchRelationshipNames()
-    {
-        Assert.Multiple(() =>
-        {
-            Assert.That(UserIncludes.Associations, Is.EqualTo("associations"));
-            Assert.That(UserIncludes.Notifications, Is.EqualTo("notifications"));
-        });
+        Assert.That(BatchIncludes.Organisation, Is.EqualTo("organisation"));
     }
 
     /// <summary>
@@ -116,20 +87,6 @@ public class IncludeHelpers
     }
 
     /// <summary>
-    /// Verifies WebhookEventIncludes constant values match relationship JSON property names
-    /// </summary>
-    [Test]
-    public void WebhookEventIncludes_ConstantsMatchRelationshipNames()
-    {
-        Assert.Multiple(() =>
-        {
-            Assert.That(WebhookEventIncludes.Organisation, Is.EqualTo("organisation"));
-            Assert.That(WebhookEventIncludes.Letter, Is.EqualTo("letter"));
-            Assert.That(WebhookEventIncludes.Event, Is.EqualTo("event"));
-        });
-    }
-
-    /// <summary>
     /// Verifies that include helper constants can be used with ApiRequest.Include
     /// </summary>
     [Test]
@@ -137,13 +94,13 @@ public class IncludeHelpers
     {
         var request = new ApiRequest
         {
-            Include = [LetterIncludes.Organisation, LetterIncludes.Events]
+            Include = [LetterIncludes.Organisation, LetterIncludes.Batch]
         };
 
         Assert.Multiple(() =>
         {
-            Assert.That(request.Include, Is.EquivalentTo(new[] { "organisation", "events" }));
-            Assert.That(string.Join(',', request.Include!), Is.EqualTo("organisation,events"));
+            Assert.That(request.Include, Is.EquivalentTo(new[] { "organisation", "batch" }));
+            Assert.That(string.Join(',', request.Include!), Is.EqualTo("organisation,batch"));
         });
     }
 }

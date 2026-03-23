@@ -36,9 +36,4 @@ public static class BatchIncludes
     /// Include the organisation that owns the batch.
     /// </summary>
     public const string Organisation = "organisation";
-
-    /// <summary>
-    /// Include the events associated with the batch.
-    /// </summary>
-    public const string Events = "events";
 }
