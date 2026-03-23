@@ -52,23 +52,23 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(LetterFields.Status, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Status)));
-            Assert.That(LetterFields.FileOriginalName, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FileOriginalName)));
-            Assert.That(LetterFields.FilePages, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FilePages)));
-            Assert.That(LetterFields.Address, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Address)));
-            Assert.That(LetterFields.AddressPosition, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.AddressPosition)));
-            Assert.That(LetterFields.Country, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Country)));
-            Assert.That(LetterFields.DeliveryProduct, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.DeliveryProduct)));
-            Assert.That(LetterFields.PrintMode, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintMode)));
-            Assert.That(LetterFields.PrintSpectrum, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintSpectrum)));
-            Assert.That(LetterFields.PriceCurrency, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceCurrency)));
-            Assert.That(LetterFields.PriceValue, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceValue)));
-            Assert.That(LetterFields.PaperTypes, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PaperTypes)));
-            Assert.That(LetterFields.Fonts, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Fonts)));
-            Assert.That(LetterFields.TrackingNumber, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.TrackingNumber)));
-            Assert.That(LetterFields.SubmittedAt, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.SubmittedAt)));
-            Assert.That(LetterFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(LetterFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt)));
+            LetterFields.Status.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Status));
+            LetterFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FileOriginalName));
+            LetterFields.FilePages.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FilePages));
+            LetterFields.Address.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Address));
+            LetterFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.AddressPosition));
+            LetterFields.Country.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Country));
+            LetterFields.DeliveryProduct.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.DeliveryProduct));
+            LetterFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintMode));
+            LetterFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintSpectrum));
+            LetterFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceCurrency));
+            LetterFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceValue));
+            LetterFields.PaperTypes.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PaperTypes));
+            LetterFields.Fonts.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Fonts));
+            LetterFields.TrackingNumber.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.TrackingNumber));
+            LetterFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.SubmittedAt));
+            LetterFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.CreatedAt));
+            LetterFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -80,19 +80,19 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(BatchFields.Name, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Name)));
-            Assert.That(BatchFields.Icon, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Icon)));
-            Assert.That(BatchFields.Status, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Status)));
-            Assert.That(BatchFields.FileOriginalName, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.FileOriginalName)));
-            Assert.That(BatchFields.LetterCount, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.LetterCount)));
-            Assert.That(BatchFields.AddressPosition, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.AddressPosition)));
-            Assert.That(BatchFields.PrintMode, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintMode)));
-            Assert.That(BatchFields.PrintSpectrum, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintSpectrum)));
-            Assert.That(BatchFields.PriceCurrency, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceCurrency)));
-            Assert.That(BatchFields.PriceValue, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceValue)));
-            Assert.That(BatchFields.SubmittedAt, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.SubmittedAt)));
-            Assert.That(BatchFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(BatchFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt)));
+            BatchFields.Name.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Name));
+            BatchFields.Icon.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Icon));
+            BatchFields.Status.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Status));
+            BatchFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.FileOriginalName));
+            BatchFields.LetterCount.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.LetterCount));
+            BatchFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.AddressPosition));
+            BatchFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintMode));
+            BatchFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintSpectrum));
+            BatchFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceCurrency));
+            BatchFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceValue));
+            BatchFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.SubmittedAt));
+            BatchFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.CreatedAt));
+            BatchFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -104,19 +104,19 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(OrganisationFields.Name, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Name)));
-            Assert.That(OrganisationFields.Status, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Status)));
-            Assert.That(OrganisationFields.Plan, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Plan)));
-            Assert.That(OrganisationFields.BillingMode, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingMode)));
-            Assert.That(OrganisationFields.BillingCurrency, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingCurrency)));
-            Assert.That(OrganisationFields.BillingBalance, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingBalance)));
-            Assert.That(OrganisationFields.DefaultCountry, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultCountry)));
-            Assert.That(OrganisationFields.DefaultAddressPosition, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultAddressPosition)));
-            Assert.That(OrganisationFields.DataRetentionAddresses, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionAddresses)));
-            Assert.That(OrganisationFields.DataRetentionPdf, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionPdf)));
-            Assert.That(OrganisationFields.Color, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Color)));
-            Assert.That(OrganisationFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(OrganisationFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt)));
+            OrganisationFields.Name.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Name));
+            OrganisationFields.Status.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Status));
+            OrganisationFields.Plan.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Plan));
+            OrganisationFields.BillingMode.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingMode));
+            OrganisationFields.BillingCurrency.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingCurrency));
+            OrganisationFields.BillingBalance.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingBalance));
+            OrganisationFields.DefaultCountry.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultCountry));
+            OrganisationFields.DefaultAddressPosition.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultAddressPosition));
+            OrganisationFields.DataRetentionAddresses.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionAddresses));
+            OrganisationFields.DataRetentionPdf.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionPdf));
+            OrganisationFields.Color.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Color));
+            OrganisationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.CreatedAt));
+            OrganisationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -128,13 +128,13 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(UserFields.Email, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Email)));
-            Assert.That(UserFields.FirstName, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.FirstName)));
-            Assert.That(UserFields.LastName, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.LastName)));
-            Assert.That(UserFields.Status, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Status)));
-            Assert.That(UserFields.Language, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Language)));
-            Assert.That(UserFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(UserFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt)));
+            UserFields.Email.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Email));
+            UserFields.FirstName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.FirstName));
+            UserFields.LastName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.LastName));
+            UserFields.Status.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Status));
+            UserFields.Language.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Language));
+            UserFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.CreatedAt));
+            UserFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -146,10 +146,10 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(UserAssociationFields.Role, Is.EqualTo(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Role)));
-            Assert.That(UserAssociationFields.Status, Is.EqualTo(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Status)));
-            Assert.That(UserAssociationFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(UserAssociationFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.UpdatedAt)));
+            UserAssociationFields.Role.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Role));
+            UserAssociationFields.Status.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Status));
+            UserAssociationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.CreatedAt));
+            UserAssociationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -161,9 +161,9 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(WebhookFields.EventCategory, Is.EqualTo(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.EventCategory)));
-            Assert.That(WebhookFields.Url, Is.EqualTo(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.Url)));
-            Assert.That(WebhookFields.SigningKey, Is.EqualTo(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.SigningKey)));
+            WebhookFields.EventCategory.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.EventCategory));
+            WebhookFields.Url.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.Url));
+            WebhookFields.SigningKey.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.SigningKey));
         });
     }
 
@@ -175,15 +175,15 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(LetterEventFields.Code, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Code)));
-            Assert.That(LetterEventFields.Name, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Name)));
-            Assert.That(LetterEventFields.Producer, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Producer)));
-            Assert.That(LetterEventFields.Location, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Location)));
-            Assert.That(LetterEventFields.HasImage, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.HasImage)));
-            Assert.That(LetterEventFields.Data, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Data)));
-            Assert.That(LetterEventFields.EmittedAt, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.EmittedAt)));
-            Assert.That(LetterEventFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.CreatedAt)));
-            Assert.That(LetterEventFields.UpdatedAt, Is.EqualTo(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.UpdatedAt)));
+            LetterEventFields.Code.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Code));
+            LetterEventFields.Name.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Name));
+            LetterEventFields.Producer.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Producer));
+            LetterEventFields.Location.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Location));
+            LetterEventFields.HasImage.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.HasImage));
+            LetterEventFields.Data.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Data));
+            LetterEventFields.EmittedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.EmittedAt));
+            LetterEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.CreatedAt));
+            LetterEventFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.UpdatedAt));
         });
     }
 
@@ -195,9 +195,9 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(WebhookEventFields.Reason, Is.EqualTo(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason)));
-            Assert.That(WebhookEventFields.Url, Is.EqualTo(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url)));
-            Assert.That(WebhookEventFields.CreatedAt, Is.EqualTo(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt)));
+            WebhookEventFields.Reason.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason));
+            WebhookEventFields.Url.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url));
+            WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt));
         });
     }
 
@@ -209,13 +209,13 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(DeliveryProductFields.Countries, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Countries)));
-            Assert.That(DeliveryProductFields.Name, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Name)));
-            Assert.That(DeliveryProductFields.FullName, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.FullName)));
-            Assert.That(DeliveryProductFields.DeliveryTimeDays, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.DeliveryTimeDays)));
-            Assert.That(DeliveryProductFields.Features, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Features)));
-            Assert.That(DeliveryProductFields.PriceCurrency, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceCurrency)));
-            Assert.That(DeliveryProductFields.PriceStartingFrom, Is.EqualTo(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceStartingFrom)));
+            DeliveryProductFields.Countries.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Countries));
+            DeliveryProductFields.Name.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Name));
+            DeliveryProductFields.FullName.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.FullName));
+            DeliveryProductFields.DeliveryTimeDays.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.DeliveryTimeDays));
+            DeliveryProductFields.Features.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Features));
+            DeliveryProductFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceCurrency));
+            DeliveryProductFields.PriceStartingFrom.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceStartingFrom));
         });
     }
 
@@ -227,8 +227,8 @@ public class FieldHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(LetterPriceFields.Currency, Is.EqualTo(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Currency)));
-            Assert.That(LetterPriceFields.Price, Is.EqualTo(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Price)));
+            LetterPriceFields.Currency.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Currency));
+            LetterPriceFields.Price.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Price));
         });
     }
 
@@ -249,10 +249,10 @@ public class FieldHelpers
 
         Assert.Multiple(() =>
         {
-            Assert.That(request.SparseFieldsets, Is.Not.Null);
-            Assert.That(request.SparseFieldsets!.Count(), Is.EqualTo(2));
+            request.SparseFieldsets.ShouldNotBeNull();
+            request.SparseFieldsets!.Count().ShouldBe(2);
             var letterEntry = request.SparseFieldsets!.First(e => e.Key == PingenApiDataType.letters);
-            Assert.That(letterEntry.Value, Is.EquivalentTo(new[] { "status", "created_at" }));
+            letterEntry.Value.ShouldBe(new[] { "status", "created_at" }, ignoreOrder: true);
         });
     }
 
@@ -268,19 +268,19 @@ public class FieldHelpers
 
         Assert.Multiple(() =>
         {
-            Assert.That(letter, Is.Not.Null);
-            Assert.That(letter!.Status, Is.EqualTo("valid"));
-            Assert.That(letter.FileOriginalName, Is.Null);
-            Assert.That(letter.Address, Is.Null);
-            Assert.That(letter.AddressPosition, Is.Null);
-            Assert.That(letter.Country, Is.Null);
-            Assert.That(letter.DeliveryProduct, Is.Null);
-            Assert.That(letter.PrintMode, Is.Null);
-            Assert.That(letter.PrintSpectrum, Is.Null);
-            Assert.That(letter.PriceCurrency, Is.Null);
-            Assert.That(letter.PaperTypes, Is.Null);
-            Assert.That(letter.Fonts, Is.Null);
-            Assert.That(letter.TrackingNumber, Is.Null);
+            letter.ShouldNotBeNull();
+            letter!.Status.ShouldBe("valid");
+            letter.FileOriginalName.ShouldBeNull();
+            letter.Address.ShouldBeNull();
+            letter.AddressPosition.ShouldBeNull();
+            letter.Country.ShouldBeNull();
+            letter.DeliveryProduct.ShouldBeNull();
+            letter.PrintMode.ShouldBeNull();
+            letter.PrintSpectrum.ShouldBeNull();
+            letter.PriceCurrency.ShouldBeNull();
+            letter.PaperTypes.ShouldBeNull();
+            letter.Fonts.ShouldBeNull();
+            letter.TrackingNumber.ShouldBeNull();
         });
     }
 
@@ -296,12 +296,12 @@ public class FieldHelpers
 
         Assert.Multiple(() =>
         {
-            Assert.That(batch, Is.Not.Null);
-            Assert.That(batch!.Name, Is.EqualTo("test-batch"));
-            Assert.That(batch.Status, Is.EqualTo("created"));
-            Assert.That(batch.Icon, Is.Null);
-            Assert.That(batch.FileOriginalName, Is.Null);
-            Assert.That(batch.AddressPosition, Is.Null);
+            batch.ShouldNotBeNull();
+            batch!.Name.ShouldBe("test-batch");
+            batch.Status.ShouldBe("created");
+            batch.Icon.ShouldBeNull();
+            batch.FileOriginalName.ShouldBeNull();
+            batch.AddressPosition.ShouldBeNull();
         });
     }
 }

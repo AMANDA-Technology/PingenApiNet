@@ -48,8 +48,8 @@ public class SparseFieldsets
             }
         };
 
-        Assert.That(request.SparseFieldsets, Is.Not.Null);
-        Assert.That(request.SparseFieldsets!.Count(), Is.EqualTo(1));
+        request.SparseFieldsets.ShouldNotBeNull();
+        request.SparseFieldsets!.Count().ShouldBe(1);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class SparseFieldsets
     public void ApiRequest_SparseFieldsetsDefaultsToNull()
     {
         var request = new ApiRequest();
-        Assert.That(request.SparseFieldsets, Is.Null);
+        request.SparseFieldsets.ShouldBeNull();
     }
 
     /// <summary>
@@ -80,9 +80,9 @@ public class SparseFieldsets
 
         Assert.Multiple(() =>
         {
-            Assert.That(request.SparseFieldsets, Is.Not.Null);
-            Assert.That(request.SparseFieldsets!.Count(), Is.EqualTo(2));
-            Assert.That(request.PageLimit, Is.EqualTo(10));
+            request.SparseFieldsets.ShouldNotBeNull();
+            request.SparseFieldsets!.Count().ShouldBe(2);
+            request.PageLimit.ShouldBe(10);
         });
     }
 
@@ -94,11 +94,11 @@ public class SparseFieldsets
     {
         Assert.Multiple(() =>
         {
-            Assert.That(ApiQueryParameterNames.SparseFields(PingenApiDataType.letters), Is.EqualTo("fields[letters]"));
-            Assert.That(ApiQueryParameterNames.SparseFields(PingenApiDataType.organisations), Is.EqualTo("fields[organisations]"));
-            Assert.That(ApiQueryParameterNames.SparseFields(PingenApiDataType.webhooks), Is.EqualTo("fields[webhooks]"));
-            Assert.That(ApiQueryParameterNames.SparseFields(PingenApiDataType.batches), Is.EqualTo("fields[batches]"));
-            Assert.That(ApiQueryParameterNames.SparseFields(PingenApiDataType.users), Is.EqualTo("fields[users]"));
+            ApiQueryParameterNames.SparseFields(PingenApiDataType.letters).ShouldBe("fields[letters]");
+            ApiQueryParameterNames.SparseFields(PingenApiDataType.organisations).ShouldBe("fields[organisations]");
+            ApiQueryParameterNames.SparseFields(PingenApiDataType.webhooks).ShouldBe("fields[webhooks]");
+            ApiQueryParameterNames.SparseFields(PingenApiDataType.batches).ShouldBe("fields[batches]");
+            ApiQueryParameterNames.SparseFields(PingenApiDataType.users).ShouldBe("fields[users]");
         });
     }
 
@@ -118,13 +118,13 @@ public class SparseFieldsets
 
         var result = InvokeGetQueryParameters(apiRequest);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         var parameters = result!.ToList();
-        Assert.That(parameters, Has.Count.EqualTo(1));
+        parameters.Count.ShouldBe(1);
         Assert.Multiple(() =>
         {
-            Assert.That(parameters[0].Key, Is.EqualTo("fields[letters]"));
-            Assert.That(parameters[0].Value, Is.EqualTo("name,status"));
+            parameters[0].Key.ShouldBe("fields[letters]");
+            parameters[0].Value.ShouldBe("name,status");
         });
     }
 
@@ -145,15 +145,15 @@ public class SparseFieldsets
 
         var result = InvokeGetQueryParameters(apiRequest);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         var parameters = result!.ToList();
-        Assert.That(parameters, Has.Count.EqualTo(2));
+        parameters.Count.ShouldBe(2);
         Assert.Multiple(() =>
         {
-            Assert.That(parameters[0].Key, Is.EqualTo("fields[letters]"));
-            Assert.That(parameters[0].Value, Is.EqualTo("name,status"));
-            Assert.That(parameters[1].Key, Is.EqualTo("fields[organisations]"));
-            Assert.That(parameters[1].Value, Is.EqualTo("name"));
+            parameters[0].Key.ShouldBe("fields[letters]");
+            parameters[0].Value.ShouldBe("name,status");
+            parameters[1].Key.ShouldBe("fields[organisations]");
+            parameters[1].Value.ShouldBe("name");
         });
     }
 
@@ -167,9 +167,9 @@ public class SparseFieldsets
 
         var result = InvokeGetQueryParameters(apiRequest);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         var parameters = result!.ToList();
-        Assert.That(parameters, Has.Count.EqualTo(0));
+        parameters.Count.ShouldBe(0);
     }
 
     /// <summary>
@@ -185,9 +185,9 @@ public class SparseFieldsets
 
         var result = InvokeGetQueryParameters(apiRequest);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         var parameters = result!.ToList();
-        Assert.That(parameters, Has.Count.EqualTo(0));
+        parameters.Count.ShouldBe(0);
     }
 
     /// <summary>
@@ -209,15 +209,15 @@ public class SparseFieldsets
 
         var result = InvokeGetQueryParameters(apiPagingRequest);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         var parameters = result!.ToList();
-        Assert.That(parameters, Has.Count.GreaterThanOrEqualTo(3));
+        parameters.Count.ShouldBeGreaterThanOrEqualTo(3);
 
         var fieldsParam = parameters.First(p => p.Key.StartsWith("fields["));
         Assert.Multiple(() =>
         {
-            Assert.That(fieldsParam.Key, Is.EqualTo("fields[letters]"));
-            Assert.That(fieldsParam.Value, Is.EqualTo("name"));
+            fieldsParam.Key.ShouldBe("fields[letters]");
+            fieldsParam.Value.ShouldBe("name");
         });
     }
 
@@ -239,7 +239,7 @@ public class SparseFieldsets
                        && parameters[0].ParameterType == typeof(string)
                        && parameters[1].ParameterType == typeof(ApiRequest);
             });
-        Assert.That(genericMethod, Is.Not.Null, "GetAsync<TResult>(string, ApiRequest?, CancellationToken) should exist on IPingenConnectionHandler");
+        genericMethod.ShouldNotBeNull("GetAsync<TResult>(string, ApiRequest?, CancellationToken) should exist on IPingenConnectionHandler");
 
         // GetAsync(string, ApiRequest?, CancellationToken) should exist
         var nonGenericMethod = interfaceType.GetMethods()
@@ -251,7 +251,7 @@ public class SparseFieldsets
                        && parameters[0].ParameterType == typeof(string)
                        && parameters[1].ParameterType == typeof(ApiRequest);
             });
-        Assert.That(nonGenericMethod, Is.Not.Null, "GetAsync(string, ApiRequest?, CancellationToken) should exist on IPingenConnectionHandler");
+        nonGenericMethod.ShouldNotBeNull("GetAsync(string, ApiRequest?, CancellationToken) should exist on IPingenConnectionHandler");
     }
 
     /// <summary>
@@ -263,27 +263,27 @@ public class SparseFieldsets
         // ILetterService.Get should have overload with ApiRequest
         var letterGet = typeof(PingenApiNet.Interfaces.Connectors.ILetterService)
             .GetMethod("Get", [typeof(string), typeof(ApiRequest), typeof(CancellationToken)]);
-        Assert.That(letterGet, Is.Not.Null, "ILetterService.Get should accept ApiRequest");
+        letterGet.ShouldNotBeNull("ILetterService.Get should accept ApiRequest");
 
         // IBatchService.Get should have overload with ApiRequest
         var batchGet = typeof(PingenApiNet.Interfaces.Connectors.IBatchService)
             .GetMethod("Get", [typeof(string), typeof(ApiRequest), typeof(CancellationToken)]);
-        Assert.That(batchGet, Is.Not.Null, "IBatchService.Get should accept ApiRequest");
+        batchGet.ShouldNotBeNull("IBatchService.Get should accept ApiRequest");
 
         // IOrganisationService.Get should have overload with ApiRequest
         var orgGet = typeof(PingenApiNet.Interfaces.Connectors.IOrganisationService)
             .GetMethod("Get", [typeof(string), typeof(ApiRequest), typeof(CancellationToken)]);
-        Assert.That(orgGet, Is.Not.Null, "IOrganisationService.Get should accept ApiRequest");
+        orgGet.ShouldNotBeNull("IOrganisationService.Get should accept ApiRequest");
 
         // IWebhookService.Get should have overload with ApiRequest
         var webhookGet = typeof(PingenApiNet.Interfaces.Connectors.IWebhookService)
             .GetMethod("Get", [typeof(string), typeof(ApiRequest), typeof(CancellationToken)]);
-        Assert.That(webhookGet, Is.Not.Null, "IWebhookService.Get should accept ApiRequest");
+        webhookGet.ShouldNotBeNull("IWebhookService.Get should accept ApiRequest");
 
         // IUserService.Get should have overload with ApiRequest
         var userGet = typeof(PingenApiNet.Interfaces.Connectors.IUserService)
             .GetMethod("Get", [typeof(ApiRequest), typeof(CancellationToken)]);
-        Assert.That(userGet, Is.Not.Null, "IUserService.Get should accept ApiRequest");
+        userGet.ShouldNotBeNull("IUserService.Get should accept ApiRequest");
     }
 
     /// <summary>
