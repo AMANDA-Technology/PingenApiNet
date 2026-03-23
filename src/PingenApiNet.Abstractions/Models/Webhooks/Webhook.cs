@@ -36,7 +36,7 @@ namespace PingenApiNet.Abstractions.Models.Webhooks;
 /// <param name="Url"></param>
 /// <param name="SigningKey"></param>
 public sealed record Webhook(
-    [property: JsonPropertyName("event_category")] WebhookEventCategory EventCategory,
-    [property: JsonPropertyName("url")] Uri? Url,
-    [property: JsonPropertyName("signing_key")] string SigningKey
+    [property: JsonPropertyName(WebhookFields.EventCategory)] WebhookEventCategory? EventCategory,
+    [property: JsonPropertyName(WebhookFields.Url)] Uri? Url,
+    [property: JsonPropertyName(WebhookFields.SigningKey)] string? SigningKey
 ) : IAttributes;

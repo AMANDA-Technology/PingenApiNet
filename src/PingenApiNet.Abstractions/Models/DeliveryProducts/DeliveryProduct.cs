@@ -39,11 +39,11 @@ namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
 /// <param name="PriceCurrency"></param>
 /// <param name="PriceStartingFrom"></param>
 public sealed record DeliveryProduct(
-    [property: JsonPropertyName("countries")] IReadOnlyList<string>? Countries,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("full_name")] string FullName,
-    [property: JsonPropertyName("delivery_time_days")] IReadOnlyList<int?> DeliveryTimeDays,
-    [property: JsonPropertyName("features")] IReadOnlyList<string> Features,
-    [property: JsonPropertyName("price_currency")] string PriceCurrency,
-    [property: JsonPropertyName("price_starting_from")] double? PriceStartingFrom
+    [property: JsonPropertyName(DeliveryProductFields.Countries)] IReadOnlyList<string>? Countries,
+    [property: JsonPropertyName(DeliveryProductFields.Name)] string? Name,
+    [property: JsonPropertyName(DeliveryProductFields.FullName)] string? FullName,
+    [property: JsonPropertyName(DeliveryProductFields.DeliveryTimeDays)] IReadOnlyList<int?>? DeliveryTimeDays,
+    [property: JsonPropertyName(DeliveryProductFields.Features)] IReadOnlyList<string>? Features,
+    [property: JsonPropertyName(DeliveryProductFields.PriceCurrency)] string? PriceCurrency,
+    [property: JsonPropertyName(DeliveryProductFields.PriceStartingFrom)] double? PriceStartingFrom
 ) : IAttributes;

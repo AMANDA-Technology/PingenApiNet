@@ -35,7 +35,7 @@ namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 /// <param name="Url"></param>
 /// <param name="CreatedAt"></param>
 public sealed record WebhookEvent(
-    [property: JsonPropertyName("reason")] string Reason,
-    [property: JsonPropertyName("url")] Uri? Url,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt
+    [property: JsonPropertyName(WebhookEventFields.Reason)] string? Reason,
+    [property: JsonPropertyName(WebhookEventFields.Url)] Uri? Url,
+    [property: JsonPropertyName(WebhookEventFields.CreatedAt)] DateTime? CreatedAt
 ) : IAttributes;

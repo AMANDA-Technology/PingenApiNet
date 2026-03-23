@@ -42,13 +42,13 @@ namespace PingenApiNet.Abstractions.Models.LetterEvents;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record LetterEvent(
-    [property: JsonPropertyName("code")] string Code,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("producer")] string Producer,
-    [property: JsonPropertyName("location")] string Location,
-    [property: JsonPropertyName("has_image")] bool HasImage,
-    [property: JsonPropertyName("data")] IReadOnlyList<string> Data,
-    [property: JsonPropertyName("emitted_at")] DateTime? EmittedAt,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(LetterEventFields.Code)] string? Code,
+    [property: JsonPropertyName(LetterEventFields.Name)] string? Name,
+    [property: JsonPropertyName(LetterEventFields.Producer)] string? Producer,
+    [property: JsonPropertyName(LetterEventFields.Location)] string? Location,
+    [property: JsonPropertyName(LetterEventFields.HasImage)] bool? HasImage,
+    [property: JsonPropertyName(LetterEventFields.Data)] IReadOnlyList<string>? Data,
+    [property: JsonPropertyName(LetterEventFields.EmittedAt)] DateTime? EmittedAt,
+    [property: JsonPropertyName(LetterEventFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(LetterEventFields.UpdatedAt)] DateTime? UpdatedAt
 ) : IAttributes;

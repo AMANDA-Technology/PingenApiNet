@@ -39,11 +39,11 @@ namespace PingenApiNet.Abstractions.Models.Users;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record User(
-    [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("first_name")] string FirstName,
-    [property: JsonPropertyName("last_name")] string LastName,
-    [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("language")] string Language,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(UserFields.Email)] string? Email,
+    [property: JsonPropertyName(UserFields.FirstName)] string? FirstName,
+    [property: JsonPropertyName(UserFields.LastName)] string? LastName,
+    [property: JsonPropertyName(UserFields.Status)] string? Status,
+    [property: JsonPropertyName(UserFields.Language)] string? Language,
+    [property: JsonPropertyName(UserFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(UserFields.UpdatedAt)] DateTime? UpdatedAt
 ) : IAttributes;

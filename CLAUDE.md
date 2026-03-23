@@ -70,7 +70,7 @@ dotnet test src/PingenApiNet.Tests/PingenApiNet.Tests.csproj
 All model types are C# `record` or `sealed record`. Use `init`-only properties. The `Data<TAttributes>` hierarchy is the core immutable data wrapper. New models must follow this pattern.
 
 ### JsonPropertyName on All Serialized Properties
-Every property that crosses the JSON boundary must have `[JsonPropertyName("snake_case_name")]`. This is also the way `PingenAttributesPropertyHelper<T>.GetJsonPropertyName()` resolves filter/sort field names at runtime — it reads the attribute at runtime. Do not omit `[JsonPropertyName]` on attributes models.
+Every property that crosses the JSON boundary must have `[JsonPropertyName("snake_case_name")]`. This is also the way `PingenAttributesPropertyHelper<T>.GetJsonPropertyName()` resolves filter/sort field names at runtime — it reads the attribute at runtime. Do not omit `[JsonPropertyName]` on attributes models. Attribute model records use the corresponding `*Fields` class constants as `[JsonPropertyName]` arguments, and all constructor parameters are nullable to support sparse fieldset responses.
 
 ### XML Documentation Comments
 All public API members carry XML doc comments (`/// <summary>`). This is enforced by `<GenerateDocumentationFile>true</GenerateDocumentationFile>` in every csproj. New public members must have doc comments.

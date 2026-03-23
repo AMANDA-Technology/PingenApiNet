@@ -45,17 +45,17 @@ namespace PingenApiNet.Abstractions.Models.Organisations;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record Organisation(
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("plan")] string Plan,
-    [property: JsonPropertyName("billing_mode")] string BillingMode,
-    [property: JsonPropertyName("billing_currency")] string BillingCurrency,
-    [property: JsonPropertyName("billing_balance")] double? BillingBalance,
-    [property: JsonPropertyName("default_country")] string DefaultCountry,
-    [property: JsonPropertyName("default_address_position")] string DefaultAddressPosition,
-    [property: JsonPropertyName("data_retention_addresses")] int? DataRetentionAddresses,
-    [property: JsonPropertyName("data_retention_pdf")] int? DataRetentionPdf,
-    [property: JsonPropertyName("color")] string Color,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(OrganisationFields.Name)] string? Name,
+    [property: JsonPropertyName(OrganisationFields.Status)] string? Status,
+    [property: JsonPropertyName(OrganisationFields.Plan)] string? Plan,
+    [property: JsonPropertyName(OrganisationFields.BillingMode)] string? BillingMode,
+    [property: JsonPropertyName(OrganisationFields.BillingCurrency)] string? BillingCurrency,
+    [property: JsonPropertyName(OrganisationFields.BillingBalance)] double? BillingBalance,
+    [property: JsonPropertyName(OrganisationFields.DefaultCountry)] string? DefaultCountry,
+    [property: JsonPropertyName(OrganisationFields.DefaultAddressPosition)] string? DefaultAddressPosition,
+    [property: JsonPropertyName(OrganisationFields.DataRetentionAddresses)] int? DataRetentionAddresses,
+    [property: JsonPropertyName(OrganisationFields.DataRetentionPdf)] int? DataRetentionPdf,
+    [property: JsonPropertyName(OrganisationFields.Color)] string? Color,
+    [property: JsonPropertyName(OrganisationFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(OrganisationFields.UpdatedAt)] DateTime? UpdatedAt
  ) : IAttributes;
