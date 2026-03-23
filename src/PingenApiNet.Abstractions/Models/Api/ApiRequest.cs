@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Enums.Api;
+
 namespace PingenApiNet.Abstractions.Models.Api;
 
 /// <summary>
@@ -30,8 +32,13 @@ namespace PingenApiNet.Abstractions.Models.Api;
 /// </summary>
 public record ApiRequest
 {
-    // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
+    /// <summary>
+    /// Sparse fieldsets allow clients to request only specific fields in the response, reducing payload size.
+    /// Each entry maps a <see cref="PingenApiDataType"/> to the field names to include.
+    /// Serialized as <c>fields[type]=field1,field2</c> query parameters per JSON:API specification.
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
+    /// </summary>
+    public IEnumerable<KeyValuePair<PingenApiDataType, IEnumerable<string>>>? SparseFieldsets { get; init; }
 
     /// <summary>
     /// Enumerable of relationship names to include in the response (JSON:API include parameter).

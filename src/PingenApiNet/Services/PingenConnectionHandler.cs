@@ -194,10 +194,24 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     }
 
     /// <inheritdoc />
+    public async Task<ApiResult<TResult>> GetAsync<TResult>(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken) where TResult : IDataResult
+    {
+        await SetOrUpdateAccessToken();
+        return await GetApiResult<TResult>(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
+    }
+
+    /// <inheritdoc />
     public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiPagingRequest? apiPagingRequest, [Optional] CancellationToken cancellationToken)
     {
         await SetOrUpdateAccessToken();
         return await GetApiResult(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiPagingRequest), cancellationToken));
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResult> GetAsync(string requestPath, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
+    {
+        await SetOrUpdateAccessToken();
+        return await GetApiResult(await _httpClients.Api.SendAsync(GetHttpRequestMessage(HttpMethod.Get, requestPath, apiRequest), cancellationToken));
     }
 
     /// <inheritdoc />
@@ -313,7 +327,9 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         if (apiRequest is null)
             yield break;
 
-        // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
+        if (apiRequest.SparseFieldsets?.Any() is true)
+            foreach (var (dataType, fields) in apiRequest.SparseFieldsets)
+                yield return new(ApiQueryParameterNames.SparseFields(dataType), string.Join(',', fields));
 
         if (apiRequest.Include?.Any() is true)
             yield return new(ApiQueryParameterNames.Include, string.Join(',', apiRequest.Include));

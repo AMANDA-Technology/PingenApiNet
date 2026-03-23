@@ -35,6 +35,6 @@ namespace PingenApiNet.Abstractions.Models.LetterPrices;
 /// <param name="Currency"></param>
 /// <param name="Price"></param>
 public sealed record LetterPrice(
-    [property: JsonPropertyName("currency")] PingenApiCurrency Currency,
-    [property: JsonPropertyName("price")] decimal Price
+    [property: JsonPropertyName(LetterPriceFields.Currency)] PingenApiCurrency? Currency,
+    [property: JsonPropertyName(LetterPriceFields.Price)] decimal? Price
 ) : IAttributes;

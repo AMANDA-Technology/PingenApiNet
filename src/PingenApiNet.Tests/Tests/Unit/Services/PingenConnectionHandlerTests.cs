@@ -1,5 +1,6 @@
 using System.Net;
 using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Tests.Helpers;
 
 namespace PingenApiNet.Tests.Tests.Unit.Services;
@@ -87,7 +88,7 @@ public class PingenConnectionHandlerTests
         var httpClients = CreateHttpClients(identityHandler, apiHandler);
         var handler = new PingenConnectionHandler(config, httpClients);
 
-        var result = await handler.GetAsync("letters");
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -131,7 +132,7 @@ public class PingenConnectionHandlerTests
         var httpClients = CreateHttpClients(identityHandler, apiHandler);
         var handler = new PingenConnectionHandler(config, httpClients);
 
-        var result = await handler.GetAsync("letters");
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
 
         result.IsSuccess.ShouldBeFalse();
     }

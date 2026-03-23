@@ -60,8 +60,8 @@ public sealed class OrganisationService : ConnectorService, IOrganisationService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(string organisationId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<OrganisationDataDetailed>>> Get(string organisationId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<OrganisationDataDetailed>>(requestPath: OrganisationsEndpoints.Single(organisationId), cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<OrganisationDataDetailed>>(requestPath: OrganisationsEndpoints.Single(organisationId), apiRequest: apiRequest, cancellationToken: cancellationToken);
     }
 }

@@ -37,8 +37,8 @@ namespace PingenApiNet.Abstractions.Models.UserAssociations;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record UserAssociation(
-    [property: JsonPropertyName("role")] UserRole Role,
-    [property: JsonPropertyName("status")] UserAssociationStatus Status,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(UserAssociationFields.Role)] UserRole? Role,
+    [property: JsonPropertyName(UserAssociationFields.Status)] UserAssociationStatus? Status,
+    [property: JsonPropertyName(UserAssociationFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(UserAssociationFields.UpdatedAt)] DateTime? UpdatedAt
 ) : IAttributes;

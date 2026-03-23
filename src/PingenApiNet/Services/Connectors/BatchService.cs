@@ -59,8 +59,8 @@ public sealed class BatchService : ConnectorService, IBatchService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<BatchDataDetailed>>> Get(string batchId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<BatchDataDetailed>>> Get(string batchId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<BatchDataDetailed>>(requestPath: BatchesEndpoints.Single(batchId), cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<BatchDataDetailed>>(requestPath: BatchesEndpoints.Single(batchId), apiRequest: apiRequest, cancellationToken: cancellationToken);
     }
 }

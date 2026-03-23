@@ -83,6 +83,7 @@ public abstract class ConnectorService : IConnectorService
     {
         var apiReRequest = new ApiPagingRequest
         {
+            SparseFieldsets = apiPagingRequest?.SparseFieldsets,
             Include = apiPagingRequest?.Include,
             Sorting = apiPagingRequest?.Sorting,
             Filtering = apiPagingRequest?.Filtering,

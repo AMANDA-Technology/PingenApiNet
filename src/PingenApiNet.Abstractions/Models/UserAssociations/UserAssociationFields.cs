@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,19 +23,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
-
-namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
+namespace PingenApiNet.Abstractions.Models.UserAssociations;
 
 /// <summary>
-/// Webhook event
+/// Available sparse fieldset field names for the UserAssociation resource.
+/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
+/// to request only specific attributes in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
 /// </summary>
-/// <param name="Reason"></param>
-/// <param name="Url"></param>
-/// <param name="CreatedAt"></param>
-public sealed record WebhookEvent(
-    [property: JsonPropertyName(WebhookEventFields.Reason)] string? Reason,
-    [property: JsonPropertyName(WebhookEventFields.Url)] Uri? Url,
-    [property: JsonPropertyName(WebhookEventFields.CreatedAt)] DateTime? CreatedAt
-) : IAttributes;
+public static class UserAssociationFields
+{
+    /// <summary>User role within the organisation</summary>
+    public const string Role = "role";
+
+    /// <summary>Association status</summary>
+    public const string Status = "status";
+
+    /// <summary>Timestamp when the association was created</summary>
+    public const string CreatedAt = "created_at";
+
+    /// <summary>Timestamp when the association was last updated</summary>
+    public const string UpdatedAt = "updated_at";
+}

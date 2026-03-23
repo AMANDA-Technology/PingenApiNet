@@ -45,17 +45,17 @@ namespace PingenApiNet.Abstractions.Models.Batches;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record Batch(
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("icon")] string Icon,
-    [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("file_original_name")] string FileOriginalName,
-    [property: JsonPropertyName("letter_count")] int? LetterCount,
-    [property: JsonPropertyName("address_position")] LetterAddressPosition AddressPosition,
-    [property: JsonPropertyName("print_mode")] LetterPrintMode? PrintMode,
-    [property: JsonPropertyName("print_spectrum")] LetterPrintSpectrum? PrintSpectrum,
-    [property: JsonPropertyName("price_currency")] string? PriceCurrency,
-    [property: JsonPropertyName("price_value")] double? PriceValue,
-    [property: JsonPropertyName("submitted_at")] DateTime? SubmittedAt,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(BatchFields.Name)] string? Name,
+    [property: JsonPropertyName(BatchFields.Icon)] string? Icon,
+    [property: JsonPropertyName(BatchFields.Status)] string? Status,
+    [property: JsonPropertyName(BatchFields.FileOriginalName)] string? FileOriginalName,
+    [property: JsonPropertyName(BatchFields.LetterCount)] int? LetterCount,
+    [property: JsonPropertyName(BatchFields.AddressPosition)] LetterAddressPosition? AddressPosition,
+    [property: JsonPropertyName(BatchFields.PrintMode)] LetterPrintMode? PrintMode,
+    [property: JsonPropertyName(BatchFields.PrintSpectrum)] LetterPrintSpectrum? PrintSpectrum,
+    [property: JsonPropertyName(BatchFields.PriceCurrency)] string? PriceCurrency,
+    [property: JsonPropertyName(BatchFields.PriceValue)] double? PriceValue,
+    [property: JsonPropertyName(BatchFields.SubmittedAt)] DateTime? SubmittedAt,
+    [property: JsonPropertyName(BatchFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(BatchFields.UpdatedAt)] DateTime? UpdatedAt
 ) : IAttributes;

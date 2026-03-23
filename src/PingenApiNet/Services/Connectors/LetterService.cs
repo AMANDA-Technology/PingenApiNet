@@ -84,9 +84,9 @@ public sealed class LetterService : ConnectorService, ILetterService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] CancellationToken cancellationToken)
+    public async Task<ApiResult<SingleResult<LetterDataDetailed>>> Get(string letterId, [Optional] ApiRequest? apiRequest, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: LettersEndpoints.Single(letterId), cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync<SingleResult<LetterDataDetailed>>(requestPath: LettersEndpoints.Single(letterId), apiRequest: apiRequest, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
@@ -104,7 +104,7 @@ public sealed class LetterService : ConnectorService, ILetterService
     /// <inheritdoc />
     public async Task<ApiResult> GetFileLocation(string letterId, [Optional] CancellationToken cancellationToken)
     {
-        return await ConnectionHandler.GetAsync(requestPath: LettersEndpoints.File(letterId), cancellationToken: cancellationToken);
+        return await ConnectionHandler.GetAsync(requestPath: LettersEndpoints.File(letterId), apiPagingRequest: null, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />

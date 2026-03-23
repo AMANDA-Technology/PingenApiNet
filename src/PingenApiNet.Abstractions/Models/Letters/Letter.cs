@@ -51,21 +51,21 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
 public sealed record Letter(
-    [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("file_original_name")] string FileOriginalName,
-    [property: JsonPropertyName("file_pages")] int? FilePages,
-    [property: JsonPropertyName("address")] string Address,
-    [property: JsonPropertyName("address_position")] LetterAddressPosition AddressPosition,
-    [property: JsonPropertyName("country")] string Country,
-    [property: JsonPropertyName("delivery_product")] string DeliveryProduct,
-    [property: JsonPropertyName("print_mode")] LetterPrintMode PrintMode,
-    [property: JsonPropertyName("print_spectrum")] LetterPrintSpectrum PrintSpectrum,
-    [property: JsonPropertyName("price_currency")] string PriceCurrency,
-    [property: JsonPropertyName("price_value")] double? PriceValue,
-    [property: JsonPropertyName("paper_types")] IReadOnlyList<string> PaperTypes,
-    [property: JsonPropertyName("fonts")] IReadOnlyList<LetterFont> Fonts,
-    [property: JsonPropertyName("tracking_number")] string TrackingNumber,
-    [property: JsonPropertyName("submitted_at")] DateTime? SubmittedAt,
-    [property: JsonPropertyName("created_at")] DateTime? CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTime? UpdatedAt
+    [property: JsonPropertyName(LetterFields.Status)] string? Status,
+    [property: JsonPropertyName(LetterFields.FileOriginalName)] string? FileOriginalName,
+    [property: JsonPropertyName(LetterFields.FilePages)] int? FilePages,
+    [property: JsonPropertyName(LetterFields.Address)] string? Address,
+    [property: JsonPropertyName(LetterFields.AddressPosition)] LetterAddressPosition? AddressPosition,
+    [property: JsonPropertyName(LetterFields.Country)] string? Country,
+    [property: JsonPropertyName(LetterFields.DeliveryProduct)] string? DeliveryProduct,
+    [property: JsonPropertyName(LetterFields.PrintMode)] LetterPrintMode? PrintMode,
+    [property: JsonPropertyName(LetterFields.PrintSpectrum)] LetterPrintSpectrum? PrintSpectrum,
+    [property: JsonPropertyName(LetterFields.PriceCurrency)] string? PriceCurrency,
+    [property: JsonPropertyName(LetterFields.PriceValue)] double? PriceValue,
+    [property: JsonPropertyName(LetterFields.PaperTypes)] IReadOnlyList<string>? PaperTypes,
+    [property: JsonPropertyName(LetterFields.Fonts)] IReadOnlyList<LetterFont>? Fonts,
+    [property: JsonPropertyName(LetterFields.TrackingNumber)] string? TrackingNumber,
+    [property: JsonPropertyName(LetterFields.SubmittedAt)] DateTime? SubmittedAt,
+    [property: JsonPropertyName(LetterFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(LetterFields.UpdatedAt)] DateTime? UpdatedAt
 ) : IAttributes;

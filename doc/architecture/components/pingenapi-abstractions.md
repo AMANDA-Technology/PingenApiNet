@@ -41,21 +41,25 @@ PingenApiNet.Abstractions/
         DataResults/ — CollectionResult<T>, CollectionResultLinks, CollectionResultMeta, SingleResult<T>
         Relations/   — RelatedManyOutput, RelatedSingleInput, RelatedSingleOutput (+ embedded link types)
     Base/            — Data, DataIdentity (+ DataLinks, Meta, MetaAbility embedded)
-    Batches/         — Batch, BatchAbilities, BatchData, BatchIncludes, BatchRelationships, BatchCreate, BatchCreateRelationships
-    DeliveryProducts/ — DeliveryProduct, DeliveryProductData
+    Batches/         — Batch, BatchAbilities, BatchData, BatchFields, BatchIncludes,
+                       BatchRelationships, BatchCreate, BatchCreateRelationships
+    DeliveryProducts/ — DeliveryProduct, DeliveryProductData, DeliveryProductFields
     Files/           — FileUpload, FileUploadData
-    LetterEvents/    — LetterEvent, LetterEventData, LetterEventIncludes, LetterEventRelationships
-    LetterPrices/    — LetterPrice, LetterPriceConfiguration, LetterPriceData
+    LetterEvents/    — LetterEvent, LetterEventData, LetterEventFields, LetterEventIncludes,
+                       LetterEventRelationships
+    LetterPrices/    — LetterPrice, LetterPriceConfiguration, LetterPriceData, LetterPriceFields
     Letters/         — Letter, LetterAbilities, LetterData, LetterDataDetailed,
-                       LetterIncludes, LetterRelationships (+ Batch), LetterFont, LetterMetaData, LetterMetaDataContact
+                       LetterFields, LetterIncludes, LetterRelationships,
+                       LetterFont, LetterMetaData, LetterMetaDataContact
       Views/         — LetterCreate, LetterCreateRelationships, LetterSend, LetterUpdate
-    Organisations/   — Organisation, OrganisationData, OrganisationRelationships
+    Organisations/   — Organisation, OrganisationData, OrganisationFields, OrganisationRelationships
     UserAssociations/ — UserAssociation, UserAssociationAbilities, UserAssociationData,
-                        UserAssociationIncludes, UserAssociationRelationships, OrganisationAbilities
-    Users/           — User, UserAbilities, UserData, UserRelationships
-    Webhooks/        — Webhook, WebhookData, WebhookIncludes, WebhookRelationships
+                        UserAssociationFields, UserAssociationIncludes,
+                        UserAssociationRelationships, OrganisationAbilities
+    Users/           — User, UserAbilities, UserData, UserFields, UserRelationships
+    Webhooks/        — Webhook, WebhookData, WebhookFields, WebhookIncludes, WebhookRelationships
       Views/         — WebhookCreate
-      WebhookEvents/ — WebhookEvent, WebhookEventData, WebhookEventRelationships
+      WebhookEvents/ — WebhookEvent, WebhookEventData, WebhookEventFields, WebhookEventRelationships
 ```
 
 ## Data Model Hierarchy

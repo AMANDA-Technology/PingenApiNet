@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,19 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
-
-namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
+namespace PingenApiNet.Abstractions.Models.Users;
 
 /// <summary>
-/// Webhook event
+/// Available sparse fieldset field names for the User resource.
+/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
+/// to request only specific attributes in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
 /// </summary>
-/// <param name="Reason"></param>
-/// <param name="Url"></param>
-/// <param name="CreatedAt"></param>
-public sealed record WebhookEvent(
-    [property: JsonPropertyName(WebhookEventFields.Reason)] string? Reason,
-    [property: JsonPropertyName(WebhookEventFields.Url)] Uri? Url,
-    [property: JsonPropertyName(WebhookEventFields.CreatedAt)] DateTime? CreatedAt
-) : IAttributes;
+public static class UserFields
+{
+    /// <summary>User's email address</summary>
+    public const string Email = "email";
+
+    /// <summary>User's first name</summary>
+    public const string FirstName = "first_name";
+
+    /// <summary>User's last name</summary>
+    public const string LastName = "last_name";
+
+    /// <summary>User account status</summary>
+    public const string Status = "status";
+
+    /// <summary>User's preferred language code</summary>
+    public const string Language = "language";
+
+    /// <summary>Timestamp when the user was created</summary>
+    public const string CreatedAt = "created_at";
+
+    /// <summary>Timestamp when the user was last updated</summary>
+    public const string UpdatedAt = "updated_at";
+}

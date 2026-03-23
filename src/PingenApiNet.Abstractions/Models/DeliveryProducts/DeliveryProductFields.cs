@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,27 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-using PingenApiNet.Abstractions.Interfaces.Data;
-
 namespace PingenApiNet.Abstractions.Models.DeliveryProducts;
 
 /// <summary>
-/// Delivery product (No API Doc available!)
+/// Available sparse fieldset field names for the DeliveryProduct resource.
+/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
+/// to request only specific attributes in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
 /// </summary>
-/// <param name="Countries"></param>
-/// <param name="Name"></param>
-/// <param name="FullName"></param>
-/// <param name="DeliveryTimeDays"></param>
-/// <param name="Features"></param>
-/// <param name="PriceCurrency"></param>
-/// <param name="PriceStartingFrom"></param>
-public sealed record DeliveryProduct(
-    [property: JsonPropertyName(DeliveryProductFields.Countries)] IReadOnlyList<string>? Countries,
-    [property: JsonPropertyName(DeliveryProductFields.Name)] string? Name,
-    [property: JsonPropertyName(DeliveryProductFields.FullName)] string? FullName,
-    [property: JsonPropertyName(DeliveryProductFields.DeliveryTimeDays)] IReadOnlyList<int?>? DeliveryTimeDays,
-    [property: JsonPropertyName(DeliveryProductFields.Features)] IReadOnlyList<string>? Features,
-    [property: JsonPropertyName(DeliveryProductFields.PriceCurrency)] string? PriceCurrency,
-    [property: JsonPropertyName(DeliveryProductFields.PriceStartingFrom)] double? PriceStartingFrom
-) : IAttributes;
+public static class DeliveryProductFields
+{
+    /// <summary>List of supported country codes</summary>
+    public const string Countries = "countries";
+
+    /// <summary>Short product name</summary>
+    public const string Name = "name";
+
+    /// <summary>Full descriptive product name</summary>
+    public const string FullName = "full_name";
+
+    /// <summary>Range of delivery time in days</summary>
+    public const string DeliveryTimeDays = "delivery_time_days";
+
+    /// <summary>List of product features</summary>
+    public const string Features = "features";
+
+    /// <summary>Currency for the starting price</summary>
+    public const string PriceCurrency = "price_currency";
+
+    /// <summary>Lowest price point for this product</summary>
+    public const string PriceStartingFrom = "price_starting_from";
+}
