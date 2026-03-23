@@ -83,6 +83,7 @@ public abstract class ConnectorService : IConnectorService
     {
         var apiReRequest = new ApiPagingRequest
         {
+            Include = apiPagingRequest?.Include,
             Sorting = apiPagingRequest?.Sorting,
             Filtering = apiPagingRequest?.Filtering,
             Searching = apiPagingRequest?.Searching,

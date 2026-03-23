@@ -130,7 +130,7 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 
 ## Testing
 
-Tests are **integration tests** that call the real Pingen staging API. There are no unit tests. Required environment variables:
+Tests are primarily **integration tests** that call the real Pingen staging API. `ApiRequestQueryParameters` is an offline unit test for query parameter construction. Required environment variables for integration tests:
 
 ```
 PingenApiNet__BaseUri          # e.g. https://api-staging.pingen.com
@@ -140,7 +140,7 @@ PingenApiNet__ClientSecret
 PingenApiNet__OrganisationId
 ```
 
-Tests construct `PingenConnectionHandler` and `PingenApiClient` directly without DI. The `Webhooks.DeserializeWebhookEventData` test is the only offline test — it uses `Assets/webhook_sample.json`.
+Tests construct `PingenConnectionHandler` and `PingenApiClient` directly without DI. The `Webhooks.DeserializeWebhookEventData` test is an offline test using `Assets/webhook_sample.json`. The `ApiRequestQueryParameters` tests are also offline — they verify `ApiRequest.Include` property behavior and query parameter formatting without any API calls.
 
 ## Known Constraints and Gotchas
 

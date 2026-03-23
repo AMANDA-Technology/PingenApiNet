@@ -31,6 +31,11 @@ namespace PingenApiNet.Abstractions.Models.Api;
 public record ApiRequest
 {
     // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
     // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
+
+    /// <summary>
+    /// Enumerable of relationship names to include in the response (JSON:API include parameter).
+    /// <see href="https://api.pingen.com/documentation#section/Advanced/Including-relationships">API Doc - Including relationships</see>
+    /// </summary>
+    public IEnumerable<string>? Include { get; init; }
 }
