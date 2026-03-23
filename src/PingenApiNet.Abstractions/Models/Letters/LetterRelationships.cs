@@ -34,7 +34,9 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// </summary>
 /// <param name="Organisation"></param>
 /// <param name="Events"></param>
+/// <param name="Batch"></param>
 public sealed record LetterRelationships(
     [property: JsonPropertyName("organisation")] RelatedSingleOutput Organisation,
-    [property: JsonPropertyName("events")] RelatedManyOutput Events
+    [property: JsonPropertyName("events")] RelatedManyOutput Events,
+    [property: JsonPropertyName("batch")] RelatedSingleOutput Batch
 ) : IRelationships;
