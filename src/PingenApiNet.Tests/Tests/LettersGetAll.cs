@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -60,15 +60,15 @@ public class TestLetters : TestBase
                 })
         };
 
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
 
         var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Data?.Data.ShouldNotBeNull();
         });
 
         var letters = new List<LetterData>();
@@ -76,8 +76,8 @@ public class TestLetters : TestBase
         {
             letters.AddRange(page);
         }
-        Assert.That(letters, Is.Not.Null);
-        Assert.That(letters, Is.Not.Empty);
+        letters.ShouldNotBeNull();
+        letters.ShouldNotBeEmpty();
     }
 
     /// <summary>
@@ -88,15 +88,15 @@ public class TestLetters : TestBase
     {
         const string letterId = "0e738359-799e-4e23-9666-0a7dfe6096b4";
 
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
 
         var res = await PingenApiClient!.Letters.Get(letterId);
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Data?.Data.ShouldNotBeNull();
         });
     }
 }

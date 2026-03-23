@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -60,15 +60,15 @@ public class DistributionGetDeliveryProducts : TestBase
         };
 
         // Get page
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
 
         var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Data?.Data.ShouldNotBeNull();
         });
 
         // Get all pages with filter
@@ -89,8 +89,8 @@ public class DistributionGetDeliveryProducts : TestBase
 
         Assert.Multiple(() =>
         {
-            Assert.That(deliveryProducts, Is.Not.Empty);
-            Assert.That(error, Is.Null);
+            deliveryProducts.ShouldNotBeEmpty();
+            error.ShouldBeNull();
         });
     }
 }

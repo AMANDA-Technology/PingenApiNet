@@ -45,8 +45,8 @@ public class IncludeHelpers
     {
         Assert.Multiple(() =>
         {
-            Assert.That(LetterIncludes.Organisation, Is.EqualTo("organisation"));
-            Assert.That(LetterIncludes.Batch, Is.EqualTo("batch"));
+            LetterIncludes.Organisation.ShouldBe("organisation");
+            LetterIncludes.Batch.ShouldBe("batch");
         });
     }
 
@@ -56,7 +56,7 @@ public class IncludeHelpers
     [Test]
     public void BatchIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.That(BatchIncludes.Organisation, Is.EqualTo("organisation"));
+        BatchIncludes.Organisation.ShouldBe("organisation");
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class IncludeHelpers
     [Test]
     public void UserAssociationIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.That(UserAssociationIncludes.Organisation, Is.EqualTo("organisation"));
+        UserAssociationIncludes.Organisation.ShouldBe("organisation");
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class IncludeHelpers
     [Test]
     public void LetterEventIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.That(LetterEventIncludes.Letter, Is.EqualTo("letter"));
+        LetterEventIncludes.Letter.ShouldBe("letter");
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class IncludeHelpers
     [Test]
     public void WebhookIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.That(WebhookIncludes.Organisation, Is.EqualTo("organisation"));
+        WebhookIncludes.Organisation.ShouldBe("organisation");
     }
 
     /// <summary>
@@ -99,8 +99,8 @@ public class IncludeHelpers
 
         Assert.Multiple(() =>
         {
-            Assert.That(request.Include, Is.EquivalentTo(new[] { "organisation", "batch" }));
-            Assert.That(string.Join(',', request.Include!), Is.EqualTo("organisation,batch"));
+            request.Include.ShouldBe(new[] { "organisation", "batch" }, ignoreOrder: true);
+            string.Join(',', request.Include!).ShouldBe("organisation,batch");
         });
     }
 }

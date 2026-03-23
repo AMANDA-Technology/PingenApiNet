@@ -44,7 +44,7 @@ public class ApiRequestQueryParameters
             Include = ["events", "sender"]
         };
 
-        Assert.That(request.Include, Is.EquivalentTo(new[] { "events", "sender" }));
+        request.Include.ShouldBe(new[] { "events", "sender" }, ignoreOrder: true);
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class ApiRequestQueryParameters
             Include = ["events"]
         };
 
-        Assert.That(request.Include, Is.EquivalentTo(new[] { "events" }));
+        request.Include.ShouldBe(new[] { "events" }, ignoreOrder: true);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public class ApiRequestQueryParameters
     {
         var request = new ApiRequest();
 
-        Assert.That(request.Include, Is.Null);
+        request.Include.ShouldBeNull();
     }
 
     /// <summary>
@@ -85,8 +85,8 @@ public class ApiRequestQueryParameters
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.EqualTo(expected));
-            Assert.That(ApiQueryParameterNames.Include, Is.EqualTo("include"));
+            result.ShouldBe(expected);
+            ApiQueryParameterNames.Include.ShouldBe("include");
         });
     }
 }

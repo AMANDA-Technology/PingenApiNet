@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -45,31 +45,31 @@ public class Webhooks : TestBase
     public async Task DeserializeWebhookEventData()
     {
         var webhookBody = await File.ReadAllTextAsync("Assets/webhook_sample.json");
-        Assert.That(webhookBody, Is.Not.Empty);
+        webhookBody.ShouldNotBeEmpty();
 
         var webhookEventData = PingenSerialisationHelper.Deserialize<SingleResult<WebhookEventData>>(webhookBody);
-        Assert.That(webhookEventData?.Data.Attributes, Is.Not.Null);
+        webhookEventData?.Data.Attributes.ShouldNotBeNull();
 
         var includedOrganisationFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
         Assert.Multiple(() =>
         {
-            Assert.That(includedOrganisationFound, Is.True);
-            Assert.That(organisationData, Is.Not.Null);
+            includedOrganisationFound.ShouldBeTrue();
+            organisationData.ShouldNotBeNull();
         });
 
         var letterFound = PingenSerialisationHelper.TryGetIncludedData<Letter>(webhookEventData!, out var letterData);
         Assert.Multiple(() =>
         {
-            Assert.That(letterFound, Is.True);
-            Assert.That(letterData, Is.Not.Null);
+            letterFound.ShouldBeTrue();
+            letterData.ShouldNotBeNull();
         });
 
         Data<LetterEvent>? letterEventData;
         var letterEventFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out letterEventData);
         Assert.Multiple(() =>
         {
-            Assert.That(letterEventFound, Is.True);
-            Assert.That(letterEventData, Is.Not.Null);
+            letterEventFound.ShouldBeTrue();
+            letterEventData.ShouldNotBeNull();
         });
     }
 }
