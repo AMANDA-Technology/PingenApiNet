@@ -18,7 +18,7 @@ public class PingenConnectionHandlerTests
     {
         var config = CreateConfig(baseUri: "", identityUri: "https://identity.example.com/");
 
-        Assert.Throws<ArgumentException>(() =>
+        Should.Throw<ArgumentException>(() =>
             new PingenConnectionHandler(config, CreateHttpClients()));
     }
 
@@ -30,7 +30,7 @@ public class PingenConnectionHandlerTests
     {
         var config = CreateConfig(baseUri: "https://api.example.com/", identityUri: "");
 
-        Assert.Throws<ArgumentException>(() =>
+        Should.Throw<ArgumentException>(() =>
             new PingenConnectionHandler(config, CreateHttpClients()));
     }
 
@@ -44,7 +44,7 @@ public class PingenConnectionHandlerTests
 
         var handler = new PingenConnectionHandler(config, CreateHttpClients());
 
-        Assert.That(handler, Is.Not.Null);
+        handler.ShouldNotBeNull();
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class PingenConnectionHandlerTests
 
         var result = await handler.GetAsync("letters");
 
-        Assert.That(result.IsSuccess, Is.True);
+        result.IsSuccess.ShouldBeTrue();
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public class PingenConnectionHandlerTests
         var request = new HttpRequestMessage(HttpMethod.Get, "https://external.example.com/file.pdf");
         var result = await handler.SendExternalRequestAsync(request);
 
-        Assert.That(result.IsSuccessStatusCode, Is.True);
+        result.IsSuccessStatusCode.ShouldBeTrue();
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public class PingenConnectionHandlerTests
 
         var result = await handler.GetAsync("letters");
 
-        Assert.That(result.IsSuccess, Is.False);
+        result.IsSuccess.ShouldBeFalse();
     }
 
     private static IPingenConfiguration CreateConfig(

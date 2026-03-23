@@ -21,15 +21,15 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.False);
-            Assert.That(result.RequestId, Is.EqualTo(Guid.Empty));
-            Assert.That(result.RateLimitLimit, Is.EqualTo(0));
-            Assert.That(result.RateLimitRemaining, Is.EqualTo(0));
-            Assert.That(result.RateLimitReset, Is.Null);
-            Assert.That(result.RetryAfter, Is.Null);
-            Assert.That(result.IdempotentReplayed, Is.False);
-            Assert.That(result.ApiError, Is.Null);
-            Assert.That(result.Location, Is.Null);
+            result.IsSuccess.ShouldBeFalse();
+            result.RequestId.ShouldBe(Guid.Empty);
+            result.RateLimitLimit.ShouldBe(0);
+            result.RateLimitRemaining.ShouldBe(0);
+            result.RateLimitReset.ShouldBeNull();
+            result.RetryAfter.ShouldBeNull();
+            result.IdempotentReplayed.ShouldBeFalse();
+            result.ApiError.ShouldBeNull();
+            result.Location.ShouldBeNull();
         });
     }
 
@@ -57,14 +57,14 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.RequestId, Is.EqualTo(requestId));
-            Assert.That(result.RateLimitLimit, Is.EqualTo(100));
-            Assert.That(result.RateLimitRemaining, Is.EqualTo(99));
-            Assert.That(result.RateLimitReset, Is.EqualTo(resetTime));
-            Assert.That(result.RetryAfter, Is.EqualTo(30));
-            Assert.That(result.IdempotentReplayed, Is.True);
-            Assert.That(result.Location, Is.EqualTo(location));
+            result.IsSuccess.ShouldBeTrue();
+            result.RequestId.ShouldBe(requestId);
+            result.RateLimitLimit.ShouldBe(100);
+            result.RateLimitRemaining.ShouldBe(99);
+            result.RateLimitReset.ShouldBe(resetTime);
+            result.RetryAfter.ShouldBe(30);
+            result.IdempotentReplayed.ShouldBeTrue();
+            result.Location.ShouldBe(location);
         });
     }
 
@@ -82,8 +82,8 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.Data, Is.Null);
+            result.IsSuccess.ShouldBeTrue();
+            result.Data.ShouldBeNull();
         });
     }
 
@@ -105,9 +105,9 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.RequestId, Is.EqualTo(requestId));
-            Assert.That(result.RateLimitLimit, Is.EqualTo(50));
+            result.IsSuccess.ShouldBeTrue();
+            result.RequestId.ShouldBe(requestId);
+            result.RateLimitLimit.ShouldBe(50);
         });
     }
 
@@ -127,9 +127,9 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.False);
-            Assert.That(result.ApiError, Is.Not.Null);
-            Assert.That(result.ApiError!.Errors, Has.Count.EqualTo(1));
+            result.IsSuccess.ShouldBeFalse();
+            result.ApiError.ShouldNotBeNull();
+            result.ApiError!.Errors.Count.ShouldBe(1);
         });
     }
 
@@ -143,12 +143,12 @@ public class ApiResultTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(meta.CurrentPage, Is.EqualTo(1));
-            Assert.That(meta.LastPage, Is.EqualTo(5));
-            Assert.That(meta.PerPage, Is.EqualTo(20));
-            Assert.That(meta.From, Is.EqualTo(1));
-            Assert.That(meta.To, Is.EqualTo(20));
-            Assert.That(meta.Total, Is.EqualTo(100));
+            meta.CurrentPage.ShouldBe(1);
+            meta.LastPage.ShouldBe(5);
+            meta.PerPage.ShouldBe(20);
+            meta.From.ShouldBe(1);
+            meta.To.ShouldBe(20);
+            meta.Total.ShouldBe(100);
         });
     }
 }

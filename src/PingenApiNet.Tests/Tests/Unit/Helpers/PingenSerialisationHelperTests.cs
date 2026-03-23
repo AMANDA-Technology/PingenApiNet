@@ -19,8 +19,8 @@ public class PingenSerialisationHelperTests
 
         var json = PingenSerialisationHelper.Serialize(obj);
 
-        Assert.That(json, Does.Contain("\"name\":\"test\""));
-        Assert.That(json, Does.Contain("\"value\":42"));
+        json.ShouldContain("\"name\":\"test\"");
+        json.ShouldContain("\"value\":42");
     }
 
     /// <summary>
@@ -33,11 +33,11 @@ public class PingenSerialisationHelperTests
 
         var result = PingenSerialisationHelper.Deserialize<DataIdentity>(json);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(result!.Id, Is.EqualTo("abc-123"));
-            Assert.That(result.Type, Is.EqualTo(PingenApiDataType.letters));
+            result.Id.ShouldBe("abc-123");
+            result.Type.ShouldBe(PingenApiDataType.letters);
         });
     }
 
@@ -52,11 +52,11 @@ public class PingenSerialisationHelperTests
 
         var result = await PingenSerialisationHelper.DeserializeAsync<DataIdentity>(stream);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(result!.Id, Is.EqualTo("def-456"));
-            Assert.That(result.Type, Is.EqualTo(PingenApiDataType.batches));
+            result.Id.ShouldBe("def-456");
+            result.Type.ShouldBe(PingenApiDataType.batches);
         });
     }
 
@@ -70,7 +70,7 @@ public class PingenSerialisationHelperTests
 
         var json = PingenSerialisationHelper.Serialize(obj);
 
-        Assert.That(json, Does.Not.Contain("extra"));
+        json.ShouldNotContain("extra");
     }
 
     /// <summary>
@@ -83,13 +83,13 @@ public class PingenSerialisationHelperTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.letters));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.batches));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.organisations));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.webhooks));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.users));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.file_uploads));
-            Assert.That(mapping, Does.ContainKey(PingenApiDataType.delivery_products));
+            mapping.ContainsKey(PingenApiDataType.letters).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.batches).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.organisations).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.webhooks).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.users).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.file_uploads).ShouldBeTrue();
+            mapping.ContainsKey(PingenApiDataType.delivery_products).ShouldBeTrue();
         });
     }
 
@@ -101,7 +101,7 @@ public class PingenSerialisationHelperTests
     {
         var json = "{}";
 
-        Assert.Throws<System.Text.Json.JsonException>(() =>
+        Should.Throw<System.Text.Json.JsonException>(() =>
             PingenSerialisationHelper.Deserialize<DataIdentity>(json));
     }
 }

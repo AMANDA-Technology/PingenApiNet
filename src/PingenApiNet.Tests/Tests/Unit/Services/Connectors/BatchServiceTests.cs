@@ -10,7 +10,7 @@ namespace PingenApiNet.Tests.Tests.Unit.Services.Connectors;
 /// </summary>
 public class BatchServiceTests
 {
-    private Mock<IPingenConnectionHandler> _mockConnectionHandler = null!;
+    private IPingenConnectionHandler _mockConnectionHandler = null!;
     private BatchService _batchService = null!;
 
     /// <summary>
@@ -19,8 +19,8 @@ public class BatchServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockConnectionHandler = new Mock<IPingenConnectionHandler>();
-        _batchService = new BatchService(_mockConnectionHandler.Object);
+        _mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
+        _batchService = new BatchService(_mockConnectionHandler);
     }
 
     /// <summary>
@@ -30,18 +30,18 @@ public class BatchServiceTests
     public async Task GetPage_CallsConnectionHandlerWithCorrectPath()
     {
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<CollectionResult<BatchData>>(
+            .GetAsync<CollectionResult<BatchData>>(
                 "batches",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<CollectionResult<BatchData>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<BatchData>> { IsSuccess = true });
 
         await _batchService.GetPage();
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<CollectionResult<BatchData>>(
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<BatchData>>(
             "batches",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -53,17 +53,17 @@ public class BatchServiceTests
         const string batchId = "test-batch-id";
 
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<SingleResult<BatchDataDetailed>>(
+            .GetAsync<SingleResult<BatchDataDetailed>>(
                 $"batches/{batchId}",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<SingleResult<BatchDataDetailed>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<BatchDataDetailed>> { IsSuccess = true });
 
         await _batchService.Get(batchId);
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<SingleResult<BatchDataDetailed>>(
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<BatchDataDetailed>>(
             $"batches/{batchId}",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 }

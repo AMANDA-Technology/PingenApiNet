@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -43,15 +43,15 @@ public class TestGetFileUploadData : TestBase
     [Test]
     public async Task GetUploadData()
     {
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
 
         var res = await PingenApiClient!.Files.GetPath();
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Data?.Data.ShouldNotBeNull();
         });
     }
 
@@ -59,22 +59,22 @@ public class TestGetFileUploadData : TestBase
     public async Task GetUploadDataAndCreateLetter()
     {
         const string fileName = "sample.pdf";
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
 
         var res = await PingenApiClient!.Files.GetPath();
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Data?.Data, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Data?.Data.ShouldNotBeNull();
         });
 
         MemoryStream stream = new();
         await File.OpenRead($"Assets/{fileName}").CopyToAsync(stream);
         var uploadRes = await PingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
-        Assert.That(uploadRes, Is.True);
+        uploadRes.ShouldBeTrue();
 
         var letterMetaData = new LetterMetaData
         {
@@ -116,21 +116,21 @@ public class TestGetFileUploadData : TestBase
             Relationships = LetterCreateRelationships.Create("1234567890")
         });
 
-        Assert.That(resLetter, Is.Not.Null);
+        resLetter.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(resLetter.IsSuccess, Is.True);
-            Assert.That(resLetter.ApiError, Is.Null);
-            Assert.That(resLetter.Data?.Data, Is.Not.Null);
+            resLetter.IsSuccess.ShouldBeTrue();
+            resLetter.ApiError.ShouldBeNull();
+            resLetter.Data?.Data.ShouldNotBeNull();
         });
 
         var letterId = resLetter.Data!.Data.Id;
 
         var letterFromRemote = await PingenApiClient.Letters.Get(letterId);
-        Assert.That(letterFromRemote, Is.Not.Null);
+        letterFromRemote.ShouldNotBeNull();
 
         var letterEvents = await PingenApiClient.Letters.GetEventsPage(letterId, PingenApiLanguage.EnGB);
-        Assert.That(letterEvents, Is.Not.Null);
+        letterEvents.ShouldNotBeNull();
 
         const int attempts = 300;
         const int delaySeconds = 1;
@@ -151,8 +151,8 @@ public class TestGetFileUploadData : TestBase
             await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
         }
 
-        Assert.That(letter, Is.Not.Null);
-        Assert.That(letter!.Attributes.Status, Is.EqualTo(LetterStates.Valid));
+        letter.ShouldNotBeNull();
+        letter.Attributes.Status.ShouldBe(LetterStates.Valid);
 
         var resSendLetter = await PingenApiClient.Letters.Send(new()
         {
@@ -167,14 +167,14 @@ public class TestGetFileUploadData : TestBase
             Id = letterId
         });
 
-        Assert.That(resSendLetter, Is.Not.Null);
-        Assert.That(resSendLetter.IsSuccess, Is.True);
+        resSendLetter.ShouldNotBeNull();
+        resSendLetter.IsSuccess.ShouldBeTrue();
     }
 
     [Test]
     public async Task GetLetterEvents()
     {
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
         const string letterId = "1540e30d-84cd-4425-bcc1-c3aff196d4da";
 
         foreach (var language in new[]
@@ -187,46 +187,46 @@ public class TestGetFileUploadData : TestBase
                  })
         {
             var res = await PingenApiClient!.Letters.GetEventsPage(letterId, language);
-            Assert.That(res, Is.Not.Null);
+            res.ShouldNotBeNull();
             Assert.Multiple(() =>
             {
-                Assert.That(res.IsSuccess, Is.True);
-                Assert.That(res.ApiError, Is.Null);
-                Assert.That(res.Data?.Data, Is.Not.Null);
+                res.IsSuccess.ShouldBeTrue();
+                res.ApiError.ShouldBeNull();
+                res.Data?.Data.ShouldNotBeNull();
             });
         }
     }
 
     [Test]
-    public void GetFileDownloadError()
+    public async Task GetFileDownloadError()
     {
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
         const string url = "https://pingen2-staging.objects.rma.cloudscale.ch/letters/20c1e673-03fe-4e19-ad45-9cdd85c5a940?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=Z3YMWIXX6Y1G0KHUQDZ7%2F20221128%2Fregion1%2Fs3%2Faws4_request&X-Amz-Date=20221128T222323Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Signature=02705e5180cd082c5907d93e77fdb2d8c5a77938bc2e91a6e7c014ef953db9dd";
 
-        Assert.ThrowsAsync<PingenFileDownloadException>(async () => await PingenApiClient!.Letters.DownloadFileContent(new(url)));
+        await Should.ThrowAsync<PingenFileDownloadException>(async () => await PingenApiClient!.Letters.DownloadFileContent(new(url)));
     }
 
     [Test]
     public async Task GetFileDownload()
     {
-        Assert.That(PingenApiClient, Is.Not.Null);
+        PingenApiClient.ShouldNotBeNull();
         const string letterId = "1540e30d-84cd-4425-bcc1-c3aff196d4da";
         const string filePath = "filepath.pdf";
 
         var res = await PingenApiClient!.Letters.GetFileLocation(letterId);
-        Assert.That(res, Is.Not.Null);
+        res.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(res.IsSuccess, Is.True);
-            Assert.That(res.ApiError, Is.Null);
-            Assert.That(res.Location, Is.Not.Null);
+            res.IsSuccess.ShouldBeTrue();
+            res.ApiError.ShouldBeNull();
+            res.Location.ShouldNotBeNull();
         });
 
         var stream = await PingenApiClient.Letters.DownloadFileContent(res.Location!);
         await using (var file = File.OpenWrite(filePath))
             await stream.CopyToAsync(file);
 
-        Assert.That(File.Exists(filePath));
+        File.Exists(filePath).ShouldBeTrue();
         File.Delete(filePath);
     }
 }

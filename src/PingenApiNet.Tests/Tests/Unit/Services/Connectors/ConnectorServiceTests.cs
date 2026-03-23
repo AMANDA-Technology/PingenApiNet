@@ -17,7 +17,7 @@ namespace PingenApiNet.Tests.Tests.Unit.Services.Connectors;
 /// </summary>
 public class ConnectorServiceTests
 {
-    private Mock<IPingenConnectionHandler> _mockConnectionHandler = null!;
+    private IPingenConnectionHandler _mockConnectionHandler = null!;
     private LetterService _letterService = null!;
 
     /// <summary>
@@ -26,8 +26,8 @@ public class ConnectorServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockConnectionHandler = new Mock<IPingenConnectionHandler>();
-        _letterService = new LetterService(_mockConnectionHandler.Object);
+        _mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
+        _letterService = new LetterService(_mockConnectionHandler);
     }
 
     /// <summary>
@@ -51,8 +51,8 @@ public class ConnectorServiceTests
 
         var result = _letterService.HandleResult(apiResult);
 
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result[0].Id, Is.EqualTo("letter-1"));
+        result.Count.ShouldBe(1);
+        result[0].Id.ShouldBe("letter-1");
     }
 
     /// <summary>
@@ -66,8 +66,8 @@ public class ConnectorServiceTests
             IsSuccess = false
         };
 
-        var ex = Assert.Throws<PingenApiErrorException>(() => _letterService.HandleResult(apiResult));
-        Assert.That(ex!.ApiResult, Is.Not.Null);
+        var ex = Should.Throw<PingenApiErrorException>(() => _letterService.HandleResult(apiResult));
+        ex.ApiResult.ShouldNotBeNull();
     }
 
     /// <summary>
@@ -87,8 +87,8 @@ public class ConnectorServiceTests
 
         var result = _letterService.HandleResult(apiResult);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo("letter-2"));
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe("letter-2");
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class ConnectorServiceTests
             IsSuccess = false
         };
 
-        Assert.Throws<PingenApiErrorException>(() => _letterService.HandleResult(apiResult));
+        Should.Throw<PingenApiErrorException>(() => _letterService.HandleResult(apiResult));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class ConnectorServiceTests
 
         var result = _letterService.HandleResult(apiResult);
 
-        Assert.That(result, Is.Empty);
+        result.ShouldBeEmpty();
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public class ConnectorServiceTests
 
         var result = _letterService.HandleResult(apiResult);
 
-        Assert.That(result, Is.Null);
+        result.ShouldBeNull();
     }
 
     private static LetterData CreateLetterData(string id) => new()

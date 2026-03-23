@@ -18,7 +18,7 @@ public class PingenExceptionTests
 
         var exception = new PingenApiErrorException(apiResult);
 
-        Assert.That(exception.ApiResult, Is.SameAs(apiResult));
+        exception.ApiResult.ShouldBeSameAs(apiResult);
     }
 
     /// <summary>
@@ -34,8 +34,8 @@ public class PingenExceptionTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(exception.Message, Is.EqualTo(message));
-            Assert.That(exception.ApiResult, Is.SameAs(apiResult));
+            exception.Message.ShouldBe(message);
+            exception.ApiResult.ShouldBeSameAs(apiResult);
         });
     }
 
@@ -52,8 +52,8 @@ public class PingenExceptionTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(exception.InnerException, Is.SameAs(inner));
-            Assert.That(exception.ApiResult, Is.SameAs(apiResult));
+            exception.InnerException.ShouldBeSameAs(inner);
+            exception.ApiResult.ShouldBeSameAs(apiResult);
         });
     }
 
@@ -67,7 +67,7 @@ public class PingenExceptionTests
 
         var exception = new PingenFileDownloadException(errorCode);
 
-        Assert.That(exception.ErrorCode, Is.EqualTo(errorCode));
+        exception.ErrorCode.ShouldBe(errorCode);
     }
 
     /// <summary>
@@ -83,8 +83,8 @@ public class PingenExceptionTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(exception.ErrorCode, Is.EqualTo(errorCode));
-            Assert.That(exception.Message, Is.EqualTo(message));
+            exception.ErrorCode.ShouldBe(errorCode);
+            exception.Message.ShouldBe(message);
         });
     }
 
@@ -98,7 +98,7 @@ public class PingenExceptionTests
 
         var exception = new PingenFileDownloadException("err", "msg", inner);
 
-        Assert.That(exception.InnerException, Is.SameAs(inner));
+        exception.InnerException.ShouldBeSameAs(inner);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class PingenExceptionTests
     {
         var exception = new PingenFileDownloadException(null);
 
-        Assert.That(exception.ErrorCode, Is.Null);
+        exception.ErrorCode.ShouldBeNull();
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class PingenExceptionTests
     {
         var exception = new PingenWebhookValidationErrorException(null);
 
-        Assert.That(exception.WebhookEventData, Is.Null);
+        exception.WebhookEventData.ShouldBeNull();
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public class PingenExceptionTests
 
         var exception = new PingenWebhookValidationErrorException(null, message);
 
-        Assert.That(exception.Message, Is.EqualTo(message));
+        exception.Message.ShouldBe(message);
     }
 
     /// <summary>
@@ -146,6 +146,6 @@ public class PingenExceptionTests
 
         var exception = new PingenWebhookValidationErrorException(null, "msg", inner);
 
-        Assert.That(exception.InnerException, Is.SameAs(inner));
+        exception.InnerException.ShouldBeSameAs(inner);
     }
 }

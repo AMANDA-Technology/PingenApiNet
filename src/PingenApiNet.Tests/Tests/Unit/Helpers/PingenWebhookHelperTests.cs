@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Helpers;
 
 namespace PingenApiNet.Tests.Tests.Unit.Helpers;
@@ -24,7 +23,7 @@ public class PingenWebhookHelperTests
 
         var result = await PingenWebhookHelper.ValidateWebhook(signingKey, signature, stream);
 
-        Assert.That(result, Is.True);
+        result.ShouldBeTrue();
     }
 
     /// <summary>
@@ -38,21 +37,20 @@ public class PingenWebhookHelperTests
 
         var result = await PingenWebhookHelper.ValidateWebhook(signingKey, "invalid-signature", stream);
 
-        Assert.That(result, Is.False);
+        result.ShouldBeFalse();
     }
 
     /// <summary>
     /// Verifies that ValidateWebhookAndGetData throws when signature is invalid
     /// </summary>
     [Test]
-    public void ValidateWebhookAndGetData_InvalidSignature_Throws()
+    public async Task ValidateWebhookAndGetData_InvalidSignature_Throws()
     {
         const string signingKey = "test-signing-key";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(SamplePayload));
 
-        Assert.That(async () =>
-            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, "invalid-sig", stream),
-            Throws.Exception);
+        await Should.ThrowAsync<Exception>(async () =>
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, "invalid-sig", stream));
     }
 
     /// <summary>
@@ -70,10 +68,10 @@ public class PingenWebhookHelperTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(webhookEventData, Is.Not.Null);
-            Assert.That(organisationData, Is.Not.Null);
-            Assert.That(letterData, Is.Not.Null);
-            Assert.That(letterEventData, Is.Not.Null);
+            webhookEventData.ShouldNotBeNull();
+            organisationData.ShouldNotBeNull();
+            letterData.ShouldNotBeNull();
+            letterEventData.ShouldNotBeNull();
         });
     }
 
@@ -90,7 +88,7 @@ public class PingenWebhookHelperTests
 
         var result = await PingenWebhookHelper.ValidateWebhook(wrongKey, signature, stream);
 
-        Assert.That(result, Is.False);
+        result.ShouldBeFalse();
     }
 
     private static string ComputeHmacSha256(string key, string data)

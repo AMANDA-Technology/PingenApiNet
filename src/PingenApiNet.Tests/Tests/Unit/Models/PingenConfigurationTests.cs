@@ -24,8 +24,8 @@ public class PingenConfigurationTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(normalized.BaseUri, Is.EqualTo("https://api.example.com/"));
-            Assert.That(normalized.IdentityUri, Is.EqualTo("https://identity.example.com/"));
+            normalized.BaseUri.ShouldBe("https://api.example.com/");
+            normalized.IdentityUri.ShouldBe("https://identity.example.com/");
         });
     }
 
@@ -48,8 +48,8 @@ public class PingenConfigurationTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(normalized.BaseUri, Is.EqualTo("https://api.example.com/"));
-            Assert.That(normalized.IdentityUri, Is.EqualTo("https://identity.example.com/"));
+            normalized.BaseUri.ShouldBe("https://api.example.com/");
+            normalized.IdentityUri.ShouldBe("https://identity.example.com/");
         });
     }
 
@@ -71,12 +71,12 @@ public class PingenConfigurationTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(config.BaseUri, Is.EqualTo("https://api.example.com/"));
-            Assert.That(config.IdentityUri, Is.EqualTo("https://identity.example.com/"));
-            Assert.That(config.ClientId, Is.EqualTo("my-client-id"));
-            Assert.That(config.ClientSecret, Is.EqualTo("my-client-secret"));
-            Assert.That(config.DefaultOrganisationId, Is.EqualTo("my-org-id"));
-            Assert.That(config.WebhookSigningKeys, Has.Count.EqualTo(1));
+            config.BaseUri.ShouldBe("https://api.example.com/");
+            config.IdentityUri.ShouldBe("https://identity.example.com/");
+            config.ClientId.ShouldBe("my-client-id");
+            config.ClientSecret.ShouldBe("my-client-secret");
+            config.DefaultOrganisationId.ShouldBe("my-org-id");
+            config.WebhookSigningKeys.Count.ShouldBe(1);
         });
     }
 }

@@ -10,7 +10,7 @@ namespace PingenApiNet.Tests.Tests.Unit.Services.Connectors;
 /// </summary>
 public class WebhookServiceTests
 {
-    private Mock<IPingenConnectionHandler> _mockConnectionHandler = null!;
+    private IPingenConnectionHandler _mockConnectionHandler = null!;
     private WebhookService _webhookService = null!;
 
     /// <summary>
@@ -19,8 +19,8 @@ public class WebhookServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockConnectionHandler = new Mock<IPingenConnectionHandler>();
-        _webhookService = new WebhookService(_mockConnectionHandler.Object);
+        _mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
+        _webhookService = new WebhookService(_mockConnectionHandler);
     }
 
     /// <summary>
@@ -30,18 +30,18 @@ public class WebhookServiceTests
     public async Task GetPage_CallsConnectionHandlerWithCorrectPath()
     {
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<CollectionResult<WebhookData>>(
+            .GetAsync<CollectionResult<WebhookData>>(
                 "webhooks",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<CollectionResult<WebhookData>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<WebhookData>> { IsSuccess = true });
 
         await _webhookService.GetPage();
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<CollectionResult<WebhookData>>(
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<WebhookData>>(
             "webhooks",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -53,18 +53,18 @@ public class WebhookServiceTests
         const string webhookId = "webhook-123";
 
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<SingleResult<WebhookData>>(
+            .GetAsync<SingleResult<WebhookData>>(
                 $"webhooks/{webhookId}",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<SingleResult<WebhookData>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<WebhookData>> { IsSuccess = true });
 
         await _webhookService.Get(webhookId);
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<SingleResult<WebhookData>>(
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<WebhookData>>(
             $"webhooks/{webhookId}",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -76,15 +76,15 @@ public class WebhookServiceTests
         const string webhookId = "webhook-delete";
 
         _mockConnectionHandler
-            .Setup(x => x.DeleteAsync(
+            .DeleteAsync(
                 $"webhooks/{webhookId}",
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult { IsSuccess = true });
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult { IsSuccess = true });
 
         await _webhookService.Delete(webhookId);
 
-        _mockConnectionHandler.Verify(x => x.DeleteAsync(
+        await _mockConnectionHandler.Received(1).DeleteAsync(
             $"webhooks/{webhookId}",
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<CancellationToken>());
     }
 }

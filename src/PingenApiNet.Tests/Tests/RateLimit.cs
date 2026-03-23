@@ -1,4 +1,4 @@
-﻿/* Copyright (C) AMANDA Technology - All Rights Reserved
+/* Copyright (C) AMANDA Technology - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
  * Written by Manuel Gysin <manuel.gysin@amanda-technology.ch>
@@ -65,9 +65,9 @@ public class RateLimit : TestBase
 
                         Assert.Multiple(() =>
                         {
-                            Assert.That(res.RateLimitRemaining, Is.LessThanOrEqualTo(0));
-                            Assert.That(res.RateLimitReset, Is.Not.Null);
-                            Assert.That(res.RetryAfter, Is.Not.Null);
+                            res.RateLimitRemaining.ShouldBeLessThanOrEqualTo(0);
+                            res.RateLimitReset.ShouldNotBeNull();
+                            res.RetryAfter.ShouldNotBeNull();
                         });
 
                         // Assert that call is success when repeated after given time
@@ -75,7 +75,7 @@ public class RateLimit : TestBase
                             await Task.Delay(100, cancellationToken);
 
                         var resRepeat = await client.Letters.GetPage(ApiPagingRequest, cancellationToken);
-                        Assert.That(resRepeat.IsSuccess, Is.True);
+                        resRepeat.IsSuccess.ShouldBeTrue();
                         await Console.Out.WriteLineAsync("Call has been succeeded at retry");
                         break;
                     }
@@ -87,8 +87,8 @@ public class RateLimit : TestBase
 
         Assert.Multiple(() =>
         {
-            Assert.That(hasRateLimitReached, Is.True);
-            Assert.That(cts.IsCancellationRequested, Is.False);
+            hasRateLimitReached.ShouldBeTrue();
+            cts.IsCancellationRequested.ShouldBeFalse();
         });
         return;
 

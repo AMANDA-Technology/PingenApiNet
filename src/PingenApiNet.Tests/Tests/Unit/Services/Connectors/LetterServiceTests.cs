@@ -14,7 +14,7 @@ namespace PingenApiNet.Tests.Tests.Unit.Services.Connectors;
 /// </summary>
 public class LetterServiceTests
 {
-    private Mock<IPingenConnectionHandler> _mockConnectionHandler = null!;
+    private IPingenConnectionHandler _mockConnectionHandler = null!;
     private LetterService _letterService = null!;
 
     /// <summary>
@@ -23,8 +23,8 @@ public class LetterServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockConnectionHandler = new Mock<IPingenConnectionHandler>();
-        _letterService = new LetterService(_mockConnectionHandler.Object);
+        _mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
+        _letterService = new LetterService(_mockConnectionHandler);
     }
 
     /// <summary>
@@ -34,18 +34,18 @@ public class LetterServiceTests
     public async Task GetPage_CallsConnectionHandlerWithCorrectPath()
     {
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<CollectionResult<LetterData>>(
+            .GetAsync<CollectionResult<LetterData>>(
                 "letters",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<CollectionResult<LetterData>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<LetterData>> { IsSuccess = true });
 
         await _letterService.GetPage();
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<CollectionResult<LetterData>>(
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<LetterData>>(
             "letters",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -57,18 +57,18 @@ public class LetterServiceTests
         const string letterId = "test-letter-id";
 
         _mockConnectionHandler
-            .Setup(x => x.GetAsync<SingleResult<LetterDataDetailed>>(
+            .GetAsync<SingleResult<LetterDataDetailed>>(
                 $"letters/{letterId}",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
 
         await _letterService.Get(letterId);
 
-        _mockConnectionHandler.Verify(x => x.GetAsync<SingleResult<LetterDataDetailed>>(
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<LetterDataDetailed>>(
             $"letters/{letterId}",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -80,16 +80,16 @@ public class LetterServiceTests
         const string letterId = "delete-letter-id";
 
         _mockConnectionHandler
-            .Setup(x => x.DeleteAsync(
+            .DeleteAsync(
                 $"letters/{letterId}",
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult { IsSuccess = true });
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult { IsSuccess = true });
 
         await _letterService.Delete(letterId);
 
-        _mockConnectionHandler.Verify(x => x.DeleteAsync(
+        await _mockConnectionHandler.Received(1).DeleteAsync(
             $"letters/{letterId}",
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -101,18 +101,18 @@ public class LetterServiceTests
         const string letterId = "cancel-letter-id";
 
         _mockConnectionHandler
-            .Setup(x => x.PatchAsync(
+            .PatchAsync(
                 $"letters/{letterId}/cancel",
-                It.IsAny<string?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult { IsSuccess = true });
+                Arg.Any<string?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult { IsSuccess = true });
 
         await _letterService.Cancel(letterId);
 
-        _mockConnectionHandler.Verify(x => x.PatchAsync(
+        await _mockConnectionHandler.Received(1).PatchAsync(
             $"letters/{letterId}/cancel",
-            It.IsAny<string?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<string?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -124,18 +124,18 @@ public class LetterServiceTests
         const string letterId = "file-letter-id";
 
         _mockConnectionHandler
-            .Setup(x => x.GetAsync(
+            .GetAsync(
                 $"letters/{letterId}/file",
-                It.IsAny<ApiPagingRequest?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult { IsSuccess = true });
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult { IsSuccess = true });
 
         await _letterService.GetFileLocation(letterId);
 
-        _mockConnectionHandler.Verify(x => x.GetAsync(
+        await _mockConnectionHandler.Received(1).GetAsync(
             $"letters/{letterId}/file",
-            It.IsAny<ApiPagingRequest?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
@@ -161,40 +161,40 @@ public class LetterServiceTests
         };
 
         _mockConnectionHandler
-            .Setup(x => x.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
+            .PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
                 "letters",
-                It.IsAny<DataPost<LetterCreate, LetterCreateRelationships>>(),
-                It.IsAny<string?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
+                Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
+                Arg.Any<string?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
 
         await _letterService.Create(data);
 
-        _mockConnectionHandler.Verify(x => x.PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
+        await _mockConnectionHandler.Received(1).PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
             "letters",
-            It.IsAny<DataPost<LetterCreate, LetterCreateRelationships>>(),
-            It.IsAny<string?>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+            Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
+            Arg.Any<string?>(),
+            Arg.Any<CancellationToken>());
     }
 
     /// <summary>
     /// Verifies DownloadFileContent throws PingenFileDownloadException on failed download
     /// </summary>
     [Test]
-    public void DownloadFileContent_FailedRequest_ThrowsPingenFileDownloadException()
+    public async Task DownloadFileContent_FailedRequest_ThrowsPingenFileDownloadException()
     {
         var fileUrl = new Uri("https://example.com/file.pdf");
 
         _mockConnectionHandler
-            .Setup(x => x.SendExternalRequestAsync(
-                It.IsAny<HttpRequestMessage>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden)
+            .SendExternalRequestAsync(
+                Arg.Any<HttpRequestMessage>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden)
             {
                 Content = new StringContent("<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>")
             });
 
-        Assert.ThrowsAsync<Abstractions.Exceptions.PingenFileDownloadException>(
+        await Should.ThrowAsync<Abstractions.Exceptions.PingenFileDownloadException>(
             async () => await _letterService.DownloadFileContent(fileUrl));
     }
 
@@ -208,17 +208,17 @@ public class LetterServiceTests
         var content = new byte[] { 0x25, 0x50, 0x44, 0x46 }; // PDF magic bytes
 
         _mockConnectionHandler
-            .Setup(x => x.SendExternalRequestAsync(
-                It.IsAny<HttpRequestMessage>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            .SendExternalRequestAsync(
+                Arg.Any<HttpRequestMessage>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(content)
             });
 
         var result = await _letterService.DownloadFileContent(fileUrl);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.Length, Is.GreaterThan(0));
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0L);
     }
 }

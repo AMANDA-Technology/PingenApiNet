@@ -13,34 +13,34 @@ public class PingenApiClientTests
     [Test]
     public void PingenApiClient_ExposesAllServices()
     {
-        var mockConnectionHandler = new Mock<IPingenConnectionHandler>();
-        var mockLetters = new Mock<ILetterService>();
-        var mockBatches = new Mock<IBatchService>();
-        var mockUsers = new Mock<IUserService>();
-        var mockOrganisations = new Mock<IOrganisationService>();
-        var mockWebhooks = new Mock<IWebhookService>();
-        var mockFiles = new Mock<IFilesService>();
-        var mockDistributions = new Mock<IDistributionService>();
+        var mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
+        var mockLetters = Substitute.For<ILetterService>();
+        var mockBatches = Substitute.For<IBatchService>();
+        var mockUsers = Substitute.For<IUserService>();
+        var mockOrganisations = Substitute.For<IOrganisationService>();
+        var mockWebhooks = Substitute.For<IWebhookService>();
+        var mockFiles = Substitute.For<IFilesService>();
+        var mockDistributions = Substitute.For<IDistributionService>();
 
         var client = new PingenApiClient(
-            mockConnectionHandler.Object,
-            mockLetters.Object,
-            mockBatches.Object,
-            mockUsers.Object,
-            mockOrganisations.Object,
-            mockWebhooks.Object,
-            mockFiles.Object,
-            mockDistributions.Object);
+            mockConnectionHandler,
+            mockLetters,
+            mockBatches,
+            mockUsers,
+            mockOrganisations,
+            mockWebhooks,
+            mockFiles,
+            mockDistributions);
 
         Assert.Multiple(() =>
         {
-            Assert.That(client.Letters, Is.SameAs(mockLetters.Object));
-            Assert.That(client.Batches, Is.SameAs(mockBatches.Object));
-            Assert.That(client.Users, Is.SameAs(mockUsers.Object));
-            Assert.That(client.Organisations, Is.SameAs(mockOrganisations.Object));
-            Assert.That(client.Webhooks, Is.SameAs(mockWebhooks.Object));
-            Assert.That(client.Files, Is.SameAs(mockFiles.Object));
-            Assert.That(client.Distributions, Is.SameAs(mockDistributions.Object));
+            client.Letters.ShouldBeSameAs(mockLetters);
+            client.Batches.ShouldBeSameAs(mockBatches);
+            client.Users.ShouldBeSameAs(mockUsers);
+            client.Organisations.ShouldBeSameAs(mockOrganisations);
+            client.Webhooks.ShouldBeSameAs(mockWebhooks);
+            client.Files.ShouldBeSameAs(mockFiles);
+            client.Distributions.ShouldBeSameAs(mockDistributions);
         });
     }
 
@@ -50,21 +50,21 @@ public class PingenApiClientTests
     [Test]
     public void SetOrganisationId_DelegatesToConnectionHandler()
     {
-        var mockConnectionHandler = new Mock<IPingenConnectionHandler>();
+        var mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
         var client = new PingenApiClient(
-            mockConnectionHandler.Object,
-            new Mock<ILetterService>().Object,
-            new Mock<IBatchService>().Object,
-            new Mock<IUserService>().Object,
-            new Mock<IOrganisationService>().Object,
-            new Mock<IWebhookService>().Object,
-            new Mock<IFilesService>().Object,
-            new Mock<IDistributionService>().Object);
+            mockConnectionHandler,
+            Substitute.For<ILetterService>(),
+            Substitute.For<IBatchService>(),
+            Substitute.For<IUserService>(),
+            Substitute.For<IOrganisationService>(),
+            Substitute.For<IWebhookService>(),
+            Substitute.For<IFilesService>(),
+            Substitute.For<IDistributionService>());
 
         const string newOrgId = "new-org-id";
         client.SetOrganisationId(newOrgId);
 
-        mockConnectionHandler.Verify(x => x.SetOrganisationId(newOrgId), Times.Once);
+        mockConnectionHandler.Received(1).SetOrganisationId(newOrgId);
     }
 
     /// <summary>
@@ -73,20 +73,20 @@ public class PingenApiClientTests
     [Test]
     public void Services_CanBeReplacedViaSetters()
     {
-        var mockConnectionHandler = new Mock<IPingenConnectionHandler>();
+        var mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
         var client = new PingenApiClient(
-            mockConnectionHandler.Object,
-            new Mock<ILetterService>().Object,
-            new Mock<IBatchService>().Object,
-            new Mock<IUserService>().Object,
-            new Mock<IOrganisationService>().Object,
-            new Mock<IWebhookService>().Object,
-            new Mock<IFilesService>().Object,
-            new Mock<IDistributionService>().Object);
+            mockConnectionHandler,
+            Substitute.For<ILetterService>(),
+            Substitute.For<IBatchService>(),
+            Substitute.For<IUserService>(),
+            Substitute.For<IOrganisationService>(),
+            Substitute.For<IWebhookService>(),
+            Substitute.For<IFilesService>(),
+            Substitute.For<IDistributionService>());
 
-        var newLetterService = new Mock<ILetterService>().Object;
+        var newLetterService = Substitute.For<ILetterService>();
         client.Letters = newLetterService;
 
-        Assert.That(client.Letters, Is.SameAs(newLetterService));
+        client.Letters.ShouldBeSameAs(newLetterService);
     }
 }

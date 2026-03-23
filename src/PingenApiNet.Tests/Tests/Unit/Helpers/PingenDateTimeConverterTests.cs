@@ -18,7 +18,7 @@ public class PingenDateTimeConverterTests
 
         var json = PingenSerialisationHelper.Serialize(obj);
 
-        Assert.That(json, Does.Contain("2024-06-15T14:30:00"));
+        json.ShouldContain("2024-06-15T14:30:00");
     }
 
     /// <summary>
@@ -31,12 +31,12 @@ public class PingenDateTimeConverterTests
 
         var result = PingenSerialisationHelper.Deserialize<DateTimeHolder>(json);
 
-        Assert.That(result, Is.Not.Null);
+        result.ShouldNotBeNull();
         Assert.Multiple(() =>
         {
-            Assert.That(result!.Date.Year, Is.EqualTo(2024));
-            Assert.That(result.Date.Month, Is.EqualTo(6));
-            Assert.That(result.Date.Day, Is.EqualTo(15));
+            result.Date.Year.ShouldBe(2024);
+            result.Date.Month.ShouldBe(6);
+            result.Date.Day.ShouldBe(15);
         });
     }
 
@@ -50,8 +50,8 @@ public class PingenDateTimeConverterTests
 
         var result = PingenSerialisationHelper.Deserialize<DateTimeHolder>(json);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Date, Is.EqualTo(DateTime.MinValue));
+        result.ShouldNotBeNull();
+        result.Date.ShouldBe(DateTime.MinValue);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class PingenDateTimeConverterTests
 
         var json = PingenSerialisationHelper.Serialize(obj);
 
-        Assert.That(json, Does.Not.Contain("date"));
+        json.ShouldNotContain("date");
     }
 
     private sealed record DateTimeHolder

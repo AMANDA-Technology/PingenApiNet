@@ -16,7 +16,7 @@ public class PingenAttributesPropertyHelperTests
     {
         var result = PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(l => l.Status);
 
-        Assert.That(result, Is.EqualTo("status"));
+        result.ShouldBe("status");
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class PingenAttributesPropertyHelperTests
     {
         var result = PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(l => l.FileOriginalName);
 
-        Assert.That(result, Is.EqualTo("file_original_name"));
+        result.ShouldBe("file_original_name");
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class PingenAttributesPropertyHelperTests
     {
         var result = PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(l => l.Country);
 
-        Assert.That(result, Is.EqualTo("country"));
+        result.ShouldBe("country");
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class PingenAttributesPropertyHelperTests
     [Test]
     public void GetJsonPropertyName_NonMemberExpression_ThrowsInvalidOperationException()
     {
-        Assert.Throws<InvalidOperationException>(() =>
+        Should.Throw<InvalidOperationException>(() =>
             PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(l => "constant"));
     }
 }

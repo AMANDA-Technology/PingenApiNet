@@ -27,8 +27,8 @@ public class DataPostPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(dataPost.Type, Is.EqualTo(PingenApiDataType.letters));
-            Assert.That(dataPost.Attributes, Is.SameAs(attributes));
+            dataPost.Type.ShouldBe(PingenApiDataType.letters);
+            dataPost.Attributes.ShouldBeSameAs(attributes);
         });
     }
 
@@ -48,9 +48,9 @@ public class DataPostPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(json, Does.Contain("\"type\":\"letters\""));
-            Assert.That(json, Does.Contain("\"attributes\""));
-            Assert.That(json, Does.Contain("\"file_original_name\":\"test.pdf\""));
+            json.ShouldContain("\"type\":\"letters\"");
+            json.ShouldContain("\"attributes\"");
+            json.ShouldContain("\"file_original_name\":\"test.pdf\"");
         });
     }
 
@@ -71,9 +71,9 @@ public class DataPostPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(dataPatch.Id, Is.EqualTo("letter-123"));
-            Assert.That(dataPatch.Type, Is.EqualTo(PingenApiDataType.letters));
-            Assert.That(dataPatch.Attributes, Is.SameAs(attributes));
+            dataPatch.Id.ShouldBe("letter-123");
+            dataPatch.Type.ShouldBe(PingenApiDataType.letters);
+            dataPatch.Attributes.ShouldBeSameAs(attributes);
         });
     }
 
@@ -94,9 +94,9 @@ public class DataPostPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(json, Does.Contain("\"id\":\"letter-456\""));
-            Assert.That(json, Does.Contain("\"type\":\"letters\""));
-            Assert.That(json, Does.Contain("\"attributes\""));
+            json.ShouldContain("\"id\":\"letter-456\"");
+            json.ShouldContain("\"type\":\"letters\"");
+            json.ShouldContain("\"attributes\"");
         });
     }
 
