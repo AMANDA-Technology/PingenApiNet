@@ -24,5 +24,6 @@ SOFTWARE.
 */
 
 global using NUnit.Framework;
+global using Moq;
 global using PingenApiNet.Interfaces;
 global using PingenApiNet.Services;
