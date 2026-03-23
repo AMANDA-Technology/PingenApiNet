@@ -41,19 +41,19 @@ PingenApiNet.Abstractions/
         DataResults/ — CollectionResult<T>, CollectionResultLinks, CollectionResultMeta, SingleResult<T>
         Relations/   — RelatedManyOutput, RelatedSingleInput, RelatedSingleOutput (+ embedded link types)
     Base/            — Data, DataIdentity (+ DataLinks, Meta, MetaAbility embedded)
-    Batches/         — Batch, BatchAbilities, BatchData, BatchRelationships, BatchCreate, BatchCreateRelationships
+    Batches/         — Batch, BatchAbilities, BatchData, BatchIncludes, BatchRelationships, BatchCreate, BatchCreateRelationships
     DeliveryProducts/ — DeliveryProduct, DeliveryProductData
     Files/           — FileUpload, FileUploadData
-    LetterEvents/    — LetterEvent, LetterEventData, LetterEventRelationships
+    LetterEvents/    — LetterEvent, LetterEventData, LetterEventIncludes, LetterEventRelationships
     LetterPrices/    — LetterPrice, LetterPriceConfiguration, LetterPriceData
     Letters/         — Letter, LetterAbilities, LetterData, LetterDataDetailed,
-                       LetterRelationships, LetterFont, LetterMetaData, LetterMetaDataContact
+                       LetterIncludes, LetterRelationships (+ Batch), LetterFont, LetterMetaData, LetterMetaDataContact
       Views/         — LetterCreate, LetterCreateRelationships, LetterSend, LetterUpdate
     Organisations/   — Organisation, OrganisationData, OrganisationRelationships
     UserAssociations/ — UserAssociation, UserAssociationAbilities, UserAssociationData,
-                        UserAssociationRelationships, OrganisationAbilities
+                        UserAssociationIncludes, UserAssociationRelationships, OrganisationAbilities
     Users/           — User, UserAbilities, UserData, UserRelationships
-    Webhooks/        — Webhook, WebhookData, WebhookRelationships
+    Webhooks/        — Webhook, WebhookData, WebhookIncludes, WebhookRelationships
       Views/         — WebhookCreate
       WebhookEvents/ — WebhookEvent, WebhookEventData, WebhookEventRelationships
 ```

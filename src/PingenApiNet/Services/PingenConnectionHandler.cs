@@ -315,7 +315,8 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
 
         // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
 
-        // TODO: Add Including relationships? https://api.pingen.com/documentation#section/Advanced/Including-relationships
+        if (apiRequest.Include?.Any() is true)
+            yield return new(ApiQueryParameterNames.Include, string.Join(',', apiRequest.Include));
 
         if (apiRequest is not ApiPagingRequest apiPagingRequest)
             yield break;

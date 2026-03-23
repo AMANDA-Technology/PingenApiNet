@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,19 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Api;
+namespace PingenApiNet.Abstractions.Models.UserAssociations;
 
 /// <summary>
-/// An API request object to sent to the API with meta information to send as headers or query parameters
+/// Available include relationship names for the UserAssociation resource.
+/// Pass one or more of these constants to <see cref="Api.ApiRequest.Include"/>
+/// to receive related resources sideloaded in the response.
+/// <see href="https://api.pingen.com/documentation#section/Advanced/Including-relationships">API Doc - Including relationships</see>
 /// </summary>
-public record ApiRequest
+public static class UserAssociationIncludes
 {
-    // TODO: Add Sparse fieldsets? https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets
-    // NOTE: When implementing, every request on all connector services should accept this one as optional argument, or implement a 'raw' request method. And make it non abstract.
-
     /// <summary>
-    /// Enumerable of relationship names to include in the response (JSON:API include parameter).
-    /// <see href="https://api.pingen.com/documentation#section/Advanced/Including-relationships">API Doc - Including relationships</see>
+    /// Include the organisation associated with this user association.
     /// </summary>
-    public IEnumerable<string>? Include { get; init; }
+    public const string Organisation = "organisation";
 }
