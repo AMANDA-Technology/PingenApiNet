@@ -195,3 +195,28 @@ private async Task<(WebhookEventData WebhookEventData, Data<Organisation> Organi
     return (webhookEventData, organisationData, letterData, eventData);
 }
 ```
+
+#### 7. Using the include parameter
+
+Request related resources to be sideloaded in the response using the `Include` property on `ApiRequest` / `ApiPagingRequest`. Each resource type has a corresponding static `*Includes` class with discoverable constants.
+
+```c#
+// Fetch letters with organisation and events included
+var result = await _pingenApiClient.Letters.GetPage(new ApiPagingRequest
+{
+    Include = [LetterIncludes.Organisation, LetterIncludes.Events]
+});
+```
+
+**Available include helpers:**
+
+| Class | Constants |
+|---|---|
+| `LetterIncludes` | `Organisation`, `Events` |
+| `BatchIncludes` | `Organisation`, `Events` |
+| `OrganisationIncludes` | `Associations` |
+| `UserIncludes` | `Associations`, `Notifications` |
+| `UserAssociationIncludes` | `Organisation` |
+| `LetterEventIncludes` | `Letter` |
+| `WebhookIncludes` | `Organisation` |
+| `WebhookEventIncludes` | `Organisation`, `Letter`, `Event` |
