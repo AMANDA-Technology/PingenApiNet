@@ -5,7 +5,7 @@ tags: [architecture, overview]
 
 # Architecture Overview
 
-PingenApiNet is a .NET 9 API client library published as three NuGet packages. It provides a typed, async-first, JSON:API-compliant interface to the [Pingen v2 API](https://api.pingen.com/documentation) — an online postal service that accepts PDF files and sends physical letters.
+PingenApiNet is a .NET 10 API client library published as three NuGet packages. It provides a typed, async-first, JSON:API-compliant interface to the [Pingen v2 API](https://api.pingen.com/documentation) — an online postal service that accepts PDF files and sends physical letters.
 
 ## Key Constraints
 
@@ -18,8 +18,8 @@ PingenApiNet is a .NET 9 API client library published as three NuGet packages. I
 
 | Concern | Technology |
 |---|---|
-| Language | C# 13 |
-| Runtime | .NET 9 |
+| Language | C# 14 |
+| Runtime | .NET 10 |
 | Serialization | System.Text.Json |
 | HTTP | System.Net.Http (HttpClient / IHttpClientFactory) |
 | DI | Microsoft.Extensions.DependencyInjection |

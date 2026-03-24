@@ -5,13 +5,13 @@ tags: [project, onboarding, dotnet]
 
 # PingenApiNet
 
-An unofficial .NET 9 API client library for the [Pingen v2 REST API](https://api.pingen.com/documentation) (used version 2.0.0). Pingen is a Swiss online postal service that accepts PDFs and dispatches physical letters. This library handles authentication (OAuth 2.0 client credentials), request construction, response deserialization, rate-limit tracking, auto-pagination, file upload/download, and webhook validation. It is published as three NuGet packages under the MIT license.
+An unofficial .NET 10 API client library for the [Pingen v2 REST API](https://api.pingen.com/documentation) (used version 2.0.0). Pingen is a Swiss online postal service that accepts PDFs and dispatches physical letters. This library handles authentication (OAuth 2.0 client credentials), request construction, response deserialization, rate-limit tracking, auto-pagination, file upload/download, and webhook validation. It is published as three NuGet packages under the MIT license.
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Runtime | .NET 9 / C# 13 |
+| Runtime | .NET 10 / C# 14 |
 | Serialization | `System.Text.Json` with custom converters |
 | HTTP | `System.Net.Http.HttpClient` via `IHttpClientFactory` (ASP.NET Core path) or direct construction (standalone path) |
 | DI integration | `Microsoft.Extensions.DependencyInjection` |
