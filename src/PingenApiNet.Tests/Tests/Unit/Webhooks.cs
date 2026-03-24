@@ -31,12 +31,12 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 ///
 /// </summary>
-public class Webhooks : TestBase
+public class Webhooks
 {
     /// <summary>
     ///

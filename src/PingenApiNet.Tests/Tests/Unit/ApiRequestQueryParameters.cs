@@ -26,7 +26,7 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.Api;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Offline unit tests for API request query parameter construction

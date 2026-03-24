@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.UserAssociations;
 using PingenApiNet.Abstractions.Models.Webhooks;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Offline unit tests for include helper static classes

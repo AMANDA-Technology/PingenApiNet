@@ -27,7 +27,7 @@ using System.Reflection;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.Api;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Tests for sparse fieldset query parameter support

@@ -27,7 +27,8 @@ src/
   PingenApiNet.Abstractions/    # No external NuGet dependencies — pure models, enums, interfaces, helpers
   PingenApiNet/                 # References Abstractions + Microsoft.Extensions.Http
   PingenApiNet.AspNetCore/      # References Abstractions + PingenApiNet + Microsoft.Extensions.DependencyInjection
-  PingenApiNet.Tests/           # Integration tests (NUnit). References Abstractions + PingenApiNet. NOT packaged.
+  PingenApiNet.Tests/           # Offline unit tests (NUnit). References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
+  PingenApiNet.Tests.E2E/       # E2E integration tests (NUnit). Requires API env vars. NOT packaged.
 build/
   GetBuildVersion.psm1          # PowerShell module for semver extraction from git ref
 .github/workflows/
@@ -41,6 +42,7 @@ build/
 ```
 Abstractions  <──  PingenApiNet  <──  AspNetCore
                                  <──  Tests
+                                 <──  Tests.E2E
 ```
 
 `Abstractions` has zero NuGet dependencies. It defines all data contracts.
@@ -60,8 +62,11 @@ dotnet build PingenApiNet.sln --configuration Release -p:Version=1.2.5
 # Pack NuGet packages
 dotnet pack PingenApiNet.sln --configuration Release -p:PackageVersion=1.2.5 --no-build
 
-# Run integration tests (requires env vars — see Testing section)
+# Run unit tests (offline, no env vars needed)
 dotnet test src/PingenApiNet.Tests/PingenApiNet.Tests.csproj
+
+# Run E2E tests (requires env vars — see Testing section)
+dotnet test src/PingenApiNet.Tests.E2E/PingenApiNet.Tests.E2E.csproj
 ```
 
 ## Key Conventions
@@ -125,12 +130,24 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 | Base data model | `src/PingenApiNet.Abstractions/Models/Base/Data.cs` |
 | API result model | `src/PingenApiNet.Abstractions/Models/Api/ApiResult.cs` |
 | Filter/sort helper | `src/PingenApiNet.Abstractions/Helpers/PingenAttributesPropertyHelper.cs` |
-| Test base | `src/PingenApiNet.Tests/TestBase.cs` |
+| E2E test base | `src/PingenApiNet.Tests.E2E/TestBase.cs` |
 | CI pipeline | `.github/workflows/main.yml` |
 
 ## Testing
 
-Tests are primarily **integration tests** that call the real Pingen staging API. `ApiRequestQueryParameters` is an offline unit test for query parameter construction. `IncludeHelpers` is an offline unit test that verifies all `*Includes` static helper classes have correct constant values matching their sibling `*Relationships` JSON property names. Required environment variables for integration tests:
+Tests are split into two projects:
+
+### Unit Tests (`PingenApiNet.Tests`)
+Offline tests that require no API credentials or network access. Located under `Tests/Unit/`. Includes:
+- `ApiRequestQueryParameters` — verifies `ApiRequest.Include` property behavior and query parameter formatting.
+- `FieldHelpers` — verifies `*Fields` constant values match `[JsonPropertyName]` attributes on model records.
+- `IncludeHelpers` — verifies `*Includes` static helper constant values match relationship JSON property names.
+- `SparseFieldsets` — verifies sparse fieldset query parameter construction and serialization.
+- `Webhooks` — offline deserialization test using `Assets/webhook_sample.json`.
+- Additional unit tests under `Tests/Unit/` subdirectories (Helpers, Services, Models, Exceptions, AspNetCore).
+
+### E2E Tests (`PingenApiNet.Tests.E2E`)
+Integration tests that call the real Pingen staging API. Require environment variables:
 
 ```
 PingenApiNet__BaseUri          # e.g. https://api-staging.pingen.com
@@ -140,7 +157,7 @@ PingenApiNet__ClientSecret
 PingenApiNet__OrganisationId
 ```
 
-Tests construct `PingenConnectionHandler` and `PingenApiClient` directly without DI. The `Webhooks.DeserializeWebhookEventData` test is an offline test using `Assets/webhook_sample.json`. The `ApiRequestQueryParameters` tests are also offline — they verify `ApiRequest.Include` property behavior and query parameter formatting without any API calls. The `IncludeHelpers` tests are also offline — they verify all `*Includes` static helper constant values and their usability with `ApiRequest.Include`.
+E2E tests construct `PingenConnectionHandler` and `PingenApiClient` directly without DI. Includes: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit`.
 
 ## Known Constraints and Gotchas
 

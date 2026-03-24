@@ -37,7 +37,7 @@ using PingenApiNet.Abstractions.Models.Users;
 using PingenApiNet.Abstractions.Models.Webhooks;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Offline unit tests for sparse fieldset field helper static classes

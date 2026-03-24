@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
 using PingenApiNet.Abstractions.Models.Letters.Views;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
 ///

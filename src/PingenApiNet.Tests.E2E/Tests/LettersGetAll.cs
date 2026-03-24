@@ -28,7 +28,7 @@ using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Letters;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
 ///
