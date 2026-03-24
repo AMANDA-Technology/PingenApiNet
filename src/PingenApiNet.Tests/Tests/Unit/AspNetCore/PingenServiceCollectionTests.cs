@@ -24,7 +24,7 @@ public class PingenServiceCollectionTests
             "test-client-secret",
             "test-org-id");
 
-        Should.SatisfyAllConditions(
+        services.ShouldSatisfyAllConditions(
             () => services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue("IPingenConfiguration not registered"),
             () => services.Any(s => s.ServiceType == typeof(IPingenConnectionHandler)).ShouldBeTrue("IPingenConnectionHandler not registered"),
             () => services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue("IPingenApiClient not registered"),
@@ -53,7 +53,7 @@ public class PingenServiceCollectionTests
             "test-client-secret",
             "test-org-id");
 
-        Should.SatisfyAllConditions(
+        services.ShouldSatisfyAllConditions(
             () => services.First(s => s.ServiceType == typeof(IPingenConfiguration)).Lifetime
                 .ShouldBe(ServiceLifetime.Singleton, "IPingenConfiguration should be Singleton"),
             () => services.First(s => s.ServiceType == typeof(IPingenConnectionHandler)).Lifetime
@@ -83,7 +83,7 @@ public class PingenServiceCollectionTests
 
         services.AddPingenServices(config);
 
-        Should.SatisfyAllConditions(
+        services.ShouldSatisfyAllConditions(
             () => services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue(),
             () => services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue()
         );

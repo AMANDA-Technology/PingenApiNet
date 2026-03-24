@@ -64,7 +64,7 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Data?.Data.ShouldNotBeNull()
@@ -91,7 +91,7 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.Get(letterId);
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Data?.Data.ShouldNotBeNull()

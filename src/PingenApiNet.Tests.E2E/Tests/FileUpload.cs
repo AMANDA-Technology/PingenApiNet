@@ -47,7 +47,7 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Files.GetPath();
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Data?.Data.ShouldNotBeNull()
@@ -62,7 +62,7 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Files.GetPath();
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Data?.Data.ShouldNotBeNull()
@@ -115,7 +115,7 @@ public class TestGetFileUploadData : TestBase
         });
 
         resLetter.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        resLetter.ShouldSatisfyAllConditions(
             () => resLetter.IsSuccess.ShouldBeTrue(),
             () => resLetter.ApiError.ShouldBeNull(),
             () => resLetter.Data?.Data.ShouldNotBeNull()
@@ -185,7 +185,7 @@ public class TestGetFileUploadData : TestBase
         {
             var res = await PingenApiClient!.Letters.GetEventsPage(letterId, language);
             res.ShouldNotBeNull();
-            Should.SatisfyAllConditions(
+            res.ShouldSatisfyAllConditions(
                 () => res.IsSuccess.ShouldBeTrue(),
                 () => res.ApiError.ShouldBeNull(),
                 () => res.Data?.Data.ShouldNotBeNull()
@@ -211,7 +211,7 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Letters.GetFileLocation(letterId);
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Location.ShouldNotBeNull()

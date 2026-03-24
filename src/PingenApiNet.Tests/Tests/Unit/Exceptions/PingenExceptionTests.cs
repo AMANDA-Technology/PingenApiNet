@@ -32,7 +32,7 @@ public class PingenExceptionTests
 
         var exception = new PingenApiErrorException(apiResult, message);
 
-        Should.SatisfyAllConditions(
+        exception.ShouldSatisfyAllConditions(
             () => exception.Message.ShouldBe(message),
             () => exception.ApiResult.ShouldBeSameAs(apiResult)
         );
@@ -49,7 +49,7 @@ public class PingenExceptionTests
 
         var exception = new PingenApiErrorException(apiResult, "msg", inner);
 
-        Should.SatisfyAllConditions(
+        exception.ShouldSatisfyAllConditions(
             () => exception.InnerException.ShouldBeSameAs(inner),
             () => exception.ApiResult.ShouldBeSameAs(apiResult)
         );
@@ -79,7 +79,7 @@ public class PingenExceptionTests
 
         var exception = new PingenFileDownloadException(errorCode, message);
 
-        Should.SatisfyAllConditions(
+        exception.ShouldSatisfyAllConditions(
             () => exception.ErrorCode.ShouldBe(errorCode),
             () => exception.Message.ShouldBe(message)
         );

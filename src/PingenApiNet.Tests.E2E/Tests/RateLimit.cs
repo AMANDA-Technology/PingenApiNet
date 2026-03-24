@@ -63,7 +63,7 @@ public class RateLimit : TestBase
                         hasRateLimitReached = res.RateLimitRemaining <= 0;
                         await Console.Out.WriteLineAsync($"Call has been failed due to rate limit and can be repeated in {res.RetryAfter} seconds");
 
-                        Should.SatisfyAllConditions(
+                        res.ShouldSatisfyAllConditions(
                             () => res.RateLimitRemaining.ShouldBeLessThanOrEqualTo(0),
                             () => res.RateLimitReset.ShouldNotBeNull(),
                             () => res.RetryAfter.ShouldNotBeNull()
@@ -84,7 +84,7 @@ public class RateLimit : TestBase
                 }
             });
 
-        Should.SatisfyAllConditions(
+        "RateLimitResult".ShouldSatisfyAllConditions(
             () => hasRateLimitReached.ShouldBeTrue(),
             () => cts.IsCancellationRequested.ShouldBeFalse()
         );

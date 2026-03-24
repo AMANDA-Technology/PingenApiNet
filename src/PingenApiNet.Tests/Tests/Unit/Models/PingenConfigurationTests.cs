@@ -22,7 +22,7 @@ public class PingenConfigurationTests
 
         var normalized = config.Normalize();
 
-        Should.SatisfyAllConditions(
+        normalized.ShouldSatisfyAllConditions(
             () => normalized.BaseUri.ShouldBe("https://api.example.com/"),
             () => normalized.IdentityUri.ShouldBe("https://identity.example.com/")
         );
@@ -45,7 +45,7 @@ public class PingenConfigurationTests
 
         var normalized = config.Normalize();
 
-        Should.SatisfyAllConditions(
+        normalized.ShouldSatisfyAllConditions(
             () => normalized.BaseUri.ShouldBe("https://api.example.com/"),
             () => normalized.IdentityUri.ShouldBe("https://identity.example.com/")
         );
@@ -67,7 +67,7 @@ public class PingenConfigurationTests
             WebhookSigningKeys = new Dictionary<string, string> { ["key1"] = "secret1" }
         };
 
-        Should.SatisfyAllConditions(
+        config.ShouldSatisfyAllConditions(
             () => config.BaseUri.ShouldBe("https://api.example.com/"),
             () => config.IdentityUri.ShouldBe("https://identity.example.com/"),
             () => config.ClientId.ShouldBe("my-client-id"),

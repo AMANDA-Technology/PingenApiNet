@@ -78,7 +78,7 @@ public class SparseFieldsets
             PageLimit = 10
         };
 
-        Should.SatisfyAllConditions(
+        request.ShouldSatisfyAllConditions(
             () => request.SparseFieldsets.ShouldNotBeNull(),
             () => request.SparseFieldsets!.Count().ShouldBe(2),
             () => request.PageLimit.ShouldBe(10)
@@ -91,7 +91,7 @@ public class SparseFieldsets
     [Test]
     public void ApiQueryParameterNames_SparseFields_GeneratesCorrectFormat()
     {
-        Should.SatisfyAllConditions(
+        "ApiQueryParameterNames".ShouldSatisfyAllConditions(
             () => ApiQueryParameterNames.SparseFields(PingenApiDataType.letters).ShouldBe("fields[letters]"),
             () => ApiQueryParameterNames.SparseFields(PingenApiDataType.organisations).ShouldBe("fields[organisations]"),
             () => ApiQueryParameterNames.SparseFields(PingenApiDataType.webhooks).ShouldBe("fields[webhooks]"),
@@ -119,7 +119,7 @@ public class SparseFieldsets
         result.ShouldNotBeNull();
         var parameters = result!.ToList();
         parameters.Count.ShouldBe(1);
-        Should.SatisfyAllConditions(
+        parameters.ShouldSatisfyAllConditions(
             () => parameters[0].Key.ShouldBe("fields[letters]"),
             () => parameters[0].Value.ShouldBe("name,status")
         );
@@ -145,7 +145,7 @@ public class SparseFieldsets
         result.ShouldNotBeNull();
         var parameters = result!.ToList();
         parameters.Count.ShouldBe(2);
-        Should.SatisfyAllConditions(
+        parameters.ShouldSatisfyAllConditions(
             () => parameters[0].Key.ShouldBe("fields[letters]"),
             () => parameters[0].Value.ShouldBe("name,status"),
             () => parameters[1].Key.ShouldBe("fields[organisations]"),
@@ -210,7 +210,7 @@ public class SparseFieldsets
         parameters.Count.ShouldBeGreaterThanOrEqualTo(3);
 
         var fieldsParam = parameters.First(p => p.Key.StartsWith("fields["));
-        Should.SatisfyAllConditions(
+        fieldsParam.ShouldSatisfyAllConditions(
             () => fieldsParam.Key.ShouldBe("fields[letters]"),
             () => fieldsParam.Value.ShouldBe("name")
         );

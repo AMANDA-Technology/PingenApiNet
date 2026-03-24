@@ -19,7 +19,7 @@ public class ApiResultTests
     {
         var result = new ApiResult();
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.IsSuccess.ShouldBeFalse(),
             () => result.RequestId.ShouldBe(Guid.Empty),
             () => result.RateLimitLimit.ShouldBe(0),
@@ -54,7 +54,7 @@ public class ApiResultTests
             Location = location
         };
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.IsSuccess.ShouldBeTrue(),
             () => result.RequestId.ShouldBe(requestId),
             () => result.RateLimitLimit.ShouldBe(100),
@@ -78,7 +78,7 @@ public class ApiResultTests
             Data = null
         };
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.IsSuccess.ShouldBeTrue(),
             () => result.Data.ShouldBeNull()
         );
@@ -100,7 +100,7 @@ public class ApiResultTests
             Data = null
         };
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.IsSuccess.ShouldBeTrue(),
             () => result.RequestId.ShouldBe(requestId),
             () => result.RateLimitLimit.ShouldBe(50)
@@ -121,7 +121,7 @@ public class ApiResultTests
             ApiError = error
         };
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.IsSuccess.ShouldBeFalse(),
             () => result.ApiError.ShouldNotBeNull(),
             () => result.ApiError!.Errors.Count.ShouldBe(1)
@@ -136,7 +136,7 @@ public class ApiResultTests
     {
         var meta = new CollectionResultMeta(1, 5, 20, 1, 20, 100);
 
-        Should.SatisfyAllConditions(
+        meta.ShouldSatisfyAllConditions(
             () => meta.CurrentPage.ShouldBe(1),
             () => meta.LastPage.ShouldBe(5),
             () => meta.PerPage.ShouldBe(20),

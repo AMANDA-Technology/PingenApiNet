@@ -51,20 +51,20 @@ public class Webhooks
         webhookEventData?.Data.Attributes.ShouldNotBeNull();
 
         var includedOrganisationFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
-        Should.SatisfyAllConditions(
+        webhookEventData!.ShouldSatisfyAllConditions(
             () => includedOrganisationFound.ShouldBeTrue(),
             () => organisationData.ShouldNotBeNull()
         );
 
         var letterFound = PingenSerialisationHelper.TryGetIncludedData<Letter>(webhookEventData!, out var letterData);
-        Should.SatisfyAllConditions(
+        webhookEventData.ShouldSatisfyAllConditions(
             () => letterFound.ShouldBeTrue(),
             () => letterData.ShouldNotBeNull()
         );
 
         Data<LetterEvent>? letterEventData;
         var letterEventFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out letterEventData);
-        Should.SatisfyAllConditions(
+        webhookEventData.ShouldSatisfyAllConditions(
             () => letterEventFound.ShouldBeTrue(),
             () => letterEventData.ShouldNotBeNull()
         );

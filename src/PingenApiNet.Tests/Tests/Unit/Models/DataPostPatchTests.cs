@@ -25,7 +25,7 @@ public class DataPostPatchTests
             Attributes = attributes
         };
 
-        Should.SatisfyAllConditions(
+        dataPost.ShouldSatisfyAllConditions(
             () => dataPost.Type.ShouldBe(PingenApiDataType.letters),
             () => dataPost.Attributes.ShouldBeSameAs(attributes)
         );
@@ -45,7 +45,7 @@ public class DataPostPatchTests
 
         var json = PingenSerialisationHelper.Serialize(new { data = dataPost });
 
-        Should.SatisfyAllConditions(
+        json.ShouldSatisfyAllConditions(
             () => json.ShouldContain("\"type\":\"letters\""),
             () => json.ShouldContain("\"attributes\""),
             () => json.ShouldContain("\"file_original_name\":\"test.pdf\"")
@@ -67,7 +67,7 @@ public class DataPostPatchTests
             Attributes = attributes
         };
 
-        Should.SatisfyAllConditions(
+        dataPatch.ShouldSatisfyAllConditions(
             () => dataPatch.Id.ShouldBe("letter-123"),
             () => dataPatch.Type.ShouldBe(PingenApiDataType.letters),
             () => dataPatch.Attributes.ShouldBeSameAs(attributes)
@@ -89,7 +89,7 @@ public class DataPostPatchTests
 
         var json = PingenSerialisationHelper.Serialize(new { data = dataPatch });
 
-        Should.SatisfyAllConditions(
+        json.ShouldSatisfyAllConditions(
             () => json.ShouldContain("\"id\":\"letter-456\""),
             () => json.ShouldContain("\"type\":\"letters\""),
             () => json.ShouldContain("\"attributes\"")

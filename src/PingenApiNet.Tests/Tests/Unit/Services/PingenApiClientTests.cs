@@ -32,7 +32,7 @@ public class PingenApiClientTests
             mockFiles,
             mockDistributions);
 
-        Should.SatisfyAllConditions(
+        client.ShouldSatisfyAllConditions(
             () => client.Letters.ShouldBeSameAs(mockLetters),
             () => client.Batches.ShouldBeSameAs(mockBatches),
             () => client.Users.ShouldBeSameAs(mockUsers),

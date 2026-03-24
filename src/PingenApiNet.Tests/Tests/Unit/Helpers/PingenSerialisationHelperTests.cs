@@ -34,7 +34,7 @@ public class PingenSerialisationHelperTests
         var result = PingenSerialisationHelper.Deserialize<DataIdentity>(json);
 
         result.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        result!.ShouldSatisfyAllConditions(
             () => result.Id.ShouldBe("abc-123"),
             () => result.Type.ShouldBe(PingenApiDataType.letters)
         );
@@ -52,7 +52,7 @@ public class PingenSerialisationHelperTests
         var result = await PingenSerialisationHelper.DeserializeAsync<DataIdentity>(stream);
 
         result.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        result!.ShouldSatisfyAllConditions(
             () => result.Id.ShouldBe("def-456"),
             () => result.Type.ShouldBe(PingenApiDataType.batches)
         );
@@ -79,7 +79,7 @@ public class PingenSerialisationHelperTests
     {
         var mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
-        Should.SatisfyAllConditions(
+        mapping.ShouldSatisfyAllConditions(
             () => mapping.ContainsKey(PingenApiDataType.letters).ShouldBeTrue(),
             () => mapping.ContainsKey(PingenApiDataType.batches).ShouldBeTrue(),
             () => mapping.ContainsKey(PingenApiDataType.organisations).ShouldBeTrue(),

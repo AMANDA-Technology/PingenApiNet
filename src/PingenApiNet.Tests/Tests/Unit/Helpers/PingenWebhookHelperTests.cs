@@ -66,7 +66,7 @@ public class PingenWebhookHelperTests
         var (webhookEventData, organisationData, letterData, letterEventData) =
             await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
 
-        Should.SatisfyAllConditions(
+        webhookEventData.ShouldSatisfyAllConditions(
             () => webhookEventData.ShouldNotBeNull(),
             () => organisationData.ShouldNotBeNull(),
             () => letterData.ShouldNotBeNull(),

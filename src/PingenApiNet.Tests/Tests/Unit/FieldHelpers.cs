@@ -50,7 +50,7 @@ public class FieldHelpers
     [Test]
     public void LetterFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "LetterFields".ShouldSatisfyAllConditions(
             () => LetterFields.Status.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Status)),
             () => LetterFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FileOriginalName)),
             () => LetterFields.FilePages.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FilePages)),
@@ -77,7 +77,7 @@ public class FieldHelpers
     [Test]
     public void BatchFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "BatchFields".ShouldSatisfyAllConditions(
             () => BatchFields.Name.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Name)),
             () => BatchFields.Icon.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Icon)),
             () => BatchFields.Status.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Status)),
@@ -100,7 +100,7 @@ public class FieldHelpers
     [Test]
     public void OrganisationFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "OrganisationFields".ShouldSatisfyAllConditions(
             () => OrganisationFields.Name.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Name)),
             () => OrganisationFields.Status.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Status)),
             () => OrganisationFields.Plan.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Plan)),
@@ -123,7 +123,7 @@ public class FieldHelpers
     [Test]
     public void UserFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "UserFields".ShouldSatisfyAllConditions(
             () => UserFields.Email.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Email)),
             () => UserFields.FirstName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.FirstName)),
             () => UserFields.LastName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.LastName)),
@@ -140,7 +140,7 @@ public class FieldHelpers
     [Test]
     public void UserAssociationFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "UserAssociationFields".ShouldSatisfyAllConditions(
             () => UserAssociationFields.Role.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Role)),
             () => UserAssociationFields.Status.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Status)),
             () => UserAssociationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.CreatedAt)),
@@ -154,7 +154,7 @@ public class FieldHelpers
     [Test]
     public void WebhookFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "WebhookFields".ShouldSatisfyAllConditions(
             () => WebhookFields.EventCategory.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.EventCategory)),
             () => WebhookFields.Url.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.Url)),
             () => WebhookFields.SigningKey.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.SigningKey))
@@ -167,7 +167,7 @@ public class FieldHelpers
     [Test]
     public void LetterEventFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "LetterEventFields".ShouldSatisfyAllConditions(
             () => LetterEventFields.Code.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Code)),
             () => LetterEventFields.Name.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Name)),
             () => LetterEventFields.Producer.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Producer)),
@@ -186,7 +186,7 @@ public class FieldHelpers
     [Test]
     public void WebhookEventFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "WebhookEventFields".ShouldSatisfyAllConditions(
             () => WebhookEventFields.Reason.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason)),
             () => WebhookEventFields.Url.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url)),
             () => WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt))
@@ -199,7 +199,7 @@ public class FieldHelpers
     [Test]
     public void DeliveryProductFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "DeliveryProductFields".ShouldSatisfyAllConditions(
             () => DeliveryProductFields.Countries.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Countries)),
             () => DeliveryProductFields.Name.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Name)),
             () => DeliveryProductFields.FullName.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.FullName)),
@@ -216,7 +216,7 @@ public class FieldHelpers
     [Test]
     public void LetterPriceFields_ConstantsMatchJsonPropertyNames()
     {
-        Should.SatisfyAllConditions(
+        "LetterPriceFields".ShouldSatisfyAllConditions(
             () => LetterPriceFields.Currency.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Currency)),
             () => LetterPriceFields.Price.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Price))
         );
@@ -238,7 +238,7 @@ public class FieldHelpers
         };
 
         var letterEntry = request.SparseFieldsets!.First(e => e.Key == PingenApiDataType.letters);
-        Should.SatisfyAllConditions(
+        request.ShouldSatisfyAllConditions(
             () => request.SparseFieldsets.ShouldNotBeNull(),
             () => request.SparseFieldsets!.Count().ShouldBe(2),
             () => letterEntry.Value.ShouldBe(new[] { "status", "created_at" }, ignoreOrder: true)
@@ -255,7 +255,7 @@ public class FieldHelpers
 
         var letter = PingenSerialisationHelper.Deserialize<Letter>(sparseJson);
 
-        Should.SatisfyAllConditions(
+        letter!.ShouldSatisfyAllConditions(
             () => letter.ShouldNotBeNull(),
             () => letter!.Status.ShouldBe("valid"),
             () => letter!.FileOriginalName.ShouldBeNull(),
@@ -282,7 +282,7 @@ public class FieldHelpers
 
         var batch = PingenSerialisationHelper.Deserialize<Batch>(sparseJson);
 
-        Should.SatisfyAllConditions(
+        batch!.ShouldSatisfyAllConditions(
             () => batch.ShouldNotBeNull(),
             () => batch!.Name.ShouldBe("test-batch"),
             () => batch!.Status.ShouldBe("created"),

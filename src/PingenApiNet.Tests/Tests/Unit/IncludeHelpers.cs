@@ -43,7 +43,7 @@ public class IncludeHelpers
     [Test]
     public void LetterIncludes_ConstantsMatchRelationshipNames()
     {
-        Should.SatisfyAllConditions(
+        "LetterIncludes".ShouldSatisfyAllConditions(
             () => LetterIncludes.Organisation.ShouldBe("organisation"),
             () => LetterIncludes.Batch.ShouldBe("batch")
         );
@@ -96,7 +96,7 @@ public class IncludeHelpers
             Include = [LetterIncludes.Organisation, LetterIncludes.Batch]
         };
 
-        Should.SatisfyAllConditions(
+        request.ShouldSatisfyAllConditions(
             () => request.Include.ShouldBe(new[] { "organisation", "batch" }, ignoreOrder: true),
             () => string.Join(',', request.Include!).ShouldBe("organisation,batch")
         );

@@ -83,7 +83,7 @@ public class ApiRequestQueryParameters
 
         var result = string.Join(',', includeValues);
 
-        Should.SatisfyAllConditions(
+        result.ShouldSatisfyAllConditions(
             () => result.ShouldBe(expected),
             () => ApiQueryParameterNames.Include.ShouldBe("include")
         );

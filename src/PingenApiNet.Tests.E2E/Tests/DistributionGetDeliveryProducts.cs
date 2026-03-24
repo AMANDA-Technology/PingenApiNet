@@ -64,7 +64,7 @@ public class DistributionGetDeliveryProducts : TestBase
 
         var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Should.SatisfyAllConditions(
+        res.ShouldSatisfyAllConditions(
             () => res.IsSuccess.ShouldBeTrue(),
             () => res.ApiError.ShouldBeNull(),
             () => res.Data?.Data.ShouldNotBeNull()
@@ -86,7 +86,7 @@ public class DistributionGetDeliveryProducts : TestBase
             error = e.ApiResult?.ApiError;
         }
 
-        Should.SatisfyAllConditions(
+        deliveryProducts.ShouldSatisfyAllConditions(
             () => deliveryProducts.ShouldNotBeEmpty(),
             () => error.ShouldBeNull()
         );
