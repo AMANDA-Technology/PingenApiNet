@@ -258,17 +258,17 @@ public class FieldHelpers
         Should.SatisfyAllConditions(
             () => letter.ShouldNotBeNull(),
             () => letter!.Status.ShouldBe("valid"),
-            () => letter.FileOriginalName.ShouldBeNull(),
-            () => letter.Address.ShouldBeNull(),
-            () => letter.AddressPosition.ShouldBeNull(),
-            () => letter.Country.ShouldBeNull(),
-            () => letter.DeliveryProduct.ShouldBeNull(),
-            () => letter.PrintMode.ShouldBeNull(),
-            () => letter.PrintSpectrum.ShouldBeNull(),
-            () => letter.PriceCurrency.ShouldBeNull(),
-            () => letter.PaperTypes.ShouldBeNull(),
-            () => letter.Fonts.ShouldBeNull(),
-            () => letter.TrackingNumber.ShouldBeNull()
+            () => letter!.FileOriginalName.ShouldBeNull(),
+            () => letter!.Address.ShouldBeNull(),
+            () => letter!.AddressPosition.ShouldBeNull(),
+            () => letter!.Country.ShouldBeNull(),
+            () => letter!.DeliveryProduct.ShouldBeNull(),
+            () => letter!.PrintMode.ShouldBeNull(),
+            () => letter!.PrintSpectrum.ShouldBeNull(),
+            () => letter!.PriceCurrency.ShouldBeNull(),
+            () => letter!.PaperTypes.ShouldBeNull(),
+            () => letter!.Fonts.ShouldBeNull(),
+            () => letter!.TrackingNumber.ShouldBeNull()
         );
     }
 
@@ -285,10 +285,10 @@ public class FieldHelpers
         Should.SatisfyAllConditions(
             () => batch.ShouldNotBeNull(),
             () => batch!.Name.ShouldBe("test-batch"),
-            () => batch.Status.ShouldBe("created"),
-            () => batch.Icon.ShouldBeNull(),
-            () => batch.FileOriginalName.ShouldBeNull(),
-            () => batch.AddressPosition.ShouldBeNull()
+            () => batch!.Status.ShouldBe("created"),
+            () => batch!.Icon.ShouldBeNull(),
+            () => batch!.FileOriginalName.ShouldBeNull(),
+            () => batch!.AddressPosition.ShouldBeNull()
         );
     }
 }
