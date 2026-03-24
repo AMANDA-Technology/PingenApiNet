@@ -14,10 +14,10 @@ C4Container
     Person(developer, "Application Developer")
 
     Container_Boundary(library, "PingenApiNet Library") {
-        Container(aspnetcore, "PingenApiNet.AspNetCore", ".NET 9 / C#", "IServiceCollection extension for registering all Pingen services and HTTP clients in ASP.NET Core DI containers")
-        Container(core, "PingenApiNet", ".NET 9 / C#", "Core API client: connection handler, authentication, HTTP request construction, response parsing, and connector services per resource type")
-        Container(abstractions, "PingenApiNet.Abstractions", ".NET 9 / C#", "All models, enums, interfaces, exceptions, and helpers. Zero NuGet dependencies. Safe for reference in domain layers.")
-        Container(tests, "PingenApiNet.Tests", ".NET 9 / NUnit 4", "Integration test suite. Not packaged. Calls real Pingen staging API.")
+        Container(aspnetcore, "PingenApiNet.AspNetCore", ".NET 10 / C#", "IServiceCollection extension for registering all Pingen services and HTTP clients in ASP.NET Core DI containers")
+        Container(core, "PingenApiNet", ".NET 10 / C#", "Core API client: connection handler, authentication, HTTP request construction, response parsing, and connector services per resource type")
+        Container(abstractions, "PingenApiNet.Abstractions", ".NET 10 / C#", "All models, enums, interfaces, exceptions, and helpers. Zero NuGet dependencies. Safe for reference in domain layers.")
+        Container(tests, "PingenApiNet.Tests", ".NET 10 / NUnit 4", "Integration test suite. Not packaged. Calls real Pingen staging API.")
     }
 
     System_Ext(pingenApi, "Pingen API", "JSON:API REST")
@@ -58,7 +58,7 @@ C4Container
 |---|---|
 | Repo path | `src/PingenApiNet/` |
 | Namespace root | `PingenApiNet` |
-| NuGet dependencies | `Microsoft.Extensions.Http` 9.0.x |
+| NuGet dependencies | `Microsoft.Extensions.Http` 10.0.x |
 | Responsibility | HTTP client management, OAuth 2.0 token lifecycle, URL construction, request dispatch, response parsing, connector services |
 | Main entry points | `IPingenApiClient` / `PingenApiClient`, `IPingenConnectionHandler` / `PingenConnectionHandler` |
 | Connector services | `LetterService`, `BatchService`, `UserService`, `OrganisationService`, `WebhookService`, `FilesService`, `DistributionService` |
@@ -70,7 +70,7 @@ C4Container
 |---|---|
 | Repo path | `src/PingenApiNet.AspNetCore/` |
 | Namespace root | `PingenApiNet.AspNetCore` |
-| NuGet dependencies | `Microsoft.Extensions.DependencyInjection` 9.0.x |
+| NuGet dependencies | `Microsoft.Extensions.DependencyInjection` 10.0.x |
 | Responsibility | Single static class `PingenServiceCollection` with `AddPingenServices()` extension method. Registers all named HTTP clients and scoped services. |
 | Consumer API | `services.AddPingenServices(configuration)` or `services.AddPingenServices(baseUri, identityUri, clientId, clientSecret, orgId)` |
 

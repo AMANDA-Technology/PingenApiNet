@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Collection sort direction
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<CollectionSortDirection>))]
 public enum CollectionSortDirection
 {
     /// <summary>

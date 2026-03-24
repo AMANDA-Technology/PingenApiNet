@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Letters;
 /// <summary>
 /// Letter address position. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<LetterAddressPosition>))]
 public enum LetterAddressPosition
 {
     /// <summary>

@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Users;
 /// <summary>
 /// User role
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<UserRole>))]
 public enum UserRole
 {
     /// <summary>

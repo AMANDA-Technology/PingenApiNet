@@ -97,7 +97,7 @@ public abstract class ConnectorService : IConnectorService
         {
             result = await getPage.Invoke(apiReRequest);
             HandleResult(result);
-            yield return result.Data?.Data ?? Enumerable.Empty<TData>();
+            yield return result.Data?.Data ?? [];
 
             apiReRequest = apiReRequest with { PageNumber = apiReRequest.PageNumber + 1 };
         } while (result.Data?.Meta is not null

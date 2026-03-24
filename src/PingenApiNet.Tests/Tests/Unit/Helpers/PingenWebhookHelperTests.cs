@@ -95,6 +95,6 @@ public class PingenWebhookHelperTests
         var keyBytes = Encoding.UTF8.GetBytes(key);
         using var hmac = new HMACSHA256(keyBytes);
         var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
-        return hash.Aggregate("", (current, t) => current + t.ToString("x2"));
+        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 }

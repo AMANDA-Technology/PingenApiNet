@@ -176,7 +176,7 @@ public class SparseFieldsets
     {
         var apiRequest = new ApiRequest
         {
-            SparseFieldsets = Enumerable.Empty<KeyValuePair<PingenApiDataType, IEnumerable<string>>>()
+            SparseFieldsets = []
         };
 
         var result = InvokeGetQueryParameters(apiRequest);
