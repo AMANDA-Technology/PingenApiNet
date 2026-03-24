@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API currency
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<PingenApiCurrency>))]
 public enum PingenApiCurrency
 {
     /// <summary>

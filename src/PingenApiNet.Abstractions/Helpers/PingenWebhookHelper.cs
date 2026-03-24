@@ -94,8 +94,8 @@ public static class PingenWebhookHelper
     /// </summary>
     /// <param name="buff"></param>
     /// <returns></returns>
-    private static string ByteToString(IEnumerable<byte> buff)
+    private static string ByteToString(byte[] buff)
     {
-        return buff.Aggregate("", (current, t) => current + t.ToString("x2"));
+        return Convert.ToHexString(buff).ToLowerInvariant();
     }
 }

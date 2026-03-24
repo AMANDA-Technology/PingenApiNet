@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Batches;
 /// <summary>
 /// Batch icon
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<BatchIcon>))]
 public enum BatchIcon
 {
     /// <summary>

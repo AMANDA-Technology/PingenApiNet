@@ -32,7 +32,7 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API data type to identify the kind of data transported in requests
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<PingenApiDataType>))]
 public enum PingenApiDataType
 {
     /// <summary>

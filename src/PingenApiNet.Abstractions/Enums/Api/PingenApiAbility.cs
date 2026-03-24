@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API ability
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<PingenApiAbility>))]
 public enum PingenApiAbility
 {
     /// <summary>

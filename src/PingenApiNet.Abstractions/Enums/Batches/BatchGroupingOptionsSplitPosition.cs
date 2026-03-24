@@ -30,7 +30,7 @@ namespace PingenApiNet.Abstractions.Enums.Batches;
 /// <summary>
 /// Batch grouping split position options
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<BatchGroupingOptionsSplitPosition>))]
 public enum BatchGroupingOptionsSplitPosition
 {
     /// <summary>

@@ -31,7 +31,7 @@ namespace PingenApiNet.Abstractions.Enums.Users;
 /// <summary>
 /// User association status
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<UserAssociationStatus>))]
 public enum UserAssociationStatus
 {
     /// <summary>
