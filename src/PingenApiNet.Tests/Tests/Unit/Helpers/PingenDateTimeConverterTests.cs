@@ -32,12 +32,11 @@ public class PingenDateTimeConverterTests
         var result = PingenSerialisationHelper.Deserialize<DateTimeHolder>(json);
 
         result.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            result.Date.Year.ShouldBe(2024);
-            result.Date.Month.ShouldBe(6);
-            result.Date.Day.ShouldBe(15);
-        });
+        result!.ShouldSatisfyAllConditions(
+            () => result.Date.Year.ShouldBe(2024),
+            () => result.Date.Month.ShouldBe(6),
+            () => result.Date.Day.ShouldBe(15)
+        );
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ using System.Reflection;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.Api;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Tests for sparse fieldset query parameter support
@@ -78,12 +78,11 @@ public class SparseFieldsets
             PageLimit = 10
         };
 
-        Assert.Multiple(() =>
-        {
-            request.SparseFieldsets.ShouldNotBeNull();
-            request.SparseFieldsets!.Count().ShouldBe(2);
-            request.PageLimit.ShouldBe(10);
-        });
+        request.ShouldSatisfyAllConditions(
+            () => request.SparseFieldsets.ShouldNotBeNull(),
+            () => request.SparseFieldsets!.Count().ShouldBe(2),
+            () => request.PageLimit.ShouldBe(10)
+        );
     }
 
     /// <summary>
@@ -92,14 +91,13 @@ public class SparseFieldsets
     [Test]
     public void ApiQueryParameterNames_SparseFields_GeneratesCorrectFormat()
     {
-        Assert.Multiple(() =>
-        {
-            ApiQueryParameterNames.SparseFields(PingenApiDataType.letters).ShouldBe("fields[letters]");
-            ApiQueryParameterNames.SparseFields(PingenApiDataType.organisations).ShouldBe("fields[organisations]");
-            ApiQueryParameterNames.SparseFields(PingenApiDataType.webhooks).ShouldBe("fields[webhooks]");
-            ApiQueryParameterNames.SparseFields(PingenApiDataType.batches).ShouldBe("fields[batches]");
-            ApiQueryParameterNames.SparseFields(PingenApiDataType.users).ShouldBe("fields[users]");
-        });
+        "ApiQueryParameterNames".ShouldSatisfyAllConditions(
+            () => ApiQueryParameterNames.SparseFields(PingenApiDataType.letters).ShouldBe("fields[letters]"),
+            () => ApiQueryParameterNames.SparseFields(PingenApiDataType.organisations).ShouldBe("fields[organisations]"),
+            () => ApiQueryParameterNames.SparseFields(PingenApiDataType.webhooks).ShouldBe("fields[webhooks]"),
+            () => ApiQueryParameterNames.SparseFields(PingenApiDataType.batches).ShouldBe("fields[batches]"),
+            () => ApiQueryParameterNames.SparseFields(PingenApiDataType.users).ShouldBe("fields[users]")
+        );
     }
 
     /// <summary>
@@ -121,11 +119,10 @@ public class SparseFieldsets
         result.ShouldNotBeNull();
         var parameters = result!.ToList();
         parameters.Count.ShouldBe(1);
-        Assert.Multiple(() =>
-        {
-            parameters[0].Key.ShouldBe("fields[letters]");
-            parameters[0].Value.ShouldBe("name,status");
-        });
+        parameters.ShouldSatisfyAllConditions(
+            () => parameters[0].Key.ShouldBe("fields[letters]"),
+            () => parameters[0].Value.ShouldBe("name,status")
+        );
     }
 
     /// <summary>
@@ -148,13 +145,12 @@ public class SparseFieldsets
         result.ShouldNotBeNull();
         var parameters = result!.ToList();
         parameters.Count.ShouldBe(2);
-        Assert.Multiple(() =>
-        {
-            parameters[0].Key.ShouldBe("fields[letters]");
-            parameters[0].Value.ShouldBe("name,status");
-            parameters[1].Key.ShouldBe("fields[organisations]");
-            parameters[1].Value.ShouldBe("name");
-        });
+        parameters.ShouldSatisfyAllConditions(
+            () => parameters[0].Key.ShouldBe("fields[letters]"),
+            () => parameters[0].Value.ShouldBe("name,status"),
+            () => parameters[1].Key.ShouldBe("fields[organisations]"),
+            () => parameters[1].Value.ShouldBe("name")
+        );
     }
 
     /// <summary>
@@ -214,11 +210,10 @@ public class SparseFieldsets
         parameters.Count.ShouldBeGreaterThanOrEqualTo(3);
 
         var fieldsParam = parameters.First(p => p.Key.StartsWith("fields["));
-        Assert.Multiple(() =>
-        {
-            fieldsParam.Key.ShouldBe("fields[letters]");
-            fieldsParam.Value.ShouldBe("name");
-        });
+        fieldsParam.ShouldSatisfyAllConditions(
+            () => fieldsParam.Key.ShouldBe("fields[letters]"),
+            () => fieldsParam.Value.ShouldBe("name")
+        );
     }
 
     /// <summary>

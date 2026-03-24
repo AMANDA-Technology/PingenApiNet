@@ -31,12 +31,12 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 ///
 /// </summary>
-public class Webhooks : TestBase
+public class Webhooks
 {
     /// <summary>
     ///
@@ -51,25 +51,22 @@ public class Webhooks : TestBase
         webhookEventData?.Data.Attributes.ShouldNotBeNull();
 
         var includedOrganisationFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
-        Assert.Multiple(() =>
-        {
-            includedOrganisationFound.ShouldBeTrue();
-            organisationData.ShouldNotBeNull();
-        });
+        webhookEventData!.ShouldSatisfyAllConditions(
+            () => includedOrganisationFound.ShouldBeTrue(),
+            () => organisationData.ShouldNotBeNull()
+        );
 
         var letterFound = PingenSerialisationHelper.TryGetIncludedData<Letter>(webhookEventData!, out var letterData);
-        Assert.Multiple(() =>
-        {
-            letterFound.ShouldBeTrue();
-            letterData.ShouldNotBeNull();
-        });
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => letterFound.ShouldBeTrue(),
+            () => letterData.ShouldNotBeNull()
+        );
 
         Data<LetterEvent>? letterEventData;
         var letterEventFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out letterEventData);
-        Assert.Multiple(() =>
-        {
-            letterEventFound.ShouldBeTrue();
-            letterEventData.ShouldNotBeNull();
-        });
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => letterEventFound.ShouldBeTrue(),
+            () => letterEventData.ShouldNotBeNull()
+        );
     }
 }

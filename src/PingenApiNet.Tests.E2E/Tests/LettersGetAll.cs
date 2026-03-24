@@ -28,7 +28,7 @@ using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Letters;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
 ///
@@ -64,12 +64,11 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
 
         var letters = new List<LetterData>();
         await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync(apiPagingRequest))
@@ -92,11 +91,10 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.Get(letterId);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
     }
 }

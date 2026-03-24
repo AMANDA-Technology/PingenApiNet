@@ -1,6 +1,6 @@
-﻿using PingenApiNet.Services.Connectors;
+using PingenApiNet.Services.Connectors;
 
-namespace PingenApiNet.Tests;
+namespace PingenApiNet.Tests.E2E;
 
 /// <summary>
 /// Base class for all pingen API tests

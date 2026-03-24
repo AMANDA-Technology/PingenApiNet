@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.DeliveryProducts;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
 ///
@@ -64,12 +64,11 @@ public class DistributionGetDeliveryProducts : TestBase
 
         var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
 
         // Get all pages with filter
         var deliveryProducts = new List<DeliveryProductData>();
@@ -87,10 +86,9 @@ public class DistributionGetDeliveryProducts : TestBase
             error = e.ApiResult?.ApiError;
         }
 
-        Assert.Multiple(() =>
-        {
-            deliveryProducts.ShouldNotBeEmpty();
-            error.ShouldBeNull();
-        });
+        deliveryProducts.ShouldSatisfyAllConditions(
+            () => deliveryProducts.ShouldNotBeEmpty(),
+            () => error.ShouldBeNull()
+        );
     }
 }

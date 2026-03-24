@@ -34,11 +34,10 @@ public class PingenSerialisationHelperTests
         var result = PingenSerialisationHelper.Deserialize<DataIdentity>(json);
 
         result.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            result.Id.ShouldBe("abc-123");
-            result.Type.ShouldBe(PingenApiDataType.letters);
-        });
+        result!.ShouldSatisfyAllConditions(
+            () => result.Id.ShouldBe("abc-123"),
+            () => result.Type.ShouldBe(PingenApiDataType.letters)
+        );
     }
 
     /// <summary>
@@ -53,11 +52,10 @@ public class PingenSerialisationHelperTests
         var result = await PingenSerialisationHelper.DeserializeAsync<DataIdentity>(stream);
 
         result.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            result.Id.ShouldBe("def-456");
-            result.Type.ShouldBe(PingenApiDataType.batches);
-        });
+        result!.ShouldSatisfyAllConditions(
+            () => result.Id.ShouldBe("def-456"),
+            () => result.Type.ShouldBe(PingenApiDataType.batches)
+        );
     }
 
     /// <summary>
@@ -81,16 +79,15 @@ public class PingenSerialisationHelperTests
     {
         var mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
-        Assert.Multiple(() =>
-        {
-            mapping.ContainsKey(PingenApiDataType.letters).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.batches).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.organisations).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.webhooks).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.users).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.file_uploads).ShouldBeTrue();
-            mapping.ContainsKey(PingenApiDataType.delivery_products).ShouldBeTrue();
-        });
+        mapping.ShouldSatisfyAllConditions(
+            () => mapping.ContainsKey(PingenApiDataType.letters).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.batches).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.organisations).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.webhooks).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.users).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.file_uploads).ShouldBeTrue(),
+            () => mapping.ContainsKey(PingenApiDataType.delivery_products).ShouldBeTrue()
+        );
     }
 
     /// <summary>

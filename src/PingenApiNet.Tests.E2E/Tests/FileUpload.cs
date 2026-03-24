@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Letters.Embedded;
 using PingenApiNet.Abstractions.Models.Letters.Views;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
 ///
@@ -47,12 +47,11 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Files.GetPath();
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
     }
 
     [Test]
@@ -63,12 +62,11 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Files.GetPath();
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
 
         MemoryStream stream = new();
         await File.OpenRead($"Assets/{fileName}").CopyToAsync(stream);
@@ -117,12 +115,11 @@ public class TestGetFileUploadData : TestBase
         });
 
         resLetter.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            resLetter.IsSuccess.ShouldBeTrue();
-            resLetter.ApiError.ShouldBeNull();
-            resLetter.Data?.Data.ShouldNotBeNull();
-        });
+        resLetter.ShouldSatisfyAllConditions(
+            () => resLetter.IsSuccess.ShouldBeTrue(),
+            () => resLetter.ApiError.ShouldBeNull(),
+            () => resLetter.Data?.Data.ShouldNotBeNull()
+        );
 
         var letterId = resLetter.Data!.Data.Id;
 
@@ -188,12 +185,11 @@ public class TestGetFileUploadData : TestBase
         {
             var res = await PingenApiClient!.Letters.GetEventsPage(letterId, language);
             res.ShouldNotBeNull();
-            Assert.Multiple(() =>
-            {
-                res.IsSuccess.ShouldBeTrue();
-                res.ApiError.ShouldBeNull();
-                res.Data?.Data.ShouldNotBeNull();
-            });
+            res.ShouldSatisfyAllConditions(
+                () => res.IsSuccess.ShouldBeTrue(),
+                () => res.ApiError.ShouldBeNull(),
+                () => res.Data?.Data.ShouldNotBeNull()
+            );
         }
     }
 
@@ -215,12 +211,11 @@ public class TestGetFileUploadData : TestBase
 
         var res = await PingenApiClient!.Letters.GetFileLocation(letterId);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Location.ShouldNotBeNull();
-        });
+        res.ShouldSatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Location.ShouldNotBeNull()
+        );
 
         var stream = await PingenApiClient.Letters.DownloadFileContent(res.Location!);
         await using (var file = File.OpenWrite(filePath))

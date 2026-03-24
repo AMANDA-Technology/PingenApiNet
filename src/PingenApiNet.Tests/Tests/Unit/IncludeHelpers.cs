@@ -30,7 +30,7 @@ using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.UserAssociations;
 using PingenApiNet.Abstractions.Models.Webhooks;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Offline unit tests for include helper static classes
@@ -43,11 +43,10 @@ public class IncludeHelpers
     [Test]
     public void LetterIncludes_ConstantsMatchRelationshipNames()
     {
-        Assert.Multiple(() =>
-        {
-            LetterIncludes.Organisation.ShouldBe("organisation");
-            LetterIncludes.Batch.ShouldBe("batch");
-        });
+        "LetterIncludes".ShouldSatisfyAllConditions(
+            () => LetterIncludes.Organisation.ShouldBe("organisation"),
+            () => LetterIncludes.Batch.ShouldBe("batch")
+        );
     }
 
     /// <summary>
@@ -97,10 +96,9 @@ public class IncludeHelpers
             Include = [LetterIncludes.Organisation, LetterIncludes.Batch]
         };
 
-        Assert.Multiple(() =>
-        {
-            request.Include.ShouldBe(new[] { "organisation", "batch" }, ignoreOrder: true);
-            string.Join(',', request.Include!).ShouldBe("organisation,batch");
-        });
+        request.ShouldSatisfyAllConditions(
+            () => request.Include.ShouldBe(new[] { "organisation", "batch" }, ignoreOrder: true),
+            () => string.Join(',', request.Include!).ShouldBe("organisation,batch")
+        );
     }
 }

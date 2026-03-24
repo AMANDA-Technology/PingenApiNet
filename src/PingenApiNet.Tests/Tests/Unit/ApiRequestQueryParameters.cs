@@ -26,7 +26,7 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.Api;
 
-namespace PingenApiNet.Tests.Tests;
+namespace PingenApiNet.Tests.Tests.Unit;
 
 /// <summary>
 /// Offline unit tests for API request query parameter construction
@@ -83,10 +83,9 @@ public class ApiRequestQueryParameters
 
         var result = string.Join(',', includeValues);
 
-        Assert.Multiple(() =>
-        {
-            result.ShouldBe(expected);
-            ApiQueryParameterNames.Include.ShouldBe("include");
-        });
+        result.ShouldSatisfyAllConditions(
+            () => result.ShouldBe(expected),
+            () => ApiQueryParameterNames.Include.ShouldBe("include")
+        );
     }
 }
