@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
 
@@ -47,7 +46,7 @@ public enum BatchIcon
     /// <summary>
     /// Wave-hand
     /// </summary>
-    [EnumMember(Value = "wave-hand")]
+    [JsonStringEnumMemberName("wave-hand")]
     waveHand,
 
     /// <summary>
@@ -68,13 +67,13 @@ public enum BatchIcon
     /// <summary>
     /// Percent-tag
     /// </summary>
-    [EnumMember(Value = "percent-tag")]
+    [JsonStringEnumMemberName("percent-tag")]
     percentTag,
 
     /// <summary>
     /// Percent-badge
     /// </summary>
-    [EnumMember(Value = "percent-badge")]
+    [JsonStringEnumMemberName("percent-badge")]
     percentBadge,
 
     /// <summary>

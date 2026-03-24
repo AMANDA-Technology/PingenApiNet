@@ -29,7 +29,7 @@ using System.Text.Json.Serialization;
 namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Pingen API languages
+/// Pingen API webhook event category
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter<WebhookEventCategory>))]
 public enum WebhookEventCategory
