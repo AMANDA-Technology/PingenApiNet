@@ -19,18 +19,17 @@ public class ApiResultTests
     {
         var result = new ApiResult();
 
-        Assert.Multiple(() =>
-        {
-            result.IsSuccess.ShouldBeFalse();
-            result.RequestId.ShouldBe(Guid.Empty);
-            result.RateLimitLimit.ShouldBe(0);
-            result.RateLimitRemaining.ShouldBe(0);
-            result.RateLimitReset.ShouldBeNull();
-            result.RetryAfter.ShouldBeNull();
-            result.IdempotentReplayed.ShouldBeFalse();
-            result.ApiError.ShouldBeNull();
-            result.Location.ShouldBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.RequestId.ShouldBe(Guid.Empty),
+            () => result.RateLimitLimit.ShouldBe(0),
+            () => result.RateLimitRemaining.ShouldBe(0),
+            () => result.RateLimitReset.ShouldBeNull(),
+            () => result.RetryAfter.ShouldBeNull(),
+            () => result.IdempotentReplayed.ShouldBeFalse(),
+            () => result.ApiError.ShouldBeNull(),
+            () => result.Location.ShouldBeNull()
+        );
     }
 
     /// <summary>
@@ -55,17 +54,16 @@ public class ApiResultTests
             Location = location
         };
 
-        Assert.Multiple(() =>
-        {
-            result.IsSuccess.ShouldBeTrue();
-            result.RequestId.ShouldBe(requestId);
-            result.RateLimitLimit.ShouldBe(100);
-            result.RateLimitRemaining.ShouldBe(99);
-            result.RateLimitReset.ShouldBe(resetTime);
-            result.RetryAfter.ShouldBe(30);
-            result.IdempotentReplayed.ShouldBeTrue();
-            result.Location.ShouldBe(location);
-        });
+        Should.SatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.RequestId.ShouldBe(requestId),
+            () => result.RateLimitLimit.ShouldBe(100),
+            () => result.RateLimitRemaining.ShouldBe(99),
+            () => result.RateLimitReset.ShouldBe(resetTime),
+            () => result.RetryAfter.ShouldBe(30),
+            () => result.IdempotentReplayed.ShouldBeTrue(),
+            () => result.Location.ShouldBe(location)
+        );
     }
 
     /// <summary>
@@ -80,11 +78,10 @@ public class ApiResultTests
             Data = null
         };
 
-        Assert.Multiple(() =>
-        {
-            result.IsSuccess.ShouldBeTrue();
-            result.Data.ShouldBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.Data.ShouldBeNull()
+        );
     }
 
     /// <summary>
@@ -103,12 +100,11 @@ public class ApiResultTests
             Data = null
         };
 
-        Assert.Multiple(() =>
-        {
-            result.IsSuccess.ShouldBeTrue();
-            result.RequestId.ShouldBe(requestId);
-            result.RateLimitLimit.ShouldBe(50);
-        });
+        Should.SatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.RequestId.ShouldBe(requestId),
+            () => result.RateLimitLimit.ShouldBe(50)
+        );
     }
 
     /// <summary>
@@ -125,12 +121,11 @@ public class ApiResultTests
             ApiError = error
         };
 
-        Assert.Multiple(() =>
-        {
-            result.IsSuccess.ShouldBeFalse();
-            result.ApiError.ShouldNotBeNull();
-            result.ApiError!.Errors.Count.ShouldBe(1);
-        });
+        Should.SatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldNotBeNull(),
+            () => result.ApiError!.Errors.Count.ShouldBe(1)
+        );
     }
 
     /// <summary>
@@ -141,14 +136,13 @@ public class ApiResultTests
     {
         var meta = new CollectionResultMeta(1, 5, 20, 1, 20, 100);
 
-        Assert.Multiple(() =>
-        {
-            meta.CurrentPage.ShouldBe(1);
-            meta.LastPage.ShouldBe(5);
-            meta.PerPage.ShouldBe(20);
-            meta.From.ShouldBe(1);
-            meta.To.ShouldBe(20);
-            meta.Total.ShouldBe(100);
-        });
+        Should.SatisfyAllConditions(
+            () => meta.CurrentPage.ShouldBe(1),
+            () => meta.LastPage.ShouldBe(5),
+            () => meta.PerPage.ShouldBe(20),
+            () => meta.From.ShouldBe(1),
+            () => meta.To.ShouldBe(20),
+            () => meta.Total.ShouldBe(100)
+        );
     }
 }

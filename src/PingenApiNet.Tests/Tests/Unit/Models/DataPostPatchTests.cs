@@ -25,11 +25,10 @@ public class DataPostPatchTests
             Attributes = attributes
         };
 
-        Assert.Multiple(() =>
-        {
-            dataPost.Type.ShouldBe(PingenApiDataType.letters);
-            dataPost.Attributes.ShouldBeSameAs(attributes);
-        });
+        Should.SatisfyAllConditions(
+            () => dataPost.Type.ShouldBe(PingenApiDataType.letters),
+            () => dataPost.Attributes.ShouldBeSameAs(attributes)
+        );
     }
 
     /// <summary>
@@ -46,12 +45,11 @@ public class DataPostPatchTests
 
         var json = PingenSerialisationHelper.Serialize(new { data = dataPost });
 
-        Assert.Multiple(() =>
-        {
-            json.ShouldContain("\"type\":\"letters\"");
-            json.ShouldContain("\"attributes\"");
-            json.ShouldContain("\"file_original_name\":\"test.pdf\"");
-        });
+        Should.SatisfyAllConditions(
+            () => json.ShouldContain("\"type\":\"letters\""),
+            () => json.ShouldContain("\"attributes\""),
+            () => json.ShouldContain("\"file_original_name\":\"test.pdf\"")
+        );
     }
 
     /// <summary>
@@ -69,12 +67,11 @@ public class DataPostPatchTests
             Attributes = attributes
         };
 
-        Assert.Multiple(() =>
-        {
-            dataPatch.Id.ShouldBe("letter-123");
-            dataPatch.Type.ShouldBe(PingenApiDataType.letters);
-            dataPatch.Attributes.ShouldBeSameAs(attributes);
-        });
+        Should.SatisfyAllConditions(
+            () => dataPatch.Id.ShouldBe("letter-123"),
+            () => dataPatch.Type.ShouldBe(PingenApiDataType.letters),
+            () => dataPatch.Attributes.ShouldBeSameAs(attributes)
+        );
     }
 
     /// <summary>
@@ -92,12 +89,11 @@ public class DataPostPatchTests
 
         var json = PingenSerialisationHelper.Serialize(new { data = dataPatch });
 
-        Assert.Multiple(() =>
-        {
-            json.ShouldContain("\"id\":\"letter-456\"");
-            json.ShouldContain("\"type\":\"letters\"");
-            json.ShouldContain("\"attributes\"");
-        });
+        Should.SatisfyAllConditions(
+            () => json.ShouldContain("\"id\":\"letter-456\""),
+            () => json.ShouldContain("\"type\":\"letters\""),
+            () => json.ShouldContain("\"attributes\"")
+        );
     }
 
     private static LetterCreate CreateLetterCreateAttributes() => new()

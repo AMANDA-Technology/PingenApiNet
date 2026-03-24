@@ -66,13 +66,12 @@ public class PingenWebhookHelperTests
         var (webhookEventData, organisationData, letterData, letterEventData) =
             await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
 
-        Assert.Multiple(() =>
-        {
-            webhookEventData.ShouldNotBeNull();
-            organisationData.ShouldNotBeNull();
-            letterData.ShouldNotBeNull();
-            letterEventData.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => webhookEventData.ShouldNotBeNull(),
+            () => organisationData.ShouldNotBeNull(),
+            () => letterData.ShouldNotBeNull(),
+            () => letterEventData.ShouldNotBeNull()
+        );
     }
 
     /// <summary>

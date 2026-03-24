@@ -32,16 +32,15 @@ public class PingenApiClientTests
             mockFiles,
             mockDistributions);
 
-        Assert.Multiple(() =>
-        {
-            client.Letters.ShouldBeSameAs(mockLetters);
-            client.Batches.ShouldBeSameAs(mockBatches);
-            client.Users.ShouldBeSameAs(mockUsers);
-            client.Organisations.ShouldBeSameAs(mockOrganisations);
-            client.Webhooks.ShouldBeSameAs(mockWebhooks);
-            client.Files.ShouldBeSameAs(mockFiles);
-            client.Distributions.ShouldBeSameAs(mockDistributions);
-        });
+        Should.SatisfyAllConditions(
+            () => client.Letters.ShouldBeSameAs(mockLetters),
+            () => client.Batches.ShouldBeSameAs(mockBatches),
+            () => client.Users.ShouldBeSameAs(mockUsers),
+            () => client.Organisations.ShouldBeSameAs(mockOrganisations),
+            () => client.Webhooks.ShouldBeSameAs(mockWebhooks),
+            () => client.Files.ShouldBeSameAs(mockFiles),
+            () => client.Distributions.ShouldBeSameAs(mockDistributions)
+        );
     }
 
     /// <summary>

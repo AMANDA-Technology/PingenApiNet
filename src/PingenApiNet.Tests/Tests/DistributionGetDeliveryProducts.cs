@@ -64,12 +64,11 @@ public class DistributionGetDeliveryProducts : TestBase
 
         var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
 
         // Get all pages with filter
         var deliveryProducts = new List<DeliveryProductData>();
@@ -87,10 +86,9 @@ public class DistributionGetDeliveryProducts : TestBase
             error = e.ApiResult?.ApiError;
         }
 
-        Assert.Multiple(() =>
-        {
-            deliveryProducts.ShouldNotBeEmpty();
-            error.ShouldBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => deliveryProducts.ShouldNotBeEmpty(),
+            () => error.ShouldBeNull()
+        );
     }
 }

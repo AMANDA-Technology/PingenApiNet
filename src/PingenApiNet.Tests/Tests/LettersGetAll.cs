@@ -64,12 +64,11 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.GetPage(apiPagingRequest);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
 
         var letters = new List<LetterData>();
         await foreach (var page in PingenApiClient.Letters.GetPageResultsAsync(apiPagingRequest))
@@ -92,11 +91,10 @@ public class TestLetters : TestBase
 
         var res = await PingenApiClient!.Letters.Get(letterId);
         res.ShouldNotBeNull();
-        Assert.Multiple(() =>
-        {
-            res.IsSuccess.ShouldBeTrue();
-            res.ApiError.ShouldBeNull();
-            res.Data?.Data.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => res.IsSuccess.ShouldBeTrue(),
+            () => res.ApiError.ShouldBeNull(),
+            () => res.Data?.Data.ShouldNotBeNull()
+        );
     }
 }

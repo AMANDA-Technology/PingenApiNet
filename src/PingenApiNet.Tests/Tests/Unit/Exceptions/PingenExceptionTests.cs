@@ -32,11 +32,10 @@ public class PingenExceptionTests
 
         var exception = new PingenApiErrorException(apiResult, message);
 
-        Assert.Multiple(() =>
-        {
-            exception.Message.ShouldBe(message);
-            exception.ApiResult.ShouldBeSameAs(apiResult);
-        });
+        Should.SatisfyAllConditions(
+            () => exception.Message.ShouldBe(message),
+            () => exception.ApiResult.ShouldBeSameAs(apiResult)
+        );
     }
 
     /// <summary>
@@ -50,11 +49,10 @@ public class PingenExceptionTests
 
         var exception = new PingenApiErrorException(apiResult, "msg", inner);
 
-        Assert.Multiple(() =>
-        {
-            exception.InnerException.ShouldBeSameAs(inner);
-            exception.ApiResult.ShouldBeSameAs(apiResult);
-        });
+        Should.SatisfyAllConditions(
+            () => exception.InnerException.ShouldBeSameAs(inner),
+            () => exception.ApiResult.ShouldBeSameAs(apiResult)
+        );
     }
 
     /// <summary>
@@ -81,11 +79,10 @@ public class PingenExceptionTests
 
         var exception = new PingenFileDownloadException(errorCode, message);
 
-        Assert.Multiple(() =>
-        {
-            exception.ErrorCode.ShouldBe(errorCode);
-            exception.Message.ShouldBe(message);
-        });
+        Should.SatisfyAllConditions(
+            () => exception.ErrorCode.ShouldBe(errorCode),
+            () => exception.Message.ShouldBe(message)
+        );
     }
 
     /// <summary>

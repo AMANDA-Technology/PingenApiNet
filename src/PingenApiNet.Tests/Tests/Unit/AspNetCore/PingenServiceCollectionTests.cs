@@ -24,19 +24,18 @@ public class PingenServiceCollectionTests
             "test-client-secret",
             "test-org-id");
 
-        Assert.Multiple(() =>
-        {
-            services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue("IPingenConfiguration not registered");
-            services.Any(s => s.ServiceType == typeof(IPingenConnectionHandler)).ShouldBeTrue("IPingenConnectionHandler not registered");
-            services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue("IPingenApiClient not registered");
-            services.Any(s => s.ServiceType == typeof(ILetterService)).ShouldBeTrue("ILetterService not registered");
-            services.Any(s => s.ServiceType == typeof(IBatchService)).ShouldBeTrue("IBatchService not registered");
-            services.Any(s => s.ServiceType == typeof(IUserService)).ShouldBeTrue("IUserService not registered");
-            services.Any(s => s.ServiceType == typeof(IOrganisationService)).ShouldBeTrue("IOrganisationService not registered");
-            services.Any(s => s.ServiceType == typeof(IWebhookService)).ShouldBeTrue("IWebhookService not registered");
-            services.Any(s => s.ServiceType == typeof(IFilesService)).ShouldBeTrue("IFilesService not registered");
-            services.Any(s => s.ServiceType == typeof(IDistributionService)).ShouldBeTrue("IDistributionService not registered");
-        });
+        Should.SatisfyAllConditions(
+            () => services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue("IPingenConfiguration not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IPingenConnectionHandler)).ShouldBeTrue("IPingenConnectionHandler not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue("IPingenApiClient not registered"),
+            () => services.Any(s => s.ServiceType == typeof(ILetterService)).ShouldBeTrue("ILetterService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IBatchService)).ShouldBeTrue("IBatchService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IUserService)).ShouldBeTrue("IUserService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IOrganisationService)).ShouldBeTrue("IOrganisationService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IWebhookService)).ShouldBeTrue("IWebhookService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IFilesService)).ShouldBeTrue("IFilesService not registered"),
+            () => services.Any(s => s.ServiceType == typeof(IDistributionService)).ShouldBeTrue("IDistributionService not registered")
+        );
     }
 
     /// <summary>
@@ -54,20 +53,16 @@ public class PingenServiceCollectionTests
             "test-client-secret",
             "test-org-id");
 
-        Assert.Multiple(() =>
-        {
-            services.First(s => s.ServiceType == typeof(IPingenConfiguration)).Lifetime
-                .ShouldBe(ServiceLifetime.Singleton, "IPingenConfiguration should be Singleton");
-
-            services.First(s => s.ServiceType == typeof(IPingenConnectionHandler)).Lifetime
-                .ShouldBe(ServiceLifetime.Scoped, "IPingenConnectionHandler should be Scoped");
-
-            services.First(s => s.ServiceType == typeof(IPingenApiClient)).Lifetime
-                .ShouldBe(ServiceLifetime.Scoped, "IPingenApiClient should be Scoped");
-
-            services.First(s => s.ServiceType == typeof(ILetterService)).Lifetime
-                .ShouldBe(ServiceLifetime.Scoped, "ILetterService should be Scoped");
-        });
+        Should.SatisfyAllConditions(
+            () => services.First(s => s.ServiceType == typeof(IPingenConfiguration)).Lifetime
+                .ShouldBe(ServiceLifetime.Singleton, "IPingenConfiguration should be Singleton"),
+            () => services.First(s => s.ServiceType == typeof(IPingenConnectionHandler)).Lifetime
+                .ShouldBe(ServiceLifetime.Scoped, "IPingenConnectionHandler should be Scoped"),
+            () => services.First(s => s.ServiceType == typeof(IPingenApiClient)).Lifetime
+                .ShouldBe(ServiceLifetime.Scoped, "IPingenApiClient should be Scoped"),
+            () => services.First(s => s.ServiceType == typeof(ILetterService)).Lifetime
+                .ShouldBe(ServiceLifetime.Scoped, "ILetterService should be Scoped")
+        );
     }
 
     /// <summary>
@@ -88,11 +83,10 @@ public class PingenServiceCollectionTests
 
         services.AddPingenServices(config);
 
-        Assert.Multiple(() =>
-        {
-            services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue();
-            services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue();
-        });
+        Should.SatisfyAllConditions(
+            () => services.Any(s => s.ServiceType == typeof(IPingenConfiguration)).ShouldBeTrue(),
+            () => services.Any(s => s.ServiceType == typeof(IPingenApiClient)).ShouldBeTrue()
+        );
     }
 
     /// <summary>

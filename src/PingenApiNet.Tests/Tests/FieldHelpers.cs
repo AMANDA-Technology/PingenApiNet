@@ -50,26 +50,25 @@ public class FieldHelpers
     [Test]
     public void LetterFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            LetterFields.Status.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Status));
-            LetterFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FileOriginalName));
-            LetterFields.FilePages.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FilePages));
-            LetterFields.Address.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Address));
-            LetterFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.AddressPosition));
-            LetterFields.Country.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Country));
-            LetterFields.DeliveryProduct.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.DeliveryProduct));
-            LetterFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintMode));
-            LetterFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintSpectrum));
-            LetterFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceCurrency));
-            LetterFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceValue));
-            LetterFields.PaperTypes.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PaperTypes));
-            LetterFields.Fonts.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Fonts));
-            LetterFields.TrackingNumber.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.TrackingNumber));
-            LetterFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.SubmittedAt));
-            LetterFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.CreatedAt));
-            LetterFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => LetterFields.Status.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Status)),
+            () => LetterFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FileOriginalName)),
+            () => LetterFields.FilePages.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.FilePages)),
+            () => LetterFields.Address.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Address)),
+            () => LetterFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.AddressPosition)),
+            () => LetterFields.Country.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Country)),
+            () => LetterFields.DeliveryProduct.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.DeliveryProduct)),
+            () => LetterFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintMode)),
+            () => LetterFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PrintSpectrum)),
+            () => LetterFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceCurrency)),
+            () => LetterFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PriceValue)),
+            () => LetterFields.PaperTypes.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.PaperTypes)),
+            () => LetterFields.Fonts.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Fonts)),
+            () => LetterFields.TrackingNumber.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.TrackingNumber)),
+            () => LetterFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.SubmittedAt)),
+            () => LetterFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => LetterFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -78,22 +77,21 @@ public class FieldHelpers
     [Test]
     public void BatchFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            BatchFields.Name.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Name));
-            BatchFields.Icon.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Icon));
-            BatchFields.Status.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Status));
-            BatchFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.FileOriginalName));
-            BatchFields.LetterCount.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.LetterCount));
-            BatchFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.AddressPosition));
-            BatchFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintMode));
-            BatchFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintSpectrum));
-            BatchFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceCurrency));
-            BatchFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceValue));
-            BatchFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.SubmittedAt));
-            BatchFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.CreatedAt));
-            BatchFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => BatchFields.Name.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Name)),
+            () => BatchFields.Icon.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Icon)),
+            () => BatchFields.Status.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Status)),
+            () => BatchFields.FileOriginalName.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.FileOriginalName)),
+            () => BatchFields.LetterCount.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.LetterCount)),
+            () => BatchFields.AddressPosition.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.AddressPosition)),
+            () => BatchFields.PrintMode.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintMode)),
+            () => BatchFields.PrintSpectrum.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PrintSpectrum)),
+            () => BatchFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceCurrency)),
+            () => BatchFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceValue)),
+            () => BatchFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.SubmittedAt)),
+            () => BatchFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => BatchFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -102,22 +100,21 @@ public class FieldHelpers
     [Test]
     public void OrganisationFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            OrganisationFields.Name.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Name));
-            OrganisationFields.Status.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Status));
-            OrganisationFields.Plan.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Plan));
-            OrganisationFields.BillingMode.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingMode));
-            OrganisationFields.BillingCurrency.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingCurrency));
-            OrganisationFields.BillingBalance.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingBalance));
-            OrganisationFields.DefaultCountry.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultCountry));
-            OrganisationFields.DefaultAddressPosition.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultAddressPosition));
-            OrganisationFields.DataRetentionAddresses.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionAddresses));
-            OrganisationFields.DataRetentionPdf.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionPdf));
-            OrganisationFields.Color.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Color));
-            OrganisationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.CreatedAt));
-            OrganisationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => OrganisationFields.Name.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Name)),
+            () => OrganisationFields.Status.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Status)),
+            () => OrganisationFields.Plan.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Plan)),
+            () => OrganisationFields.BillingMode.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingMode)),
+            () => OrganisationFields.BillingCurrency.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingCurrency)),
+            () => OrganisationFields.BillingBalance.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.BillingBalance)),
+            () => OrganisationFields.DefaultCountry.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultCountry)),
+            () => OrganisationFields.DefaultAddressPosition.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DefaultAddressPosition)),
+            () => OrganisationFields.DataRetentionAddresses.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionAddresses)),
+            () => OrganisationFields.DataRetentionPdf.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionPdf)),
+            () => OrganisationFields.Color.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Color)),
+            () => OrganisationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => OrganisationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -126,16 +123,15 @@ public class FieldHelpers
     [Test]
     public void UserFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            UserFields.Email.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Email));
-            UserFields.FirstName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.FirstName));
-            UserFields.LastName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.LastName));
-            UserFields.Status.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Status));
-            UserFields.Language.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Language));
-            UserFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.CreatedAt));
-            UserFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => UserFields.Email.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Email)),
+            () => UserFields.FirstName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.FirstName)),
+            () => UserFields.LastName.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.LastName)),
+            () => UserFields.Status.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Status)),
+            () => UserFields.Language.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Language)),
+            () => UserFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => UserFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -144,13 +140,12 @@ public class FieldHelpers
     [Test]
     public void UserAssociationFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            UserAssociationFields.Role.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Role));
-            UserAssociationFields.Status.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Status));
-            UserAssociationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.CreatedAt));
-            UserAssociationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => UserAssociationFields.Role.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Role)),
+            () => UserAssociationFields.Status.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.Status)),
+            () => UserAssociationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => UserAssociationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<UserAssociation>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -159,12 +154,11 @@ public class FieldHelpers
     [Test]
     public void WebhookFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            WebhookFields.EventCategory.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.EventCategory));
-            WebhookFields.Url.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.Url));
-            WebhookFields.SigningKey.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.SigningKey));
-        });
+        Should.SatisfyAllConditions(
+            () => WebhookFields.EventCategory.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.EventCategory)),
+            () => WebhookFields.Url.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.Url)),
+            () => WebhookFields.SigningKey.ShouldBe(PingenAttributesPropertyHelper<Webhook>.GetJsonPropertyName(x => x.SigningKey))
+        );
     }
 
     /// <summary>
@@ -173,18 +167,17 @@ public class FieldHelpers
     [Test]
     public void LetterEventFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            LetterEventFields.Code.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Code));
-            LetterEventFields.Name.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Name));
-            LetterEventFields.Producer.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Producer));
-            LetterEventFields.Location.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Location));
-            LetterEventFields.HasImage.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.HasImage));
-            LetterEventFields.Data.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Data));
-            LetterEventFields.EmittedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.EmittedAt));
-            LetterEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.CreatedAt));
-            LetterEventFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.UpdatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => LetterEventFields.Code.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Code)),
+            () => LetterEventFields.Name.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Name)),
+            () => LetterEventFields.Producer.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Producer)),
+            () => LetterEventFields.Location.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Location)),
+            () => LetterEventFields.HasImage.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.HasImage)),
+            () => LetterEventFields.Data.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.Data)),
+            () => LetterEventFields.EmittedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.EmittedAt)),
+            () => LetterEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => LetterEventFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<LetterEvent>.GetJsonPropertyName(x => x.UpdatedAt))
+        );
     }
 
     /// <summary>
@@ -193,12 +186,11 @@ public class FieldHelpers
     [Test]
     public void WebhookEventFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            WebhookEventFields.Reason.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason));
-            WebhookEventFields.Url.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url));
-            WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt));
-        });
+        Should.SatisfyAllConditions(
+            () => WebhookEventFields.Reason.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason)),
+            () => WebhookEventFields.Url.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url)),
+            () => WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt))
+        );
     }
 
     /// <summary>
@@ -207,16 +199,15 @@ public class FieldHelpers
     [Test]
     public void DeliveryProductFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            DeliveryProductFields.Countries.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Countries));
-            DeliveryProductFields.Name.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Name));
-            DeliveryProductFields.FullName.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.FullName));
-            DeliveryProductFields.DeliveryTimeDays.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.DeliveryTimeDays));
-            DeliveryProductFields.Features.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Features));
-            DeliveryProductFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceCurrency));
-            DeliveryProductFields.PriceStartingFrom.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceStartingFrom));
-        });
+        Should.SatisfyAllConditions(
+            () => DeliveryProductFields.Countries.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Countries)),
+            () => DeliveryProductFields.Name.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Name)),
+            () => DeliveryProductFields.FullName.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.FullName)),
+            () => DeliveryProductFields.DeliveryTimeDays.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.DeliveryTimeDays)),
+            () => DeliveryProductFields.Features.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.Features)),
+            () => DeliveryProductFields.PriceCurrency.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceCurrency)),
+            () => DeliveryProductFields.PriceStartingFrom.ShouldBe(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(x => x.PriceStartingFrom))
+        );
     }
 
     /// <summary>
@@ -225,11 +216,10 @@ public class FieldHelpers
     [Test]
     public void LetterPriceFields_ConstantsMatchJsonPropertyNames()
     {
-        Assert.Multiple(() =>
-        {
-            LetterPriceFields.Currency.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Currency));
-            LetterPriceFields.Price.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Price));
-        });
+        Should.SatisfyAllConditions(
+            () => LetterPriceFields.Currency.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Currency)),
+            () => LetterPriceFields.Price.ShouldBe(PingenAttributesPropertyHelper<LetterPrice>.GetJsonPropertyName(x => x.Price))
+        );
     }
 
     /// <summary>
@@ -247,13 +237,12 @@ public class FieldHelpers
             ]
         };
 
-        Assert.Multiple(() =>
-        {
-            request.SparseFieldsets.ShouldNotBeNull();
-            request.SparseFieldsets!.Count().ShouldBe(2);
-            var letterEntry = request.SparseFieldsets!.First(e => e.Key == PingenApiDataType.letters);
-            letterEntry.Value.ShouldBe(new[] { "status", "created_at" }, ignoreOrder: true);
-        });
+        var letterEntry = request.SparseFieldsets!.First(e => e.Key == PingenApiDataType.letters);
+        Should.SatisfyAllConditions(
+            () => request.SparseFieldsets.ShouldNotBeNull(),
+            () => request.SparseFieldsets!.Count().ShouldBe(2),
+            () => letterEntry.Value.ShouldBe(new[] { "status", "created_at" }, ignoreOrder: true)
+        );
     }
 
     /// <summary>
@@ -266,22 +255,21 @@ public class FieldHelpers
 
         var letter = PingenSerialisationHelper.Deserialize<Letter>(sparseJson);
 
-        Assert.Multiple(() =>
-        {
-            letter.ShouldNotBeNull();
-            letter!.Status.ShouldBe("valid");
-            letter.FileOriginalName.ShouldBeNull();
-            letter.Address.ShouldBeNull();
-            letter.AddressPosition.ShouldBeNull();
-            letter.Country.ShouldBeNull();
-            letter.DeliveryProduct.ShouldBeNull();
-            letter.PrintMode.ShouldBeNull();
-            letter.PrintSpectrum.ShouldBeNull();
-            letter.PriceCurrency.ShouldBeNull();
-            letter.PaperTypes.ShouldBeNull();
-            letter.Fonts.ShouldBeNull();
-            letter.TrackingNumber.ShouldBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => letter.ShouldNotBeNull(),
+            () => letter!.Status.ShouldBe("valid"),
+            () => letter.FileOriginalName.ShouldBeNull(),
+            () => letter.Address.ShouldBeNull(),
+            () => letter.AddressPosition.ShouldBeNull(),
+            () => letter.Country.ShouldBeNull(),
+            () => letter.DeliveryProduct.ShouldBeNull(),
+            () => letter.PrintMode.ShouldBeNull(),
+            () => letter.PrintSpectrum.ShouldBeNull(),
+            () => letter.PriceCurrency.ShouldBeNull(),
+            () => letter.PaperTypes.ShouldBeNull(),
+            () => letter.Fonts.ShouldBeNull(),
+            () => letter.TrackingNumber.ShouldBeNull()
+        );
     }
 
     /// <summary>
@@ -294,14 +282,13 @@ public class FieldHelpers
 
         var batch = PingenSerialisationHelper.Deserialize<Batch>(sparseJson);
 
-        Assert.Multiple(() =>
-        {
-            batch.ShouldNotBeNull();
-            batch!.Name.ShouldBe("test-batch");
-            batch.Status.ShouldBe("created");
-            batch.Icon.ShouldBeNull();
-            batch.FileOriginalName.ShouldBeNull();
-            batch.AddressPosition.ShouldBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => batch.ShouldNotBeNull(),
+            () => batch!.Name.ShouldBe("test-batch"),
+            () => batch.Status.ShouldBe("created"),
+            () => batch.Icon.ShouldBeNull(),
+            () => batch.FileOriginalName.ShouldBeNull(),
+            () => batch.AddressPosition.ShouldBeNull()
+        );
     }
 }

@@ -63,12 +63,11 @@ public class RateLimit : TestBase
                         hasRateLimitReached = res.RateLimitRemaining <= 0;
                         await Console.Out.WriteLineAsync($"Call has been failed due to rate limit and can be repeated in {res.RetryAfter} seconds");
 
-                        Assert.Multiple(() =>
-                        {
-                            res.RateLimitRemaining.ShouldBeLessThanOrEqualTo(0);
-                            res.RateLimitReset.ShouldNotBeNull();
-                            res.RetryAfter.ShouldNotBeNull();
-                        });
+                        Should.SatisfyAllConditions(
+                            () => res.RateLimitRemaining.ShouldBeLessThanOrEqualTo(0),
+                            () => res.RateLimitReset.ShouldNotBeNull(),
+                            () => res.RetryAfter.ShouldNotBeNull()
+                        );
 
                         // Assert that call is success when repeated after given time
                         while (DateTimeOffset.UtcNow < res.RateLimitReset && !cancellationToken.IsCancellationRequested)
@@ -85,11 +84,10 @@ public class RateLimit : TestBase
                 }
             });
 
-        Assert.Multiple(() =>
-        {
-            hasRateLimitReached.ShouldBeTrue();
-            cts.IsCancellationRequested.ShouldBeFalse();
-        });
+        Should.SatisfyAllConditions(
+            () => hasRateLimitReached.ShouldBeTrue(),
+            () => cts.IsCancellationRequested.ShouldBeFalse()
+        );
         return;
 
         IEnumerable<int> ParallelDelays(int parallelCount, int delayMilliseconds)

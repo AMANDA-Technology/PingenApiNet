@@ -51,25 +51,22 @@ public class Webhooks : TestBase
         webhookEventData?.Data.Attributes.ShouldNotBeNull();
 
         var includedOrganisationFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
-        Assert.Multiple(() =>
-        {
-            includedOrganisationFound.ShouldBeTrue();
-            organisationData.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => includedOrganisationFound.ShouldBeTrue(),
+            () => organisationData.ShouldNotBeNull()
+        );
 
         var letterFound = PingenSerialisationHelper.TryGetIncludedData<Letter>(webhookEventData!, out var letterData);
-        Assert.Multiple(() =>
-        {
-            letterFound.ShouldBeTrue();
-            letterData.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => letterFound.ShouldBeTrue(),
+            () => letterData.ShouldNotBeNull()
+        );
 
         Data<LetterEvent>? letterEventData;
         var letterEventFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out letterEventData);
-        Assert.Multiple(() =>
-        {
-            letterEventFound.ShouldBeTrue();
-            letterEventData.ShouldNotBeNull();
-        });
+        Should.SatisfyAllConditions(
+            () => letterEventFound.ShouldBeTrue(),
+            () => letterEventData.ShouldNotBeNull()
+        );
     }
 }
