@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -73,6 +73,12 @@ public static class PingenConfigurationExtension
     /// <param name="configuration"></param>
     public static IPingenConfiguration Normalize(this IPingenConfiguration configuration)
     {
+        if (!Uri.TryCreate(configuration.BaseUri, UriKind.Absolute, out var baseUri) || baseUri.Scheme != Uri.UriSchemeHttps)
+            throw new ArgumentException("BaseUri must use the HTTPS scheme.", nameof(configuration));
+
+        if (!Uri.TryCreate(configuration.IdentityUri, UriKind.Absolute, out var identityUri) || identityUri.Scheme != Uri.UriSchemeHttps)
+            throw new ArgumentException("IdentityUri must use the HTTPS scheme.", nameof(configuration));
+
         if (!configuration.BaseUri.EndsWith('/'))
             configuration.BaseUri += '/';
 

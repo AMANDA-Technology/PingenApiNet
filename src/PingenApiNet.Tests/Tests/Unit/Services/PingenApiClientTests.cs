@@ -67,25 +67,29 @@ public class PingenApiClientTests
     }
 
     /// <summary>
-    /// Verifies services can be replaced via property setters
+    /// Verifies service properties use init-only setters (immutable after construction)
     /// </summary>
     [Test]
-    public void Services_CanBeReplacedViaSetters()
+    public void Services_UseInitOnlySetters()
     {
-        var mockConnectionHandler = Substitute.For<IPingenConnectionHandler>();
-        var client = new PingenApiClient(
-            mockConnectionHandler,
-            Substitute.For<ILetterService>(),
-            Substitute.For<IBatchService>(),
-            Substitute.For<IUserService>(),
-            Substitute.For<IOrganisationService>(),
-            Substitute.For<IWebhookService>(),
-            Substitute.For<IFilesService>(),
-            Substitute.For<IDistributionService>());
+        var serviceProperties = new[]
+        {
+            nameof(PingenApiClient.Letters),
+            nameof(PingenApiClient.Batches),
+            nameof(PingenApiClient.Users),
+            nameof(PingenApiClient.Organisations),
+            nameof(PingenApiClient.Webhooks),
+            nameof(PingenApiClient.Files),
+            nameof(PingenApiClient.Distributions)
+        };
 
-        var newLetterService = Substitute.For<ILetterService>();
-        client.Letters = newLetterService;
-
-        client.Letters.ShouldBeSameAs(newLetterService);
+        foreach (var propertyName in serviceProperties)
+        {
+            var property = typeof(PingenApiClient).GetProperty(propertyName)!;
+            var setMethod = property.GetSetMethod()!;
+            var modifiers = setMethod.ReturnParameter.GetRequiredCustomModifiers();
+            modifiers.ShouldContain(typeof(System.Runtime.CompilerServices.IsExternalInit),
+                $"{propertyName} should be init-only");
+        }
     }
 }

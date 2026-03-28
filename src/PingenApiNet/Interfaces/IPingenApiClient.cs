@@ -1,9 +1,8 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
 Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
-Copyright (c) 2024 Dejan Appenzeller <dejan.appenzeller@swisspeers.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,36 +41,36 @@ public interface IPingenApiClient
     /// <summary>
     /// Pingen letters connector. <see href="https://api.pingen.com/documentation#tag/letters.general">API Doc - Letters General</see>
     /// </summary>
-    public ILetterService Letters { get; set; }
+    public ILetterService Letters { get; init; }
 
     /// <summary>
     /// Pingen batches connector. <see href="https://api.pingen.com/documentation#tag/batches.general">API Doc - Batches General</see>
     /// </summary>
-    public IBatchService Batches { get; set; }
+    public IBatchService Batches { get; init; }
 
     /// <summary>
     /// Pingen users connector. <see href="https://api.pingen.com/documentation#tag/user.general">API Doc - Users General</see>
     /// </summary>
-    public IUserService Users { get; set; }
+    public IUserService Users { get; init; }
 
     /// <summary>
     /// Pingen organisations connector. <see href="https://api.pingen.com/documentation#tag/organisations.general">API Doc - Organisations General</see>
     /// </summary>
-    public IOrganisationService Organisations { get; set; }
+    public IOrganisationService Organisations { get; init; }
 
     /// <summary>
     /// Pingen webhooks connector. <see href="https://api.pingen.com/documentation#tag/organisations.management.webhooks">API Doc - Webhooks</see>
     /// </summary>
-    public IWebhookService Webhooks { get; set; }
+    public IWebhookService Webhooks { get; init; }
 
     /// <summary>
     /// Pingen files connector. <see href="https://api.pingen.com/documentation#tag/misc.files">API Doc - Files</see>
     /// </summary>
-    public IFilesService Files { get; set; }
+    public IFilesService Files { get; init; }
 
     /// <summary>
     /// Pingen distribution connector.
     /// Undocumented endpoint, use at own risk.
     /// </summary>
-    public IDistributionService Distributions { get; set; }
+    public IDistributionService Distributions { get; init; }
 }

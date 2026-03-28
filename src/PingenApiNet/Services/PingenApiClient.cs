@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -67,23 +67,23 @@ public sealed class PingenApiClient : IPingenApiClient
     }
 
     /// <inheritdoc />
-    public ILetterService Letters { get; set; }
+    public ILetterService Letters { get; init; }
 
     /// <inheritdoc />
-    public IBatchService Batches { get; set; }
+    public IBatchService Batches { get; init; }
 
     /// <inheritdoc />
-    public IUserService Users { get; set; }
+    public IUserService Users { get; init; }
 
     /// <inheritdoc />
-    public IOrganisationService Organisations { get; set; }
+    public IOrganisationService Organisations { get; init; }
 
     /// <inheritdoc />
-    public IWebhookService Webhooks { get; set; }
+    public IWebhookService Webhooks { get; init; }
 
     /// <inheritdoc />
-    public IFilesService Files { get; set; }
+    public IFilesService Files { get; init; }
 
     /// <inheritdoc />
-    public IDistributionService Distributions { get; set; }
+    public IDistributionService Distributions { get; init; }
 }
