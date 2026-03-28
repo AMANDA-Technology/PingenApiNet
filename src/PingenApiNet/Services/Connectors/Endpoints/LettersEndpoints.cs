@@ -1,4 +1,4 @@
-﻿/* Copyright (C) AMANDA Technology - All Rights Reserved
+/* Copyright (C) AMANDA Technology - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
  * Written by Manuel Gysin <manuel.gysin@amanda-technology.ch>
@@ -56,12 +56,12 @@ internal static class LettersEndpoints
     /// <param name="id"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    internal static string Events(string id, string language) => $"{Single(id)}/events?language={language}";
+    internal static string Events(string id, string language) => $"{Single(id)}/events?language={Uri.EscapeDataString(language)}";
 
     /// <summary>
     /// Endpoint to get issues
     /// </summary>
     /// <param name="language"></param>
     /// <returns></returns>
-    internal static string Issues(string language) => $"{Root}/issues?language={language}";
+    internal static string Issues(string language) => $"{Root}/issues?language={Uri.EscapeDataString(language)}";
 }
