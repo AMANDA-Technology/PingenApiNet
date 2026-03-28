@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -48,6 +48,6 @@ public interface IFilesService
     /// <param name="fileUploadData">Result from <see cref="GetPath"/></param>
     /// <param name="data">Binary file to upload as stream</param>
     /// <param name="cancellationToken">Optional, A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns></returns>
-    public Task<bool> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken);
+    /// <returns>An <see cref="ExternalRequestResult"/> indicating the outcome of the upload</returns>
+    public Task<ExternalRequestResult> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken);
 }

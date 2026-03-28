@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Net;
 using System.Runtime.InteropServices;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -52,11 +53,20 @@ public sealed class FilesService : ConnectorService, IFilesService
     }
 
     /// <inheritdoc />
-    public async Task<bool> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken)
+    public async Task<ExternalRequestResult> UploadFile(FileUploadData fileUploadData, Stream data, [Optional] CancellationToken cancellationToken)
     {
-        return (await ConnectionHandler.SendExternalRequestAsync(new(HttpMethod.Put, fileUploadData.Attributes.Url)
+        using var request = new HttpRequestMessage(HttpMethod.Put, fileUploadData.Attributes.Url)
         {
             Content = new StreamContent(data)
-        }, cancellationToken)).IsSuccessStatusCode;
+        };
+
+        using var response = await ConnectionHandler.SendExternalRequestAsync(request, cancellationToken);
+
+        return new ExternalRequestResult
+        {
+            IsSuccess = response.IsSuccessStatusCode,
+            StatusCode = response.StatusCode,
+            ReasonPhrase = response.ReasonPhrase
+        };
     }
 }

@@ -72,7 +72,10 @@ public class TestGetFileUploadData : TestBase
         await File.OpenRead($"Assets/{fileName}").CopyToAsync(stream);
         var uploadRes = await PingenApiClient.Files.UploadFile(res.Data!.Data, stream);
 
-        uploadRes.ShouldBeTrue();
+        uploadRes.ShouldSatisfyAllConditions(
+            () => uploadRes.IsSuccess.ShouldBeTrue(),
+            () => uploadRes.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK)
+        );
 
         var letterMetaData = new LetterMetaData
         {
