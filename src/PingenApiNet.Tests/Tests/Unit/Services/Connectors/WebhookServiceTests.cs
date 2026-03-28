@@ -24,6 +24,15 @@ public class WebhookServiceTests
     }
 
     /// <summary>
+    /// Verifies WebhookService is sealed for consistency with other connector services
+    /// </summary>
+    [Test]
+    public void WebhookService_IsSealed()
+    {
+        typeof(WebhookService).IsSealed.ShouldBeTrue();
+    }
+
+    /// <summary>
     /// Verifies GetPage calls ConnectionHandler with correct endpoint
     /// </summary>
     [Test]
