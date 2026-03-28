@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -41,5 +41,5 @@ public sealed record SingleResult<TData>(
     /// Additionally requested includes
     /// </summary>
     [JsonPropertyName("included")]
-    public IList<object>? Included { get; init; } // TODO: Implement type for Included?
+    public IncludedCollection? Included { get; init; }
 }
