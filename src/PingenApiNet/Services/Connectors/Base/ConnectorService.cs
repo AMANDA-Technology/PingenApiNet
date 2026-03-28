@@ -81,16 +81,7 @@ public abstract class ConnectorService : IConnectorService
     /// <exception cref="PingenApiErrorException"></exception>
     protected async IAsyncEnumerable<IEnumerable<TData>> AutoPage<TData>(ApiPagingRequest? apiPagingRequest, Func<ApiPagingRequest, Task<ApiResult<CollectionResult<TData>>>> getPage) where TData : IData
     {
-        var apiReRequest = new ApiPagingRequest
-        {
-            SparseFieldsets = apiPagingRequest?.SparseFieldsets,
-            Include = apiPagingRequest?.Include,
-            Sorting = apiPagingRequest?.Sorting,
-            Filtering = apiPagingRequest?.Filtering,
-            Searching = apiPagingRequest?.Searching,
-            PageNumber = apiPagingRequest?.PageNumber ?? 1,
-            PageLimit = apiPagingRequest?.PageLimit
-        };
+        var apiReRequest = (apiPagingRequest ?? new ApiPagingRequest()) with { PageNumber = apiPagingRequest?.PageNumber ?? 1 };
 
         ApiResult<CollectionResult<TData>> result;
         do
