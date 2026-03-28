@@ -57,9 +57,12 @@ public class PingenHttpClients(HttpClient identityClient, HttpClient apiClient, 
 
     /// <summary>
     /// Creates a new instance of <see cref="PingenHttpClients"/> with http clients based on configuration.
+    /// This is the standalone (non-DI) factory method. The caller owns the returned <see cref="PingenHttpClients"/>
+    /// instance and is responsible for disposing the underlying <see cref="HttpClient"/> instances
+    /// (<see cref="Identity"/>, <see cref="Api"/>, <see cref="External"/>) when they are no longer needed.
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The Pingen API configuration used to set base addresses and default headers.</param>
+    /// <returns>A new <see cref="PingenHttpClients"/> instance with pre-configured HTTP clients.</returns>
     public static PingenHttpClients Create(IPingenConfiguration configuration)
     {
         var identityClient = new HttpClient

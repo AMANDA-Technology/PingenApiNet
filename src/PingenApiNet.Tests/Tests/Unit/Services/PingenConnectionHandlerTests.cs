@@ -253,6 +253,289 @@ public class PingenConnectionHandlerTests
         loginCallCount.ShouldBe(1);
     }
 
+    /// <summary>
+    /// Verifies that rate-limit headers are correctly parsed from HTTP response into ApiResult
+    /// </summary>
+    [Test]
+    public async Task GetAsync_WithRateLimitHeaders_ParsesHeadersIntoApiResult()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var requestId = Guid.NewGuid();
+        var resetUnixTimestamp = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            };
+            response.Headers.Add("X-Request-ID", requestId.ToString());
+            response.Headers.Add("x-ratelimit-limit", "100");
+            response.Headers.Add("x-ratelimit-remaining", "42");
+            response.Headers.Add("x-ratelimit-reset", resetUnixTimestamp.ToString());
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.RequestId.ShouldBe(requestId),
+            () => result.RateLimitLimit.ShouldBe(100),
+            () => result.RateLimitRemaining.ShouldBe(42),
+            () => result.RateLimitReset.ShouldBe(DateTimeOffset.FromUnixTimeSeconds(resetUnixTimestamp))
+        );
+    }
+
+    /// <summary>
+    /// Verifies that missing rate-limit headers result in default values
+    /// </summary>
+    [Test]
+    public async Task GetAsync_WithMissingRateLimitHeaders_UsesDefaultValues()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            };
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.RateLimitLimit.ShouldBe(0),
+            () => result.RateLimitRemaining.ShouldBe(0),
+            () => result.RateLimitReset.ShouldBeNull(),
+            () => result.RetryAfter.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies that Retry-After header is parsed when present in the response
+    /// </summary>
+    [Test]
+    public async Task GetAsync_WithRetryAfterHeader_ParsesRetryAfter()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            };
+            response.Headers.TryAddWithoutValidation("Retry-After", "60");
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.RetryAfter.ShouldBe(60);
+    }
+
+    /// <summary>
+    /// Verifies that authentication failure with error body throws with error message
+    /// </summary>
+    [Test]
+    public async Task GetAsync_AuthenticationFailure_ThrowsInvalidOperationException()
+    {
+        var errorJson = PingenSerialisationHelper.Serialize(new
+        {
+            error = "invalid_client",
+            error_description = "Client authentication failed",
+            message = "Client authentication failed"
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.Unauthorized, errorJson);
+        var apiHandler = new MockHttpMessageHandler(HttpStatusCode.OK, "{}");
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var ex = await Should.ThrowAsync<InvalidOperationException>(
+            async () => await handler.GetAsync("letters", (ApiPagingRequest?)null));
+        ex.Message.ShouldContain("Client authentication failed");
+    }
+
+    /// <summary>
+    /// Verifies that authentication failure with null deserialized body throws generic error
+    /// </summary>
+    [Test]
+    public async Task GetAsync_AuthenticationFailure_NullBody_ThrowsInvalidOperationException()
+    {
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.Unauthorized, "null");
+        var apiHandler = new MockHttpMessageHandler(HttpStatusCode.OK, "{}");
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var ex = await Should.ThrowAsync<InvalidOperationException>(
+            async () => await handler.GetAsync("letters", (ApiPagingRequest?)null));
+        ex.Message.ShouldContain("Invalid authentication error received");
+    }
+
+    /// <summary>
+    /// Verifies that 429 Too Many Requests returns failure with Retry-After and rate-limit info
+    /// </summary>
+    [Test]
+    public async Task GetAsync_RateLimitExceeded_ReturnsFailureWithRetryAfter()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+            {
+                Content = new StringContent("{\"errors\":[{\"code\":\"429\",\"title\":\"Too Many Requests\",\"detail\":\"Rate limit exceeded\",\"source\":{\"pointer\":\"\",\"parameter\":\"\"}}]}")
+            };
+            response.Headers.TryAddWithoutValidation("Retry-After", "30");
+            response.Headers.Add("x-ratelimit-limit", "100");
+            response.Headers.Add("x-ratelimit-remaining", "0");
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.RetryAfter.ShouldBe(30),
+            () => result.RateLimitLimit.ShouldBe(100),
+            () => result.RateLimitRemaining.ShouldBe(0)
+        );
+    }
+
+    /// <summary>
+    /// Verifies that API 401 response returns failure with error details
+    /// </summary>
+    [Test]
+    public async Task GetAsync_UnauthorizedApiResponse_ReturnsFailureResult()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.Unauthorized)
+            {
+                Content = new StringContent("{\"errors\":[{\"code\":\"401\",\"title\":\"Unauthorized\",\"detail\":\"Invalid or expired token\",\"source\":{\"pointer\":\"\",\"parameter\":\"\"}}]}")
+            };
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldNotBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies that an expired token triggers re-authentication on the next request
+    /// </summary>
+    [Test]
+    public async Task GetAsync_ExpiredToken_ReAuthenticates()
+    {
+        var authCallCount = 0;
+        var identityHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            Interlocked.Increment(ref authCallCount);
+            var tokenJson = PingenSerialisationHelper.Serialize(new
+            {
+                access_token = $"token-{authCallCount}",
+                token_type = "Bearer",
+                expires_in = authCallCount == 1 ? 61 : 3600
+            });
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(tokenJson)
+            });
+        });
+
+        string? lastCapturedToken = null;
+        var apiHandler = new MockHttpMessageHandler((request, _) =>
+        {
+            lastCapturedToken = request.Headers.Authorization?.Parameter;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        // First request triggers initial authentication
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+        authCallCount.ShouldBe(1);
+
+        // Wait for token to expire (expires_in=61, minus 1-minute buffer = ~1 second valid)
+        await Task.Delay(2000);
+
+        // Second request should trigger re-authentication
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+        authCallCount.ShouldBe(2);
+        lastCapturedToken.ShouldBe("token-2");
+    }
+
     private static IPingenConfiguration CreateConfig(
         string baseUri = "https://api.example.com/",
         string identityUri = "https://identity.example.com/")

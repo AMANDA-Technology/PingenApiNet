@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -86,16 +86,17 @@ public static class PingenWebhookHelper
         using var hmacSha256 = new HMACSHA256(keyByte);
         await hmacSha256.ComputeHashAsync(requestStream, cancellationToken);
 
-        return hmacSha256.Hash is not null && signature == ByteToString(hmacSha256.Hash);
-    }
+        if (hmacSha256.Hash is null)
+            return false;
 
-    /// <summary>
-    /// Create string vom byte array
-    /// </summary>
-    /// <param name="buff"></param>
-    /// <returns></returns>
-    private static string ByteToString(byte[] buff)
-    {
-        return Convert.ToHexString(buff).ToLowerInvariant();
+        try
+        {
+            var signatureBytes = Convert.FromHexString(signature);
+            return CryptographicOperations.FixedTimeEquals(hmacSha256.Hash, signatureBytes);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }

@@ -263,6 +263,255 @@ public class ConnectorServiceTests
         capturedRequest.PageLimit.ShouldBe(25);
     }
 
+    /// <summary>
+    /// Verifies AutoPage yields a single empty collection when result has no items
+    /// </summary>
+    [Test]
+    public async Task AutoPage_EmptyResultSet_YieldsSingleEmptyCollection()
+    {
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = new CollectionResult<LetterData>(
+                [],
+                new CollectionResultLinks("", "", "", "", ""),
+                new CollectionResultMeta(1, 1, 20, 0, 0, 0)
+            )
+        }));
+
+        var pages = new List<IEnumerable<LetterData>>();
+        await foreach (var page in _letterService.GetPageResultsAsync())
+        {
+            pages.Add(page);
+        }
+
+        pages.Count.ShouldBe(1);
+        pages[0].ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// Verifies AutoPage stops after first page when LastPage is zero
+    /// </summary>
+    [Test]
+    public async Task AutoPage_LastPageZero_StopsAfterFirstPage()
+    {
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = new CollectionResult<LetterData>(
+                [CreateLetterData("letter-1")],
+                new CollectionResultLinks("", "", "", "", ""),
+                new CollectionResultMeta(1, 0, 20, 1, 1, 1)
+            )
+        }));
+
+        var pages = new List<IEnumerable<LetterData>>();
+        await foreach (var page in _letterService.GetPageResultsAsync())
+        {
+            pages.Add(page);
+        }
+
+        pages.Count.ShouldBe(1);
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(), Arg.Any<ApiPagingRequest?>(), Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies AutoPage iterates through all pages until CurrentPage reaches LastPage
+    /// </summary>
+    [Test]
+    public async Task AutoPage_MultiplePages_IteratesAllPages()
+    {
+        var callCount = 0;
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(_ =>
+        {
+            callCount++;
+            return Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+            {
+                IsSuccess = true,
+                Data = new CollectionResult<LetterData>(
+                    [CreateLetterData($"letter-{callCount}")],
+                    new CollectionResultLinks("", "", "", "", ""),
+                    new CollectionResultMeta(callCount, 3, 1, callCount, callCount, 3)
+                )
+            });
+        });
+
+        var pages = new List<IEnumerable<LetterData>>();
+        await foreach (var page in _letterService.GetPageResultsAsync())
+        {
+            pages.Add(page);
+        }
+
+        pages.Count.ShouldBe(3);
+        pages[0].First().Id.ShouldBe("letter-1");
+        pages[1].First().Id.ShouldBe("letter-2");
+        pages[2].First().Id.ShouldBe("letter-3");
+    }
+
+    /// <summary>
+    /// Verifies AutoPage increments page number for each subsequent request
+    /// </summary>
+    [Test]
+    public async Task AutoPage_MultiplePages_IncrementsPageNumber()
+    {
+        var capturedRequests = new List<ApiPagingRequest?>();
+        var callCount = 0;
+
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Do<ApiPagingRequest?>(r => capturedRequests.Add(r)),
+            Arg.Any<CancellationToken>()
+        ).Returns(_ =>
+        {
+            callCount++;
+            return Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+            {
+                IsSuccess = true,
+                Data = new CollectionResult<LetterData>(
+                    [CreateLetterData($"letter-{callCount}")],
+                    new CollectionResultLinks("", "", "", "", ""),
+                    new CollectionResultMeta(callCount, 3, 1, callCount, callCount, 3)
+                )
+            });
+        });
+
+        await foreach (var _ in _letterService.GetPageResultsAsync())
+        {
+            // consume pages
+        }
+
+        capturedRequests.Count.ShouldBe(3);
+        capturedRequests[0]!.PageNumber.ShouldBe(1);
+        capturedRequests[1]!.PageNumber.ShouldBe(2);
+        capturedRequests[2]!.PageNumber.ShouldBe(3);
+    }
+
+    /// <summary>
+    /// Verifies AutoPage preserves filter and sort parameters across multiple pages
+    /// </summary>
+    [Test]
+    public async Task AutoPage_MultiplePages_PreservesFilterAndSort()
+    {
+        var sorting = new[] { new KeyValuePair<string, CollectionSortDirection>("status", CollectionSortDirection.ASC) };
+        var filtering = new KeyValuePair<string, object>("and", new[] { new KeyValuePair<string, string>("status", "draft") });
+
+        var capturedRequests = new List<ApiPagingRequest?>();
+        var callCount = 0;
+
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Do<ApiPagingRequest?>(r => capturedRequests.Add(r)),
+            Arg.Any<CancellationToken>()
+        ).Returns(_ =>
+        {
+            callCount++;
+            return Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+            {
+                IsSuccess = true,
+                Data = new CollectionResult<LetterData>(
+                    [CreateLetterData($"letter-{callCount}")],
+                    new CollectionResultLinks("", "", "", "", ""),
+                    new CollectionResultMeta(callCount, 2, 1, callCount, callCount, 2)
+                )
+            });
+        });
+
+        var request = new ApiPagingRequest
+        {
+            Sorting = sorting,
+            Filtering = filtering
+        };
+
+        await foreach (var _ in _letterService.GetPageResultsAsync(request))
+        {
+            // consume pages
+        }
+
+        capturedRequests.Count.ShouldBe(2);
+        capturedRequests[0]!.Sorting.ShouldBe(sorting);
+        capturedRequests[0]!.Filtering.ShouldBe(filtering);
+        capturedRequests[1]!.Sorting.ShouldBe(sorting);
+        capturedRequests[1]!.Filtering.ShouldBe(filtering);
+    }
+
+    /// <summary>
+    /// Verifies AutoPage throws PingenApiErrorException when a page request fails
+    /// </summary>
+    [Test]
+    public async Task AutoPage_FailedPage_ThrowsPingenApiErrorException()
+    {
+        var callCount = 0;
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(_ =>
+        {
+            callCount++;
+            return Task.FromResult(callCount == 1
+                ? new ApiResult<CollectionResult<LetterData>>
+                {
+                    IsSuccess = true,
+                    Data = new CollectionResult<LetterData>(
+                        [CreateLetterData("letter-1")],
+                        new CollectionResultLinks("", "", "", "", ""),
+                        new CollectionResultMeta(1, 3, 1, 1, 1, 3)
+                    )
+                }
+                : new ApiResult<CollectionResult<LetterData>>
+                {
+                    IsSuccess = false
+                });
+        });
+
+        await Should.ThrowAsync<PingenApiErrorException>(async () =>
+        {
+            await foreach (var _ in _letterService.GetPageResultsAsync())
+            {
+                // consume pages
+            }
+        });
+    }
+
+    /// <summary>
+    /// Verifies AutoPage stops after first page when ApiResult.Data is null
+    /// </summary>
+    [Test]
+    public async Task AutoPage_NullData_YieldsEmptyCollectionAndStops()
+    {
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = null
+        }));
+
+        var pages = new List<IEnumerable<LetterData>>();
+        await foreach (var page in _letterService.GetPageResultsAsync())
+        {
+            pages.Add(page);
+        }
+
+        pages.Count.ShouldBe(1);
+        pages[0].ShouldBeEmpty();
+    }
+
     private static LetterData CreateLetterData(string id) => new()
     {
         Id = id,

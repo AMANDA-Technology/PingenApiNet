@@ -52,6 +52,62 @@ public class PingenConfigurationTests
     }
 
     /// <summary>
+    /// Verifies Normalize rejects BaseUri without HTTPS scheme
+    /// </summary>
+    [Test]
+    public void Normalize_HttpBaseUri_ThrowsArgumentException()
+    {
+        var config = new PingenConfiguration
+        {
+            BaseUri = "http://api.example.com",
+            IdentityUri = "https://identity.example.com",
+            ClientId = "test",
+            ClientSecret = "test",
+            DefaultOrganisationId = "org"
+        };
+
+        Should.Throw<ArgumentException>(() => config.Normalize())
+            .Message.ShouldContain("BaseUri");
+    }
+
+    /// <summary>
+    /// Verifies Normalize rejects IdentityUri without HTTPS scheme
+    /// </summary>
+    [Test]
+    public void Normalize_HttpIdentityUri_ThrowsArgumentException()
+    {
+        var config = new PingenConfiguration
+        {
+            BaseUri = "https://api.example.com",
+            IdentityUri = "http://identity.example.com",
+            ClientId = "test",
+            ClientSecret = "test",
+            DefaultOrganisationId = "org"
+        };
+
+        Should.Throw<ArgumentException>(() => config.Normalize())
+            .Message.ShouldContain("IdentityUri");
+    }
+
+    /// <summary>
+    /// Verifies Normalize accepts valid HTTPS URIs
+    /// </summary>
+    [Test]
+    public void Normalize_HttpsUris_DoesNotThrow()
+    {
+        var config = new PingenConfiguration
+        {
+            BaseUri = "https://api.example.com",
+            IdentityUri = "https://identity.example.com",
+            ClientId = "test",
+            ClientSecret = "test",
+            DefaultOrganisationId = "org"
+        };
+
+        Should.NotThrow(() => config.Normalize());
+    }
+
+    /// <summary>
     /// Verifies PingenConfiguration stores all properties
     /// </summary>
     [Test]
