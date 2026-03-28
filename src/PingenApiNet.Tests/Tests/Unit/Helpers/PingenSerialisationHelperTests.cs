@@ -1,4 +1,3 @@
-using System.Text.Json;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -95,18 +94,6 @@ public class PingenSerialisationHelperTests
     }
 
     /// <summary>
-    /// Verifies that Deserialize throws for empty JSON when required properties are missing
-    /// </summary>
-    [Test]
-    public void Deserialize_EmptyJsonObject_ThrowsForRequiredProperties()
-    {
-        var json = "{}";
-
-        Should.Throw<System.Text.Json.JsonException>(() =>
-            PingenSerialisationHelper.Deserialize<DataIdentity>(json));
-    }
-
-    /// <summary>
     /// Verifies that TryGetIncludedData returns true and deserializes the matching included element
     /// </summary>
     [Test]
@@ -194,5 +181,17 @@ public class PingenSerialisationHelperTests
         found.ShouldBeTrue();
         included.ShouldNotBeNull();
         included!.Id.ShouldBe("org-1");
+    }
+
+    /// <summary>
+    /// Verifies that Deserialize throws for empty JSON when required properties are missing
+    /// </summary>
+    [Test]
+    public void Deserialize_EmptyJsonObject_ThrowsForRequiredProperties()
+    {
+        var json = "{}";
+
+        Should.Throw<System.Text.Json.JsonException>(() =>
+            PingenSerialisationHelper.Deserialize<DataIdentity>(json));
     }
 }
