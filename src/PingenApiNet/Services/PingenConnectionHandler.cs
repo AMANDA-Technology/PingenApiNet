@@ -89,9 +89,6 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         _configuration = configuration.Normalize();
         _organisationId = _configuration.DefaultOrganisationId;
         _httpClients = httpClients;
-
-        // Try authorize when access token is already set on this instance
-        TryAuthorizeHttpClient();
     }
 
     /// <summary>
