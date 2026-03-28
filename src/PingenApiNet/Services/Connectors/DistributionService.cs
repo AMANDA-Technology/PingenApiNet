@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -39,7 +39,7 @@ namespace PingenApiNet.Services.Connectors;
 public sealed class DistributionService : ConnectorService, IDistributionService
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LetterService"/> class.
+    /// Initializes a new instance of the <see cref="DistributionService"/> class.
     /// </summary>
     /// <param name="connectionHandler"></param>
     public DistributionService(IPingenConnectionHandler connectionHandler) : base(connectionHandler)
