@@ -23,45 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Exceptions;
+using System.Net;
+
+namespace PingenApiNet.Abstractions.Models.Api;
 
 /// <summary>
-/// Represents errors that occur from pingen file download
+/// Result of an external HTTP request (e.g., S3 file upload). Unlike <see cref="ApiResult"/>,
+/// this does not carry Pingen API-specific metadata such as request IDs or rate limit headers.
 /// </summary>
-public class PingenFileDownloadException : ApplicationException
+public sealed record ExternalRequestResult
 {
     /// <summary>
-    /// Error code
+    /// Indicates whether the HTTP request completed successfully (2xx status code)
     /// </summary>
-    public string? ErrorCode { get; }
+    public bool IsSuccess { get; init; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PingenFileDownloadException"/> class
+    /// The HTTP status code returned by the external server
     /// </summary>
-    /// <param name="errorCode"></param>
-    public PingenFileDownloadException(string? errorCode)
-    {
-        ErrorCode = errorCode;
-    }
+    public HttpStatusCode StatusCode { get; init; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PingenFileDownloadException"/> class
+    /// The reason phrase returned by the external server (e.g., "OK", "Forbidden", "Not Found").
+    /// May be null if the server did not include a reason phrase.
     /// </summary>
-    /// <param name="errorCode"></param>
-    /// <param name="message"></param>
-    public PingenFileDownloadException(string? errorCode, string message) : base(message)
-    {
-        ErrorCode = errorCode;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PingenFileDownloadException"/> class
-    /// </summary>
-    /// <param name="errorCode"></param>
-    /// <param name="message"></param>
-    /// <param name="inner"></param>
-    public PingenFileDownloadException(string? errorCode, string message, Exception inner) : base(message, inner)
-    {
-        ErrorCode = errorCode;
-    }
+    public string? ReasonPhrase { get; init; }
 }

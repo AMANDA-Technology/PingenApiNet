@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -38,7 +38,7 @@ using PingenApiNet.Services.Connectors.Endpoints;
 namespace PingenApiNet.Services.Connectors;
 
 /// <inheritdoc cref="PingenApiNet.Interfaces.Connectors.IWebhookService" />
-public class WebhookService : ConnectorService, IWebhookService
+public sealed class WebhookService : ConnectorService, IWebhookService
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="WebhookService"/> class.

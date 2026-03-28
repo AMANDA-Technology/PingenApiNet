@@ -30,8 +30,9 @@ if (!resultFilePath.IsSuccess)
 if (resultFilePath.Data?.Data is null)
     return "Failed to get file upload path from pingen, request was OK but return null";
 
-if (!await _pingenApiClient.Files.UploadFile(resultFilePath.Data.Data, contentStream))
-    return "Failed to upload file to pingen storage";
+var uploadResult = await _pingenApiClient.Files.UploadFile(resultFilePath.Data.Data, contentStream);
+if (!uploadResult.IsSuccess)
+    return $"Failed to upload file to pingen storage: {uploadResult.StatusCode} {uploadResult.ReasonPhrase}";
 ```
 
 Create the letter.

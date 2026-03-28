@@ -139,6 +139,130 @@ public class ConnectorServiceTests
         result.ShouldBeNull();
     }
 
+    /// <summary>
+    /// Verifies AutoPage preserves all properties from the original ApiPagingRequest
+    /// </summary>
+    [Test]
+    public async Task AutoPage_PreservesAllRequestProperties()
+    {
+        var sorting = new[] { new KeyValuePair<string, CollectionSortDirection>("status", CollectionSortDirection.ASC) };
+        var filtering = new KeyValuePair<string, object>("and", new[] { new KeyValuePair<string, string>("status", "draft") });
+        var sparseFieldsets = new[] { new KeyValuePair<PingenApiDataType, IEnumerable<string>>(PingenApiDataType.letters, ["status"]) };
+        var includes = new[] { "organisation" };
+
+        var originalRequest = new ApiPagingRequest
+        {
+            Sorting = sorting,
+            Filtering = filtering,
+            Searching = "test-search",
+            PageNumber = 3,
+            PageLimit = 50,
+            SparseFieldsets = sparseFieldsets,
+            Include = includes
+        };
+
+        ApiPagingRequest? capturedRequest = null;
+
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Do<ApiPagingRequest?>(r => capturedRequest = r),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = new CollectionResult<LetterData>(
+                [CreateLetterData("letter-1")],
+                new CollectionResultLinks("", "", "", "", ""),
+                new CollectionResultMeta(1, 1, 50, 1, 1, 1)
+            )
+        }));
+
+        await foreach (var _ in _letterService.GetPageResultsAsync(originalRequest))
+        {
+            // consume the page
+        }
+
+        capturedRequest.ShouldNotBeNull();
+        capturedRequest.Sorting.ShouldBe(sorting);
+        capturedRequest.Filtering.ShouldBe(filtering);
+        capturedRequest.Searching.ShouldBe("test-search");
+        capturedRequest.PageNumber.ShouldBe(3);
+        capturedRequest.PageLimit.ShouldBe(50);
+        capturedRequest.SparseFieldsets.ShouldBe(sparseFieldsets);
+        capturedRequest.Include.ShouldBe(includes);
+    }
+
+    /// <summary>
+    /// Verifies AutoPage defaults PageNumber to 1 when input request is null
+    /// </summary>
+    [Test]
+    public async Task AutoPage_NullRequest_DefaultsPageNumberToOne()
+    {
+        ApiPagingRequest? capturedRequest = null;
+
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Do<ApiPagingRequest?>(r => capturedRequest = r),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = new CollectionResult<LetterData>(
+                [CreateLetterData("letter-1")],
+                new CollectionResultLinks("", "", "", "", ""),
+                new CollectionResultMeta(1, 1, 20, 1, 1, 1)
+            )
+        }));
+
+        await foreach (var _ in _letterService.GetPageResultsAsync(null))
+        {
+            // consume the page
+        }
+
+        capturedRequest.ShouldNotBeNull();
+        capturedRequest.PageNumber.ShouldBe(1);
+    }
+
+    /// <summary>
+    /// Verifies AutoPage defaults PageNumber to 1 when PageNumber is null in the request
+    /// </summary>
+    [Test]
+    public async Task AutoPage_NullPageNumber_DefaultsToOne()
+    {
+        var originalRequest = new ApiPagingRequest
+        {
+            Searching = "test",
+            PageNumber = null,
+            PageLimit = 25
+        };
+
+        ApiPagingRequest? capturedRequest = null;
+
+        _mockConnectionHandler.GetAsync<CollectionResult<LetterData>>(
+            Arg.Any<string>(),
+            Arg.Do<ApiPagingRequest?>(r => capturedRequest = r),
+            Arg.Any<CancellationToken>()
+        ).Returns(Task.FromResult(new ApiResult<CollectionResult<LetterData>>
+        {
+            IsSuccess = true,
+            Data = new CollectionResult<LetterData>(
+                [CreateLetterData("letter-1")],
+                new CollectionResultLinks("", "", "", "", ""),
+                new CollectionResultMeta(1, 1, 25, 1, 1, 1)
+            )
+        }));
+
+        await foreach (var _ in _letterService.GetPageResultsAsync(originalRequest))
+        {
+            // consume the page
+        }
+
+        capturedRequest.ShouldNotBeNull();
+        capturedRequest.PageNumber.ShouldBe(1);
+        capturedRequest.Searching.ShouldBe("test");
+        capturedRequest.PageLimit.ShouldBe(25);
+    }
+
     private static LetterData CreateLetterData(string id) => new()
     {
         Id = id,
