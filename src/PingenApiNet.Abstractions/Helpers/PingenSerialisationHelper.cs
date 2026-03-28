@@ -135,8 +135,11 @@ public static class PingenSerialisationHelper
     {
         if (dataResult.Included
             ?.SingleOrDefault(include => include is JsonElement jsonElement
-                                         && Deserialize<DataIdentity>(jsonElement.GetRawText()) is { } dataIdentity
-                                         && PingenApiDataTypeMapping[dataIdentity.Type] == typeof(T))
+                                         && jsonElement.TryGetProperty("type", out var typeProperty)
+                                         && typeProperty.GetString() is { } typeString
+                                         && Enum.TryParse<PingenApiDataType>(typeString, out var dataType)
+                                         && PingenApiDataTypeMapping.TryGetValue(dataType, out var mappedType)
+                                         && mappedType == typeof(T))
             is JsonElement includeJsonElement)
         {
             included = Deserialize<Data<T>>(includeJsonElement.GetRawText());

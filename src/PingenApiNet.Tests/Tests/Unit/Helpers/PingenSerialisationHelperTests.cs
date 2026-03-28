@@ -1,7 +1,10 @@
 using System.Reflection;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Organisations;
 
 namespace PingenApiNet.Tests.Tests.Unit.Helpers;
 
@@ -89,6 +92,96 @@ public class PingenSerialisationHelperTests
             () => mapping.ContainsKey(PingenApiDataType.file_uploads).ShouldBeTrue(),
             () => mapping.ContainsKey(PingenApiDataType.delivery_products).ShouldBeTrue()
         );
+    }
+
+    /// <summary>
+    /// Verifies that TryGetIncludedData returns true and deserializes the matching included element
+    /// </summary>
+    [Test]
+    public void TryGetIncludedData_MatchingType_ReturnsTrueWithData()
+    {
+        var json = """
+        {
+            "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+            "included": [
+                { "id": "org-1", "type": "organisations", "attributes": { "name": "Test Org" } },
+                { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } }
+            ]
+        }
+        """;
+        var result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var found = PingenSerialisationHelper.TryGetIncludedData<Organisation>(result, out var included);
+
+        found.ShouldBeTrue();
+        included.ShouldNotBeNull();
+        included!.Id.ShouldBe("org-1");
+        included.Type.ShouldBe(PingenApiDataType.organisations);
+    }
+
+    /// <summary>
+    /// Verifies that TryGetIncludedData returns false when no element matches the requested type
+    /// </summary>
+    [Test]
+    public void TryGetIncludedData_NoMatchingType_ReturnsFalse()
+    {
+        var json = """
+        {
+            "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+            "included": [
+                { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } }
+            ]
+        }
+        """;
+        var result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var found = PingenSerialisationHelper.TryGetIncludedData<Organisation>(result, out var included);
+
+        found.ShouldBeFalse();
+        included.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// Verifies that TryGetIncludedData returns false when included is null
+    /// </summary>
+    [Test]
+    public void TryGetIncludedData_NullIncluded_ReturnsFalse()
+    {
+        var json = """
+        {
+            "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } }
+        }
+        """;
+        var result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var found = PingenSerialisationHelper.TryGetIncludedData<Organisation>(result, out var included);
+
+        found.ShouldBeFalse();
+        included.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// Verifies that TryGetIncludedData gracefully skips elements with unrecognized type discriminators
+    /// </summary>
+    [Test]
+    public void TryGetIncludedData_UnknownTypeDiscriminator_SkipsElement()
+    {
+        var json = """
+        {
+            "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+            "included": [
+                { "id": "unknown-1", "type": "unknown_type_xyz", "attributes": {} },
+                { "id": "org-1", "type": "organisations", "attributes": { "name": "Test Org" } }
+            ]
+        }
+        """;
+        var result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var found = PingenSerialisationHelper.TryGetIncludedData<Organisation>(result, out var included);
+
+        found.ShouldBeTrue();
+        included.ShouldNotBeNull();
+        included!.Id.ShouldBe("org-1");
     }
 
     /// <summary>
