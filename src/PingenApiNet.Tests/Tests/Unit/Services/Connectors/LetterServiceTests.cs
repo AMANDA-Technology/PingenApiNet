@@ -3,6 +3,7 @@ using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults.Embedded;
+using PingenApiNet.Abstractions.Models.LetterEvents;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Letters.Views;
 using PingenApiNet.Services.Connectors;
@@ -220,5 +221,54 @@ public class LetterServiceTests
 
         result.ShouldNotBeNull();
         result.Length.ShouldBeGreaterThan(0L);
+    }
+
+    /// <summary>
+    /// Verifies GetEventsPage URL-encodes the language parameter value
+    /// </summary>
+    [Test]
+    public async Task GetEventsPage_UrlEncodesLanguageParameter()
+    {
+        const string letterId = "test-letter-id";
+        const string language = "en&foo=bar";
+        var expectedPath = $"letters/{letterId}/events?language={Uri.EscapeDataString(language)}";
+
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<LetterEventData>>(
+                expectedPath,
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<LetterEventData>> { IsSuccess = true });
+
+        await _letterService.GetEventsPage(letterId, language);
+
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<LetterEventData>>(
+            expectedPath,
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies GetIssuesPage URL-encodes the language parameter value
+    /// </summary>
+    [Test]
+    public async Task GetIssuesPage_UrlEncodesLanguageParameter()
+    {
+        const string language = "en&foo=bar";
+        var expectedPath = $"letters/issues?language={Uri.EscapeDataString(language)}";
+
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<LetterEventData>>(
+                expectedPath,
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<LetterEventData>> { IsSuccess = true });
+
+        await _letterService.GetIssuesPage(language);
+
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<LetterEventData>>(
+            expectedPath,
+            Arg.Any<ApiPagingRequest?>(),
+            Arg.Any<CancellationToken>());
     }
 }
