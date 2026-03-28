@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+
 namespace PingenApiNet.Abstractions.Interfaces.Data;
 
 /// <summary>
@@ -33,7 +35,7 @@ public interface IDataResult
     /// <summary>
     /// Optionally included data objects from API
     /// </summary>
-    public IList<object>? Included { get; init; }
+    public IncludedCollection? Included { get; init; }
 }
 
 /// <summary>

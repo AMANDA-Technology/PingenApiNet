@@ -124,29 +124,17 @@ public static class PingenSerialisationHelper
     };
 
     /// <summary>
-    ///
+    /// Attempts to extract a single included resource of type <typeparamref name="T"/> from the data result.
+    /// Uses <see cref="PingenApiDataTypeMapping"/> to resolve the JSON:API <c>type</c> discriminator
+    /// to the .NET attributes type.
     /// </summary>
-    /// <param name="dataResult"></param>
-    /// <param name="included"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <param name="dataResult">The data result containing the <c>included</c> collection.</param>
+    /// <param name="included">When this method returns, contains the deserialized <see cref="Data{T}"/> if found; otherwise <c>null</c>.</param>
+    /// <typeparam name="T">The attributes type to search for (must implement <see cref="IAttributes"/>).</typeparam>
+    /// <returns><c>true</c> if a matching included resource was found; otherwise <c>false</c>.</returns>
     public static bool TryGetIncludedData<T>(IDataResult dataResult, out Data<T>? included) where T : IAttributes
     {
-        if (dataResult.Included
-            ?.SingleOrDefault(include => include is JsonElement jsonElement
-                                         && jsonElement.TryGetProperty("type", out var typeProperty)
-                                         && typeProperty.GetString() is { } typeString
-                                         && Enum.TryParse<PingenApiDataType>(typeString, out var dataType)
-                                         && PingenApiDataTypeMapping.TryGetValue(dataType, out var mappedType)
-                                         && mappedType == typeof(T))
-            is JsonElement includeJsonElement)
-        {
-            included = Deserialize<Data<T>>(includeJsonElement.GetRawText());
-            return true;
-        }
-
-        included = default;
-        return false;
+        included = dataResult.Included?.OfType<T>().SingleOrDefault();
+        return included is not null;
     }
 }
