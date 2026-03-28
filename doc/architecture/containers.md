@@ -78,7 +78,7 @@ C4Container
 
 | Property | Value |
 |---|---|
-| Repo path | `src/PingenApiNet.Tests/` |
+| Repo path | `tests/PingenApiNet.Tests/` |
 | Framework | NUnit 4, coverlet |
 | Test type | Integration tests against Pingen staging API |
 | Configuration | Environment variables (`PingenApiNet__BaseUri`, `PingenApiNet__IdentityUri`, `PingenApiNet__ClientId`, `PingenApiNet__ClientSecret`, `PingenApiNet__OrganisationId`) |
