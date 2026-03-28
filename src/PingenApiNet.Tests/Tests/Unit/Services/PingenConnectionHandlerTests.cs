@@ -112,6 +112,70 @@ public class PingenConnectionHandlerTests
     }
 
     /// <summary>
+    /// Verifies that each PingenConnectionHandler instance maintains its own access token,
+    /// preventing multi-tenant token sharing (regression test for issue #22)
+    /// </summary>
+    [Test]
+    public async Task MultipleInstances_MaintainSeparateAccessTokens()
+    {
+        // Handler A identity server returns token-A
+        var identityHandlerA = new MockHttpMessageHandler(HttpStatusCode.OK,
+            PingenSerialisationHelper.Serialize(new
+            {
+                access_token = "token-A",
+                token_type = "Bearer",
+                expires_in = 3600
+            }));
+
+        string? capturedTokenA = null;
+        var apiHandlerA = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedTokenA = request.Headers.Authorization?.Parameter;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        // Handler B identity server returns token-B
+        var identityHandlerB = new MockHttpMessageHandler(HttpStatusCode.OK,
+            PingenSerialisationHelper.Serialize(new
+            {
+                access_token = "token-B",
+                token_type = "Bearer",
+                expires_in = 3600
+            }));
+
+        string? capturedTokenB = null;
+        var apiHandlerB = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedTokenB = request.Headers.Authorization?.Parameter;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var configA = CreateConfig();
+        var configB = CreateConfig();
+
+        var httpClientsA = CreateHttpClients(identityHandlerA, apiHandlerA);
+        var httpClientsB = CreateHttpClients(identityHandlerB, apiHandlerB);
+
+        // Handler A authenticates first
+        var handlerA = new PingenConnectionHandler(configA, httpClientsA);
+        await handlerA.GetAsync("letters", (ApiPagingRequest?)null);
+
+        // Handler B created after A has already authenticated — must use its own token
+        var handlerB = new PingenConnectionHandler(configB, httpClientsB);
+        await handlerB.GetAsync("letters", (ApiPagingRequest?)null);
+
+        // Each handler should use its own token, not share the static one
+        capturedTokenA.ShouldBe("token-A");
+        capturedTokenB.ShouldBe("token-B");
+    }
+
+    /// <summary>
     /// Verifies that GetAsync returns error result on non-success status code
     /// </summary>
     [Test]

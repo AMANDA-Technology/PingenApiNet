@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -64,12 +64,12 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// <summary>
     /// Access token for authenticated requests
     /// </summary>
-    private static AccessToken? _accessToken;
+    private AccessToken? _accessToken;
 
     /// <summary>
     /// Semaphore to ensure that only one thread tries to re-/authenticate at a time
     /// </summary>
-    private static readonly SemaphoreSlim AuthenticationSemaphore = new(1, 1);
+    private readonly SemaphoreSlim _authenticationSemaphore = new(1, 1);
 
     /// <summary>
     /// Indicates if the authentication semaphore has been entered or not
@@ -90,7 +90,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         _organisationId = _configuration.DefaultOrganisationId;
         _httpClients = httpClients;
 
-        // Try authorize when static access token is set
+        // Try authorize when access token is already set on this instance
         TryAuthorizeHttpClient();
     }
 
@@ -105,7 +105,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
             return;
 
         // Wait for semaphore entrance
-        if (!await AuthenticationSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+        if (!await _authenticationSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
         {
             throw new InvalidOperationException("Authentication semaphore entrance timeout");
         }
@@ -116,7 +116,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         }
         finally
         {
-            AuthenticationSemaphore.Release();
+            _authenticationSemaphore.Release();
             _isEnteredAuthenticationSemaphore = false;
         }
     }
@@ -125,7 +125,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
     /// Check if access token is set and not expired
     /// </summary>
     /// <returns></returns>
-    private static bool IsAuthorized() => _accessToken is not null && _accessToken.ExpiresAt.AddMinutes(-1) > DateTime.Now;
+    private bool IsAuthorized() => _accessToken is not null && _accessToken.ExpiresAt.AddMinutes(-1) > DateTime.Now;
 
     /// <summary>
     /// Re-/Authenticate, save access token and authorize the http client
