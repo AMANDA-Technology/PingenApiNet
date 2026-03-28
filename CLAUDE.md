@@ -28,7 +28,7 @@ src/
   PingenApiNet/                 # References Abstractions + Microsoft.Extensions.Http
   PingenApiNet.AspNetCore/      # References Abstractions + PingenApiNet + Microsoft.Extensions.DependencyInjection
 tests/
-  PingenApiNet.Tests/           # Offline unit tests (NUnit). References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
+  PingenApiNet.UnitTests/       # Offline unit tests (NUnit). References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
   PingenApiNet.Tests.E2E/       # E2E integration tests (NUnit). Requires API env vars. NOT packaged.
 build/
   GetBuildVersion.psm1          # PowerShell module for semver extraction from git ref
@@ -42,7 +42,7 @@ build/
 
 ```
 src/Abstractions  <──  src/PingenApiNet  <──  src/AspNetCore
-                                        <──  tests/Tests
+                                        <──  tests/UnitTests
                                         <──  tests/Tests.E2E
 ```
 
@@ -64,7 +64,7 @@ dotnet build PingenApiNet.sln --configuration Release -p:Version=1.2.5
 dotnet pack PingenApiNet.sln --configuration Release -p:PackageVersion=1.2.5 --no-build
 
 # Run unit tests (offline, no env vars needed)
-dotnet test tests/PingenApiNet.Tests/PingenApiNet.Tests.csproj
+dotnet test tests/PingenApiNet.UnitTests/PingenApiNet.UnitTests.csproj
 
 # Run E2E tests (requires env vars — see Testing section)
 dotnet test tests/PingenApiNet.Tests.E2E/PingenApiNet.Tests.E2E.csproj
@@ -138,14 +138,14 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 
 Tests are split into two projects:
 
-### Unit Tests (`PingenApiNet.Tests`)
-Offline tests that require no API credentials or network access. Located under `Tests/Unit/`. Includes:
+### Unit Tests (`PingenApiNet.UnitTests`)
+Offline tests that require no API credentials or network access. Located under `Tests/`. Includes:
 - `ApiRequestQueryParameters` — verifies `ApiRequest.Include` property behavior and query parameter formatting.
 - `FieldHelpers` — verifies `*Fields` constant values match `[JsonPropertyName]` attributes on model records.
 - `IncludeHelpers` — verifies `*Includes` static helper constant values match relationship JSON property names.
 - `SparseFieldsets` — verifies sparse fieldset query parameter construction and serialization.
 - `Webhooks` — offline deserialization test using `Assets/webhook_sample.json`.
-- Additional unit tests under `Tests/Unit/` subdirectories (Helpers, Services, Models, Exceptions, AspNetCore).
+- Additional unit tests under `Tests/` subdirectories (Helpers, Services, Models, Exceptions, AspNetCore).
 
 ### E2E Tests (`PingenApiNet.Tests.E2E`)
 Integration tests that call the real Pingen staging API. Require environment variables:

@@ -17,7 +17,7 @@ C4Container
         Container(aspnetcore, "PingenApiNet.AspNetCore", ".NET 10 / C#", "IServiceCollection extension for registering all Pingen services and HTTP clients in ASP.NET Core DI containers")
         Container(core, "PingenApiNet", ".NET 10 / C#", "Core API client: connection handler, authentication, HTTP request construction, response parsing, and connector services per resource type")
         Container(abstractions, "PingenApiNet.Abstractions", ".NET 10 / C#", "All models, enums, interfaces, exceptions, and helpers. Zero NuGet dependencies. Safe for reference in domain layers.")
-        Container(tests, "PingenApiNet.Tests", ".NET 10 / NUnit 4", "Integration test suite. Not packaged. Calls real Pingen staging API.")
+        Container(tests, "PingenApiNet.UnitTests", ".NET 10 / NUnit 4", "Unit test suite. Not packaged. Offline tests, no API credentials needed.")
     }
 
     System_Ext(pingenApi, "Pingen API", "JSON:API REST")
@@ -74,13 +74,11 @@ C4Container
 | Responsibility | Single static class `PingenServiceCollection` with `AddPingenServices()` extension method. Registers all named HTTP clients and scoped services. |
 | Consumer API | `services.AddPingenServices(configuration)` or `services.AddPingenServices(baseUri, identityUri, clientId, clientSecret, orgId)` |
 
-### PingenApiNet.Tests (not packaged)
+### PingenApiNet.UnitTests (not packaged)
 
 | Property | Value |
 |---|---|
-| Repo path | `tests/PingenApiNet.Tests/` |
+| Repo path | `tests/PingenApiNet.UnitTests/` |
 | Framework | NUnit 4, coverlet |
-| Test type | Integration tests against Pingen staging API |
-| Configuration | Environment variables (`PingenApiNet__BaseUri`, `PingenApiNet__IdentityUri`, `PingenApiNet__ClientId`, `PingenApiNet__ClientSecret`, `PingenApiNet__OrganisationId`) |
-| Offline test | `Webhooks.DeserializeWebhookEventData` uses local `Assets/webhook_sample.json` |
-| Test assets | `Assets/` — sample PDFs and a webhook JSON payload |
+| Test type | Offline unit tests (no API credentials needed) |
+| Test assets | `Assets/` — webhook JSON payload for offline deserialization tests |

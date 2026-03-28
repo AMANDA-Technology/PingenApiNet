@@ -1,0 +1,72 @@
+/*
+MIT License
+
+Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
+Copyright (c) 2022 Manuel Gysin <manuel.gysin@amanda-technology.ch>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+using PingenApiNet.Abstractions.Helpers;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.LetterEvents;
+using PingenApiNet.Abstractions.Models.Letters;
+using PingenApiNet.Abstractions.Models.Organisations;
+using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
+
+namespace PingenApiNet.UnitTests.Tests;
+
+/// <summary>
+///
+/// </summary>
+public class Webhooks
+{
+    /// <summary>
+    ///
+    /// </summary>
+    [Test]
+    public async Task DeserializeWebhookEventData()
+    {
+        var webhookBody = await File.ReadAllTextAsync("Assets/webhook_sample.json");
+        webhookBody.ShouldNotBeEmpty();
+
+        var webhookEventData = PingenSerialisationHelper.Deserialize<SingleResult<WebhookEventData>>(webhookBody);
+        webhookEventData?.Data.Attributes.ShouldNotBeNull();
+
+        var includedOrganisationFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out Data<Organisation>? organisationData);
+        webhookEventData!.ShouldSatisfyAllConditions(
+            () => includedOrganisationFound.ShouldBeTrue(),
+            () => organisationData.ShouldNotBeNull()
+        );
+
+        var letterFound = PingenSerialisationHelper.TryGetIncludedData<Letter>(webhookEventData!, out var letterData);
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => letterFound.ShouldBeTrue(),
+            () => letterData.ShouldNotBeNull()
+        );
+
+        Data<LetterEvent>? letterEventData;
+        var letterEventFound = PingenSerialisationHelper.TryGetIncludedData(webhookEventData!, out letterEventData);
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => letterEventFound.ShouldBeTrue(),
+            () => letterEventData.ShouldNotBeNull()
+        );
+    }
+}
