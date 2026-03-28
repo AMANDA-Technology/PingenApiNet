@@ -109,6 +109,7 @@ public sealed class PingenConnectionHandler : IPingenConnectionHandler
         try
         {
             _isEnteredAuthenticationSemaphore = true;
+            if (IsAuthorized()) return;
             await Login();
         }
         finally

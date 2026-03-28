@@ -201,6 +201,58 @@ public class PingenConnectionHandlerTests
         result.IsSuccess.ShouldBeFalse();
     }
 
+    /// <summary>
+    /// Verifies the double-check pattern: after acquiring the semaphore, IsAuthorized() is
+    /// re-checked so that concurrent callers do not redundantly call Login().
+    /// Regression test for issue #27.
+    /// </summary>
+    [Test]
+    public async Task SetOrUpdateAccessToken_ConcurrentCalls_OnlyAuthenticatesOnce()
+    {
+        var loginCallCount = 0;
+        var loginEnteredEvent = new ManualResetEventSlim(false);
+
+        var identityHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            Interlocked.Increment(ref loginCallCount);
+            loginEnteredEvent.Set();
+
+            var tokenJson = PingenSerialisationHelper.Serialize(new
+            {
+                access_token = "shared-token",
+                token_type = "Bearer",
+                expires_in = 3600
+            });
+
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(tokenJson)
+            });
+        });
+
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+            Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            }));
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        // Fire two concurrent requests that both need authentication
+        var task1 = handler.GetAsync("letters", (ApiPagingRequest?)null);
+        var task2 = handler.GetAsync("letters", (ApiPagingRequest?)null);
+        await Task.WhenAll(task1, task2);
+
+        // Both requests should succeed
+        task1.Result.IsSuccess.ShouldBeTrue();
+        task2.Result.IsSuccess.ShouldBeTrue();
+
+        // Only one login call should have been made
+        loginCallCount.ShouldBe(1);
+    }
+
     private static IPingenConfiguration CreateConfig(
         string baseUri = "https://api.example.com/",
         string identityUri = "https://identity.example.com/")
