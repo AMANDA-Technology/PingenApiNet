@@ -1,3 +1,4 @@
+using System.Reflection;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Base;
@@ -100,5 +101,20 @@ public class PingenSerialisationHelperTests
 
         Should.Throw<System.Text.Json.JsonException>(() =>
             PingenSerialisationHelper.Deserialize<DataIdentity>(json));
+    }
+
+    /// <summary>
+    /// Verifies that SerializerOptions returns the same cached instance on every call
+    /// </summary>
+    [Test]
+    public void SerializerOptions_ReturnsSameCachedInstance()
+    {
+        var method = typeof(PingenSerialisationHelper)
+            .GetMethod("SerializerOptions", BindingFlags.NonPublic | BindingFlags.Static)!;
+
+        var first = method.Invoke(null, null);
+        var second = method.Invoke(null, null);
+
+        ReferenceEquals(first, second).ShouldBeTrue();
     }
 }

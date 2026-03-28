@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -50,21 +50,26 @@ namespace PingenApiNet.Abstractions.Helpers;
 public static class PingenSerialisationHelper
 {
     /// <summary>
+    /// Cached JSON serializer options with default settings and custom converters.
+    /// Thread-safe once initialized; do not mutate.
+    /// </summary>
+    private static readonly JsonSerializerOptions CachedSerializerOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+        Converters =
+        {
+            new PingenDateTimeConverter(),
+            new PingenDateTimeNullableConverter(),
+            new PingenKeyValuePairStringObjectConverter()
+        }
+    };
+
+    /// <summary>
     /// Json serializer options with default settings and custom converters
     /// </summary>
     /// <returns></returns>
-    private static JsonSerializerOptions SerializerOptions()
-    {
-        var options = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
-        };
-        options.Converters.Add(new PingenDateTimeConverter());
-        options.Converters.Add(new PingenDateTimeNullableConverter());
-        options.Converters.Add(new PingenKeyValuePairStringObjectConverter());
-        return options;
-    }
+    private static JsonSerializerOptions SerializerOptions() => CachedSerializerOptions;
 
     /// <summary>
     /// Parses the text representing a single JSON value into an instance of the type specified by a generic type parameter.
