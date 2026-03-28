@@ -27,6 +27,7 @@ src/
   PingenApiNet.Abstractions/    # No external NuGet dependencies — pure models, enums, interfaces, helpers
   PingenApiNet/                 # References Abstractions + Microsoft.Extensions.Http
   PingenApiNet.AspNetCore/      # References Abstractions + PingenApiNet + Microsoft.Extensions.DependencyInjection
+tests/
   PingenApiNet.Tests/           # Offline unit tests (NUnit). References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
   PingenApiNet.Tests.E2E/       # E2E integration tests (NUnit). Requires API env vars. NOT packaged.
 build/
@@ -40,9 +41,9 @@ build/
 ### Dependency Graph
 
 ```
-Abstractions  <──  PingenApiNet  <──  AspNetCore
-                                 <──  Tests
-                                 <──  Tests.E2E
+src/Abstractions  <──  src/PingenApiNet  <──  src/AspNetCore
+                                        <──  tests/Tests
+                                        <──  tests/Tests.E2E
 ```
 
 `Abstractions` has zero NuGet dependencies. It defines all data contracts.
@@ -63,10 +64,10 @@ dotnet build PingenApiNet.sln --configuration Release -p:Version=1.2.5
 dotnet pack PingenApiNet.sln --configuration Release -p:PackageVersion=1.2.5 --no-build
 
 # Run unit tests (offline, no env vars needed)
-dotnet test src/PingenApiNet.Tests/PingenApiNet.Tests.csproj
+dotnet test tests/PingenApiNet.Tests/PingenApiNet.Tests.csproj
 
 # Run E2E tests (requires env vars — see Testing section)
-dotnet test src/PingenApiNet.Tests.E2E/PingenApiNet.Tests.E2E.csproj
+dotnet test tests/PingenApiNet.Tests.E2E/PingenApiNet.Tests.E2E.csproj
 ```
 
 ## Key Conventions
@@ -130,7 +131,7 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 | Base data model | `src/PingenApiNet.Abstractions/Models/Base/Data.cs` |
 | API result model | `src/PingenApiNet.Abstractions/Models/Api/ApiResult.cs` |
 | Filter/sort helper | `src/PingenApiNet.Abstractions/Helpers/PingenAttributesPropertyHelper.cs` |
-| E2E test base | `src/PingenApiNet.Tests.E2E/TestBase.cs` |
+| E2E test base | `tests/PingenApiNet.Tests.E2E/TestBase.cs` |
 | CI pipeline | `.github/workflows/main.yml` |
 
 ## Testing
