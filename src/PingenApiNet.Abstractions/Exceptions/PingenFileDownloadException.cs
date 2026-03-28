@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -45,7 +45,7 @@ public class PingenFileDownloadException : ApplicationException
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
+    /// Initializes a new instance of the <see cref="PingenFileDownloadException"/> class
     /// </summary>
     /// <param name="errorCode"></param>
     /// <param name="message"></param>
@@ -55,7 +55,7 @@ public class PingenFileDownloadException : ApplicationException
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PingenApiErrorException"/> class
+    /// Initializes a new instance of the <see cref="PingenFileDownloadException"/> class
     /// </summary>
     /// <param name="errorCode"></param>
     /// <param name="message"></param>
