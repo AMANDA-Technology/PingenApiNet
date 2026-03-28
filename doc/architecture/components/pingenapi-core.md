@@ -67,7 +67,7 @@ The most complex component. Responsibilities:
 - Handles `302 Found` as success (file location endpoint).
 - Exposes `SendExternalRequestAsync` for anonymous S3 requests.
 
-Token field `_accessToken` is `static` — shared across all handler instances in the process (see [[decisions/002-static-access-token]]).
+Token field `_accessToken` is instance-scoped — each handler maintains its own token, safe for multi-tenant use (see [[decisions/002-static-access-token]]).
 
 ### PingenHttpClients (`Services/PingenHttpClients.cs`)
 

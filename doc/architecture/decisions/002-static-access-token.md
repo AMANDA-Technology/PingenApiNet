@@ -1,32 +1,40 @@
 ---
-title: "ADR-002: Static Access Token Field in PingenConnectionHandler"
+title: "ADR-002: Instance-Scoped Access Token Field in PingenConnectionHandler"
 tags: [adr, auth, concurrency]
 ---
 
-# ADR-002: Static Access Token Field in PingenConnectionHandler
+# ADR-002: Instance-Scoped Access Token Field in PingenConnectionHandler
+
+## Status
+
+**Superseded** — The token field was originally `static` (shared across all instances). It has been changed to an instance field to fix a multi-tenant security vulnerability (see issue #22).
 
 ## Context
 
-`PingenConnectionHandler` is registered as `Scoped` in ASP.NET Core DI (new instance per HTTP request). Each instance needs to call the Pingen Identity service to obtain an OAuth2 access token before making its first API request. Access tokens from the client_credentials flow are valid for a period (minutes to hours). Re-authenticating on every request scope would be wasteful.
+`PingenConnectionHandler` is registered as `Scoped` in ASP.NET Core DI (new instance per HTTP request). Each instance needs to call the Pingen Identity service to obtain an OAuth2 access token before making its first API request. Access tokens from the client_credentials flow are valid for a period (minutes to hours).
+
+The original design used a `static` `_accessToken` field so that one token was shared across all handler instances in the same process, avoiding unnecessary re-authentication. However, this created a critical security vulnerability in multi-tenant scenarios: if multiple `PingenConnectionHandler` instances were created with different `ClientId`/`ClientSecret` pairs, they would share the same token — a token obtained for Organisation X would be reused by a handler configured for Organisation Y.
 
 ## Decision
 
-The `_accessToken` field in `PingenConnectionHandler` is `static`:
+The `_accessToken` and `_authenticationSemaphore` fields are now **instance-scoped**:
 
 ```csharp
-private static AccessToken? _accessToken;
-private static readonly SemaphoreSlim AuthenticationSemaphore = new(1, 1);
+private AccessToken? _accessToken;
+private readonly SemaphoreSlim _authenticationSemaphore = new(1, 1);
 ```
 
-This means one token is shared across all `PingenConnectionHandler` instances in the same process. The `SemaphoreSlim(1,1)` prevents concurrent re-authentication races. The token is refreshed only when expired (with a 1-minute safety buffer).
+Each `PingenConnectionHandler` instance maintains its own token and its own authentication semaphore. The `IsAuthorized()` method is an instance method.
 
 ## Consequences
 
 **Good:**
-- A single OAuth2 token is reused across all scoped service instances — no unnecessary re-auth per request.
-- Thread-safe: the semaphore serializes re-authentication; only one goroutine enters `Login()` at a time. Others wait up to 10 seconds.
+- **Multi-tenant safe**: Multiple handler instances with different credentials maintain independent tokens. No cross-tenant token leakage.
+- **Thread-safe per instance**: The per-instance semaphore serializes re-authentication within a single handler; only one thread enters `Login()` at a time per handler. Others wait up to 10 seconds.
+- **Simpler reasoning**: No process-global mutable state to worry about.
+
+**Trade-off:**
+- **More frequent authentication in single-tenant Scoped DI**: Since each `Scoped` handler instance starts with no token, a new request scope will re-authenticate even if a previous scope's token is still valid. For most applications calling the Pingen API infrequently, this overhead is negligible. If token reuse across scopes is needed, consumers can register `PingenConnectionHandler` as `Singleton` (with appropriate thread-safety considerations for `_organisationId`) or implement external token caching.
 
 **Bad / Watch out:**
-- **Multi-tenant gotcha**: If an application manages multiple Pingen organisations with separate `ClientId`/`ClientSecret` pairs and creates multiple `PingenConnectionHandler` instances with different configurations, they will fight over the single static token. The current implementation is not safe for that use case. Work around it by using separate processes or separate AppDomains.
-- **`DefaultOrganisationId` vs `SetOrganisationId`**: The org ID is instance-level (`_organisationId`), not static. Changing it via `SetOrganisationId()` on one scoped handler does not affect other handlers. This is correct for multi-org switching within a single request scope but requires care if the same scoped instance is reused across multiple logical operations.
-- **Testing**: Since the token is static, tests that run in parallel within the same process will share authentication state. The test base constructs direct `PingenConnectionHandler` instances which can interact if run concurrently.
+- **`DefaultOrganisationId` vs `SetOrganisationId`**: The org ID is instance-level (`_organisationId`). Changing it via `SetOrganisationId()` on one handler does not affect other handlers. This is correct for multi-org switching within a single request scope but requires care if the same instance is reused across multiple logical operations.

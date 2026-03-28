@@ -98,7 +98,7 @@ All write payloads are wrapped in `DataPost<TAttributes>` or `DataPost<TAttribut
 - `PingenFileDownloadException` is thrown when an S3 file download fails (the XML `<Error><Code>` is extracted).
 
 ### Authentication
-`PingenConnectionHandler` manages the OAuth 2.0 access token internally with a `SemaphoreSlim(1,1)` to serialize concurrent re-auth. The static `_accessToken` field means one token per process. Token expiry has a 1-minute safety buffer (`ExpiresAt.AddMinutes(-1)`).
+`PingenConnectionHandler` manages the OAuth 2.0 access token internally with a `SemaphoreSlim(1,1)` to serialize concurrent re-auth. The `_accessToken` field is per-instance, so each handler maintains its own token (safe for multi-tenant scenarios). Token expiry has a 1-minute safety buffer (`ExpiresAt.AddMinutes(-1)`).
 
 ### Auto-Redirect Disabled
 The API HTTP client has `AllowAutoRedirect = false` because the file-location endpoint returns `302 Found` with a `Location` header that must be followed manually via the `External` HTTP client (unauthenticated, arbitrary URLs).
@@ -161,7 +161,7 @@ E2E tests construct `PingenConnectionHandler` and `PingenApiClient` directly wit
 
 ## Known Constraints and Gotchas
 
-1. **`_accessToken` is static** — shared across all `PingenConnectionHandler` instances in the same process. This is intentional to avoid unnecessary re-authentication. Be careful if you need per-instance tokens (e.g., multi-tenant scenarios).
+1. **`_accessToken` is per-instance** — each `PingenConnectionHandler` maintains its own access token and authentication semaphore. This is safe for multi-tenant scenarios where different handlers use different credentials. Note that in single-tenant DI setups with `Scoped` lifetime, each request scope gets a fresh handler and will re-authenticate if the previous token is not shared.
 2. **`DistributionService` is undocumented** — `IPingenApiClient.Distributions` calls an unofficial endpoint. Use at your own risk.
 3. **`LetterCreate.MetaData` caveat** — Only set `MetaData` for `PostAgRegistered` or `PostAgAPlus` delivery products. Setting it for cheap products causes address validation failures when postcodes exceed 4 characters.
 4. **`Included` is `IList<object>`** — The JSON:API `included` array is partially typed. Use `PingenSerialisationHelper.TryGetIncludedData<T>()` to extract specific included resources by their `PingenApiDataType` mapping.
