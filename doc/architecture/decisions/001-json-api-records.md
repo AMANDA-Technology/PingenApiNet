@@ -30,6 +30,11 @@ Enums that cross the JSON boundary use `[JsonConverter(typeof(JsonStringEnumConv
 - Positional records for attributes types produce concise, readable code.
 
 **Bad / Watch out:**
-- `SerializerOptions()` is instantiated fresh per call in `PingenSerialisationHelper` — there is no static cached `JsonSerializerOptions`. This is a minor allocation overhead. If performance becomes a concern, caching a static instance should be considered (but requires care with the custom converters).
 - README examples use `JsonConvert.SerializeObject` (Newtonsoft) for error formatting in sample code. Consumer applications using Newtonsoft will need to add it separately; the library itself does not pull it in.
 - `System.Text.Json` does not support `[Optional]` attributes from `System.Runtime.InteropServices` in the same way Newtonsoft does — but this library uses `[Optional]` only on method parameters (for C# 14 optional parameter syntax), not on serialized types, so there is no conflict.
+- `PingenApiDataTypeMapping` in `PingenSerialisationHelper` is a constructor-built `Dictionary` that currently allocates on every access via the property getter. Any new resource type must be added here, or `IncludedCollection.OfType<T>()` / `FindById<T>()` / `TryGetIncludedData<T>()` will silently skip it. Promoting this to a static cached instance is a small follow-up — but beware the `=>` (expression-bodied) vs `{ get; } =` distinction when editing.
+
+## Addendum (post-original-decision)
+
+- `PingenSerialisationHelper.SerializerOptions()` is now backed by a `static readonly CachedSerializerOptions` instance (see `PingenSerialisationHelper.cs`). The original ADR warned that options were allocated per call; that has since been addressed.
+- The `Included` shape has evolved from the original `IList<object>?` to a strongly-typed `IncludedCollection` wrapper with `[JsonConverter]`. See [[../components/pingenapi-abstractions]] for details.

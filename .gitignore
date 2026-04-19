@@ -49,4 +49,4 @@ source/node_modules
 
 # Reverts
 !build/
-!build/GetBuildVersion.psm1
+!build/GetBuildVersion.psm1.ai-context/

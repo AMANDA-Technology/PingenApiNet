@@ -7,6 +7,8 @@ tags: [project, onboarding, dotnet]
 
 An unofficial .NET 10 API client library for the [Pingen v2 REST API](https://api.pingen.com/documentation) (used version 2.0.0). Pingen is a Swiss online postal service that accepts PDFs and dispatches physical letters. This library handles authentication (OAuth 2.0 client credentials), request construction, response deserialization, rate-limit tracking, auto-pagination, file upload/download, and webhook validation. It is published as three NuGet packages under the MIT license.
 
+> **Before starting any task, read [`doc/ai-readiness.md`](doc/ai-readiness.md) and [`doc/architecture/README.md`](doc/architecture/README.md)**. The ai-readiness doc enumerates fragile areas (token lifecycle, org-id prefix logic, `PingenApiDataTypeMapping` completeness, `DefaultRequestHeaders.Authorization` sharing) with precautions. The architecture README is the entry point to the C4 diagrams + ADRs.
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -15,7 +17,7 @@ An unofficial .NET 10 API client library for the [Pingen v2 REST API](https://ap
 | Serialization | `System.Text.Json` with custom converters |
 | HTTP | `System.Net.Http.HttpClient` via `IHttpClientFactory` (ASP.NET Core path) or direct construction (standalone path) |
 | DI integration | `Microsoft.Extensions.DependencyInjection` |
-| Testing | NUnit 4 + coverlet |
+| Testing | NUnit 4 + Shouldly + NSubstitute + WireMock.Net + coverlet |
 | CI/CD | GitHub Actions — triggers on git tag push, builds and publishes to NuGet.org |
 | Versioning | Semver derived from git tag via `build/GetBuildVersion.psm1` (PowerShell) |
 
@@ -24,26 +26,32 @@ An unofficial .NET 10 API client library for the [Pingen v2 REST API](https://ap
 ```
 PingenApiNet.sln
 src/
-  PingenApiNet.Abstractions/    # No external NuGet dependencies — pure models, enums, interfaces, helpers
-  PingenApiNet/                 # References Abstractions + Microsoft.Extensions.Http
-  PingenApiNet.AspNetCore/      # References Abstractions + PingenApiNet + Microsoft.Extensions.DependencyInjection
+  PingenApiNet.Abstractions/       # No external NuGet dependencies — pure models, enums, interfaces, helpers
+  PingenApiNet/                    # References Abstractions + Microsoft.Extensions.Http
+  PingenApiNet.AspNetCore/         # References Abstractions + PingenApiNet + Microsoft.Extensions.DependencyInjection
 tests/
-  PingenApiNet.UnitTests/       # Offline unit tests (NUnit). References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
-  PingenApiNet.Tests.E2E/       # E2E integration tests (NUnit). Requires API env vars. NOT packaged.
+  PingenApiNet.UnitTests/          # Offline unit tests (NUnit + Shouldly + NSubstitute).
+                                   # References Abstractions + PingenApiNet + AspNetCore. NOT packaged.
+  PingenApiNet.Tests.Integration/  # In-process integration tests (NUnit + Shouldly + WireMock.Net).
+                                   # Exercises connectors/services against a local WireMock stub of the
+                                   # Pingen API + Identity server. No network. NOT packaged.
+  PingenApiNet.Tests.E2E/          # E2E integration tests (NUnit + Shouldly). Hits the real Pingen
+                                   # staging API. Requires env vars — see Testing section. NOT packaged.
 build/
-  GetBuildVersion.psm1          # PowerShell module for semver extraction from git ref
+  GetBuildVersion.psm1             # PowerShell module for semver extraction from git ref
 .github/workflows/
-  main.yml                      # Build + pack + publish to NuGet on tag
-  codeql-analysis.yml           # Security scanning
-  sonar-analysis.yml            # SonarCloud quality gate
+  main.yml                         # Build + pack + publish to NuGet on tag
+  codeql-analysis.yml              # Security scanning
+  sonar-analysis.yml               # SonarCloud quality gate
 ```
 
 ### Dependency Graph
 
 ```
 src/Abstractions  <──  src/PingenApiNet  <──  src/AspNetCore
-                                        <──  tests/UnitTests
-                                        <──  tests/Tests.E2E
+                                        <──  tests/UnitTests            (refs Abstractions + PingenApiNet + AspNetCore)
+                                        <──  tests/Tests.Integration    (refs Abstractions + PingenApiNet)
+                                        <──  tests/Tests.E2E            (refs Abstractions + PingenApiNet + AspNetCore)
 ```
 
 `Abstractions` has zero NuGet dependencies. It defines all data contracts.
@@ -66,8 +74,17 @@ dotnet pack PingenApiNet.sln --configuration Release -p:PackageVersion=1.2.5 --n
 # Run unit tests (offline, no env vars needed)
 dotnet test tests/PingenApiNet.UnitTests/PingenApiNet.UnitTests.csproj
 
-# Run E2E tests (requires env vars — see Testing section)
+# Run integration tests (offline, uses in-process WireMock.Net — no env vars needed)
+dotnet test tests/PingenApiNet.Tests.Integration/PingenApiNet.Tests.Integration.csproj
+
+# Run unit + integration tests together (fastest safe loop for local dev)
+dotnet test PingenApiNet.sln --filter "FullyQualifiedName!~PingenApiNet.Tests.E2E"
+
+# Run E2E tests (hits real Pingen staging API — requires env vars, see Testing section)
 dotnet test tests/PingenApiNet.Tests.E2E/PingenApiNet.Tests.E2E.csproj
+
+# Run everything in the solution
+dotnet test PingenApiNet.sln
 ```
 
 ## Key Conventions
@@ -132,23 +149,39 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 | API result model | `src/PingenApiNet.Abstractions/Models/Api/ApiResult.cs` |
 | Filter/sort helper | `src/PingenApiNet.Abstractions/Helpers/PingenAttributesPropertyHelper.cs` |
 | E2E test base | `tests/PingenApiNet.Tests.E2E/TestBase.cs` |
+| Integration test base | `tests/PingenApiNet.Tests.Integration/IntegrationTestBase.cs` |
+| WireMock JSON:API stub helper | `tests/PingenApiNet.Tests.Integration/Helpers/JsonApiStubHelper.cs` |
+| Unit test HTTP handler stub | `tests/PingenApiNet.UnitTests/Helpers/MockHttpMessageHandler.cs` |
 | CI pipeline | `.github/workflows/main.yml` |
 
 ## Testing
 
-Tests are split into two projects:
+Tests are split into three projects. The first two run offline on every dev machine and in CI; the third requires Pingen staging credentials and is typically run manually.
 
 ### Unit Tests (`PingenApiNet.UnitTests`)
-Offline tests that require no API credentials or network access. Located under `Tests/`. Includes:
-- `ApiRequestQueryParameters` — verifies `ApiRequest.Include` property behavior and query parameter formatting.
-- `FieldHelpers` — verifies `*Fields` constant values match `[JsonPropertyName]` attributes on model records.
-- `IncludeHelpers` — verifies `*Includes` static helper constant values match relationship JSON property names.
-- `SparseFieldsets` — verifies sparse fieldset query parameter construction and serialization.
-- `Webhooks` — offline deserialization test using `Assets/webhook_sample.json`.
-- Additional unit tests under `Tests/` subdirectories (Helpers, Services, Models, Exceptions, AspNetCore).
+Offline unit tests that require no API credentials or network access. Uses **NUnit 4 + Shouldly + NSubstitute**. Located under `tests/PingenApiNet.UnitTests/Tests/`. Covers:
+
+- `ApiRequestQueryParameters` / `SparseFieldsets` / `IncludeHelpers` / `FieldHelpers` — paging, filtering, sorting, include and sparse-fieldset query construction; verify `*Fields` / `*Includes` constants match `[JsonPropertyName]` values.
+- `Webhooks` — offline deserialization of `Assets/webhook_sample.json`.
+- `Helpers/` — `PingenSerialisationHelper`, `PingenWebhookHelper`, `PingenAttributesPropertyHelper`, `PingenDateTimeConverter(Nullable)`, `PingenKeyValuePairStringObjectConverter`.
+- `Models/` — `ApiResult`, `DataPost`/`DataPatch`, `ExternalRequestResult`, `IncludedCollection`, `PingenConfiguration`.
+- `Services/` — `PingenApiClient` facade + `PingenConnectionHandler` (OAuth token lifecycle, re-auth, rate-limit header parsing, multi-tenant token isolation regression test for #22, concurrent-login double-check regression for #27).
+- `Services/Connectors/` — per-connector unit tests using NSubstitute-mocked `IPingenConnectionHandler` (verifies endpoint path construction for Batches, Distribution, Files, Letters, Organisations, Users, Webhooks, and the shared `ConnectorService`).
+- `AspNetCore/` — `PingenServiceCollection.AddPingenServices()` DI registration.
+- `Enums/` — `BatchIconSerializationTests` (hyphenated enum-member serialization).
+- `Exceptions/` — the three Pingen exception types.
+
+`Helpers/MockHttpMessageHandler.cs` is a reusable handler stub for shaping HTTP responses in `PingenConnectionHandler` tests.
+
+### Integration Tests (`PingenApiNet.Tests.Integration`)
+Offline in-process integration tests using **NUnit 4 + Shouldly + WireMock.Net**. Spins up a local WireMock HTTP server per test fixture, stubs both the Pingen API and the OAuth token endpoint, and exercises a real `PingenApiClient` wired to that server. Covers request/response round-trips, JSON:API envelope shaping, auto-pagination (`InScenario` state machines), and the three-HTTP-client routing (identity / api / external-files):
+
+- `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `PingenApiClientTests`, `UserServiceTests`, `WebhookServiceTests`.
+- `IntegrationTestBase.cs` — handles `[OneTimeSetUp]` WireMock startup, per-test reset, token-endpoint stub, client construction, and disposal.
+- `Helpers/JsonApiStubHelper.cs` — builds JSON:API single / collection / relationship / meta response strings.
 
 ### E2E Tests (`PingenApiNet.Tests.E2E`)
-Integration tests that call the real Pingen staging API. Require environment variables:
+Remote integration tests that call the **real Pingen staging API**. Require the following environment variables (the test base throws `InvalidOperationException` if any is missing):
 
 ```
 PingenApiNet__BaseUri          # e.g. https://api-staging.pingen.com
@@ -158,7 +191,7 @@ PingenApiNet__ClientSecret
 PingenApiNet__OrganisationId
 ```
 
-E2E tests construct `PingenConnectionHandler` and `PingenApiClient` directly without DI. Includes: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit`.
+E2E tests construct `PingenConnectionHandler` and `PingenApiClient` directly (no DI). Current fixtures: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit` (the last one deliberately exceeds rate limits to validate `Retry-After` behavior — run sparingly).
 
 ## Known Constraints and Gotchas
 
