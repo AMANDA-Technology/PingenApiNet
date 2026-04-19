@@ -36,9 +36,10 @@ PingenApiNet.Abstractions/
     Data/            — IAbilities, IAttributes, IData, IDataIdentity, IDataPatch,
                        IDataPost, IDataResult, IMeta, IMetaAbility, IRelationships
   Models/
-    Api/             — ApiPagingRequest, ApiRequest, ApiResult / ApiResult<T>
+    Api/             — ApiPagingRequest, ApiRequest, ApiResult / ApiResult<T>, ExternalRequestResult
       Embedded/      — ApiError, ApiErrorData, ApiErrorSource, DataPatch<T>, DataPost<T,R>
-        DataResults/ — CollectionResult<T>, CollectionResultLinks, CollectionResultMeta, SingleResult<T>
+        DataResults/ — CollectionResult<T>, IncludedCollection, SingleResult<T>
+          Embedded/  — CollectionResultLinks, CollectionResultMeta
         Relations/   — RelatedManyOutput, RelatedSingleInput, RelatedSingleOutput (+ embedded link types)
     Base/            — Data, DataIdentity (+ DataLinks, Meta, MetaAbility embedded)
     Batches/         — Batch, BatchAbilities, BatchData, BatchFields, BatchIncludes,
@@ -73,9 +74,19 @@ IDataIdentity                  — { type: PingenApiDataType, id: string }
       Data<TAttributes>        — + attributes: TAttributes (where T : IAttributes)
         Data<TAttributes, TRelationships>  — + relationships: TRelationships
 
-IDataResult                    — marker interface; also has Included: IList<object>?
-  CollectionResult<TData>      — { data: IList<TData>, links, meta } where TData : IData
-  SingleResult<TData>          — { data: TData } where TData : IData
+IDataResult                    — carrier interface; defines Included: IncludedCollection?
+  CollectionResult<TData>      — { data: IList<TData>, links, meta, included? } where TData : IData
+  SingleResult<TData>          — { data: TData, included? } where TData : IData
+
+IncludedCollection             — strongly-typed wrapper around the JSON:API `included` array;
+                                 stores raw JsonElement items and exposes
+                                   • OfType<T>() where T : IAttributes  → IEnumerable<Data<T>>
+                                   • FindById<T>(string id) where T : IAttributes  → Data<T>?
+                                 Type discriminator → CLR type lookup comes from
+                                 `PingenSerialisationHelper.PingenApiDataTypeMapping`.
+                                 Has a `[JsonConverter(typeof(IncludedCollectionJsonConverter))]`
+                                 that reads/writes each element as a raw JsonElement so that
+                                 heterogeneous resource types can coexist in one array.
 ```
 
 All attributes types (e.g., `Letter`, `Batch`, `Organisation`) implement `IAttributes` and are C# positional records with `[JsonPropertyName]` on every property.
@@ -99,15 +110,17 @@ IDataPatch               — extends IDataPost
 
 ### PingenSerialisationHelper (`Helpers/PingenSerialisationHelper.cs`)
 
-- `Serialize(object)` / `Deserialize<T>(string)` / `DeserializeAsync<T>(Stream)` — all using a consistent `JsonSerializerOptions` with custom converters and `WhenWritingNull`.
-- `TryGetIncludedData<T>(IDataResult, out Data<T>?)` — finds a specific type within the `Included` array by matching `PingenApiDataType` via `PingenApiDataTypeMapping`.
-- **Important**: `SerializerOptions()` is called fresh per operation. There is no static cached instance.
+- `Serialize(object)` / `Deserialize<T>(string)` / `DeserializeAsync<T>(Stream)` — all using a consistent `JsonSerializerOptions` with `DefaultIgnoreCondition = WhenWritingNull`, `DictionaryKeyPolicy = CamelCase`, and three custom converters (`PingenDateTimeConverter`, `PingenDateTimeNullableConverter`, `PingenKeyValuePairStringObjectConverter`).
+- `TryGetIncludedData<T>(IDataResult, out Data<T>?)` — finds a single included resource of type `T` by delegating to `IncludedCollection.OfType<T>().SingleOrDefault()`; uses `PingenApiDataTypeMapping` for the type-string → CLR-type lookup.
+- `PingenApiDataTypeMapping` — static dictionary mapping every `PingenApiDataType` enum value to its corresponding `IAttributes` CLR type (`letters → Letter`, `batches → Batch`, `webhook_issues / webhook_sent / webhook_undeliverable → WebhookEvent`, etc.). New resource types must be registered here, otherwise `IncludedCollection.OfType<T>()` / `FindById<T>()` and `TryGetIncludedData<T>()` will silently skip them.
+- **Caching**: `SerializerOptions()` returns a single `static readonly` `CachedSerializerOptions` instance. `JsonSerializerOptions` is thread-safe once initialized; do not mutate it.
 
 ### PingenWebhookHelper (`Helpers/PingenWebhookHelper.cs`)
 
-- `ValidateWebhookAndGetData(signingKey, signature, requestStream)` — validates HMAC-SHA256 signature, then deserializes `SingleResult<WebhookEventData>` and extracts included `Organisation`, `Letter`, and `LetterEvent` via `TryGetIncludedData`.
-- `ValidateWebhook(signingKey, signature, requestStream)` — signature validation only, returns `bool`.
-- Throws `PingenWebhookValidationErrorException` on signature mismatch.
+- `ValidateWebhookAndGetData(signingKey, signature, requestStream, cancellationToken)` — reads the stream once into a payload string, rewinds it, validates the HMAC-SHA256 signature (via `ValidateWebhook`), deserializes `SingleResult<WebhookEventData>`, and extracts included `Organisation`, `Letter`, and `LetterEvent` via `TryGetIncludedData`. Returns a 4-tuple.
+- `ValidateWebhook(signingKey, signature, requestStream, cancellationToken)` — signature-only check. Computes HMAC-SHA256 of the stream, converts the caller-supplied signature from hex, and compares with `CryptographicOperations.FixedTimeEquals` (constant-time to prevent timing attacks). Returns `bool`. Catches `FormatException` from non-hex signatures and returns `false`.
+- Throws `PingenWebhookValidationErrorException` from `ValidateWebhookAndGetData` on signature mismatch; the exception carries the deserialized `WebhookEventData` (best-effort) for diagnostic logging.
+- **Caller responsibility**: ASP.NET callers must call `Request.EnableBuffering()` before passing `Request.Body` because the helper reads the stream twice (once for payload extraction, once via HMAC).
 
 ### PingenAttributesPropertyHelper\<T\> (`Helpers/PingenAttributesPropertyHelper.cs`)
 

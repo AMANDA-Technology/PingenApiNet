@@ -11,7 +11,7 @@ PingenApiNet is a .NET 10 API client library published as three NuGet packages. 
 
 - **Library, not application** — there is no executable entry point. All packages are consumed by downstream ASP.NET Core applications or other .NET services.
 - **Zero-dependency abstractions** — `PingenApiNet.Abstractions` has no NuGet dependencies, making it safe to reference in domain projects without pulling in HTTP or DI concerns.
-- **Integration and offline unit tests** — offline tests verify model correctness and helper constants without API calls; integration tests call the real staging API and require environment variables with valid credentials.
+- **Three-tier test strategy** — offline unit tests (NSubstitute + NUnit + Shouldly) for isolated logic, offline integration tests (WireMock.Net + NUnit + Shouldly) for in-process HTTP round-trips against a stubbed Pingen API, and live E2E tests (NUnit + Shouldly) that call the real staging API behind environment-variable-gated credentials. See [[decisions/005-wiremock-integration-tests]].
 - **OAuth 2.0 client credentials flow** — token is acquired and refreshed automatically; callers never handle bearer tokens directly.
 
 ## Tech Stack
@@ -23,7 +23,7 @@ PingenApiNet is a .NET 10 API client library published as three NuGet packages. 
 | Serialization | System.Text.Json |
 | HTTP | System.Net.Http (HttpClient / IHttpClientFactory) |
 | DI | Microsoft.Extensions.DependencyInjection |
-| Testing | NUnit 4, coverlet |
+| Testing | NUnit 4, Shouldly, NSubstitute, WireMock.Net (integration only), coverlet |
 | Packaging | NuGet (via `dotnet pack`, published by GitHub Actions on tag) |
 | Code quality | CodeQL (GitHub Actions), SonarCloud |
 
@@ -34,7 +34,9 @@ PingenApiNet is a .NET 10 API client library published as three NuGet packages. 
 - [[components/pingenapi-core]] — C4 Level 3: Internal components of `PingenApiNet`
 - [[components/pingenapi-abstractions]] — C4 Level 3: Internal components of `PingenApiNet.Abstractions`
 - [[decisions/001-json-api-records]] — ADR: Records and System.Text.Json for domain models
-- [[decisions/002-static-access-token]] — ADR: Static access token field in connection handler
+- [[decisions/002-static-access-token]] — ADR: Instance-scoped access token field in connection handler (supersedes the original static design)
 - [[decisions/003-iasyncenumerable-pagination]] — ADR: IAsyncEnumerable for auto-pagination
 - [[decisions/004-three-http-clients]] — ADR: Three named HttpClient instances
+- [[decisions/005-wiremock-integration-tests]] — ADR: WireMock.Net for in-process integration tests
 - [[glossary]] — Domain terminology
+- [[../ai-readiness]] — AI readiness assessment (documentation, test coverage, tech debt, backlog)

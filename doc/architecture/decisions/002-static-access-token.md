@@ -5,9 +5,11 @@ tags: [adr, auth, concurrency]
 
 # ADR-002: Instance-Scoped Access Token Field in PingenConnectionHandler
 
+> **Filename note**: the file is named `002-static-access-token.md` for historical reasons (links in `README.md` point at it). The current decision is **instance-scoped**, not static. The original static design is described as prior context; this ADR supersedes it.
+
 ## Status
 
-**Superseded** — The token field was originally `static` (shared across all instances). It has been changed to an instance field to fix a multi-tenant security vulnerability (see issue #22).
+**Accepted** — supersedes a prior design that used a `static` `_accessToken` field. The change to an instance field fixes a multi-tenant security vulnerability (see issue #22). The instance-scoped design is verified by `PingenConnectionHandlerTests.MultipleInstances_MaintainSeparateAccessTokens` (regression test for #22) and `PingenConnectionHandlerTests.SetOrUpdateAccessToken_ConcurrentCalls_OnlyAuthenticatesOnce` (double-check locking regression for #27).
 
 ## Context
 
