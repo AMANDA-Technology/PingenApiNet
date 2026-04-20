@@ -42,10 +42,10 @@
 | Shouldly 4.3.0 | ✅ Aligned |
 | NSubstitute 5.3.0 | ✅ Aligned (unit tests) |
 | WireMock.Net 2.2.0 | ✅ Aligned (integration tests) |
-| Bogus | ❌ Missing — needed for integration test data generation |
-| `PingenResponseFactory` | ❌ Missing — WireMock stub helpers |
-| `WireMockExtensions` | ❌ Missing — fluent WireMock setup helpers |
-| `E2eTestBase` with LIFO cleanup | ❌ Missing — basic `TestBase.cs` only |
+| Bogus | ✅ Done — installed in Integration and E2E tests |
+| `PingenResponseFactory` | ✅ Done — WireMock stub helpers created |
+| `WireMockExtensions` | ✅ Done — fluent WireMock setup helpers created |
+| `E2eTestBase` with LIFO cleanup | ✅ Done — upgraded and renamed from `TestBase.cs` |
 
 **No framework migration required.** Only infrastructure gaps need to be filled (Wave 0).
 

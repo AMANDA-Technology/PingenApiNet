@@ -148,7 +148,7 @@ Consult this when implementing new endpoints, verifying request/response shapes,
 | Base data model | `src/PingenApiNet.Abstractions/Models/Base/Data.cs` |
 | API result model | `src/PingenApiNet.Abstractions/Models/Api/ApiResult.cs` |
 | Filter/sort helper | `src/PingenApiNet.Abstractions/Helpers/PingenAttributesPropertyHelper.cs` |
-| E2E test base | `tests/PingenApiNet.Tests.E2E/TestBase.cs` |
+| E2E test base | `tests/PingenApiNet.Tests.E2E/E2eTestBase.cs` |
 | Integration test base | `tests/PingenApiNet.Tests.Integration/IntegrationTestBase.cs` |
 | WireMock JSON:API stub helper | `tests/PingenApiNet.Tests.Integration/Helpers/JsonApiStubHelper.cs` |
 | Unit test HTTP handler stub | `tests/PingenApiNet.UnitTests/Helpers/MockHttpMessageHandler.cs` |
@@ -174,14 +174,16 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 `Helpers/MockHttpMessageHandler.cs` is a reusable handler stub for shaping HTTP responses in `PingenConnectionHandler` tests.
 
 ### Integration Tests (`PingenApiNet.Tests.Integration`)
-Offline in-process integration tests using **NUnit 4 + Shouldly + WireMock.Net**. Spins up a local WireMock HTTP server per test fixture, stubs both the Pingen API and the OAuth token endpoint, and exercises a real `PingenApiClient` wired to that server. Covers request/response round-trips, JSON:API envelope shaping, auto-pagination (`InScenario` state machines), and the three-HTTP-client routing (identity / api / external-files):
+Offline in-process integration tests using **NUnit 4 + Shouldly + WireMock.Net + Bogus**. Spins up a local WireMock HTTP server per test fixture, stubs both the Pingen API and the OAuth token endpoint, and exercises a real `PingenApiClient` wired to that server. Covers request/response round-trips, JSON:API envelope shaping, auto-pagination (`InScenario` state machines), and the three-HTTP-client routing (identity / api / external-files):
 
 - `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `PingenApiClientTests`, `UserServiceTests`, `WebhookServiceTests`.
 - `IntegrationTestBase.cs` — handles `[OneTimeSetUp]` WireMock startup, per-test reset, token-endpoint stub, client construction, and disposal.
-- `Helpers/JsonApiStubHelper.cs` — builds JSON:API single / collection / relationship / meta response strings.
+- `Helpers/JsonApiStubHelper.cs` — low-level JSON:API envelope builder.
+- `Helpers/PingenResponseFactory.cs` — centralised WireMock JSON:API response builder using Bogus for realistic test data generation.
+- `Helpers/WireMockExtensions.cs` and `Helpers/WireMockAssertionExtensions.cs` — fluent helpers for stub setup and verification.
 
 ### E2E Tests (`PingenApiNet.Tests.E2E`)
-Remote integration tests that call the **real Pingen staging API**. Require the following environment variables (the test base throws `InvalidOperationException` if any is missing):
+Remote integration tests that call the **real Pingen staging API**. Uses **NUnit 4 + Shouldly + Bogus**. Require the following environment variables (the test base throws `InvalidOperationException` if any is missing):
 
 ```
 PingenApiNet__BaseUri          # e.g. https://api-staging.pingen.com
@@ -191,7 +193,7 @@ PingenApiNet__ClientSecret
 PingenApiNet__OrganisationId
 ```
 
-E2E tests construct `PingenConnectionHandler` and `PingenApiClient` directly (no DI). Current fixtures: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit` (the last one deliberately exceeds rate limits to validate `Retry-After` behavior — run sparingly).
+E2E tests inherit from `E2eTestBase.cs` which provides a LIFO cleanup queue (`RegisterCleanup(Func<Task>)`), orphan scavenging pattern, isolation prefix (`TestPrefix`), and standard `AssertSuccess` overloads. Current fixtures: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit` (the last one deliberately exceeds rate limits to validate `Retry-After` behavior — run sparingly).
 
 ## Known Constraints and Gotchas
 

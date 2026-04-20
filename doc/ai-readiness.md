@@ -62,6 +62,7 @@ The documentation is complete enough for an AI agent to reason about the system,
 - **Shouldly 4.3** — assertions (`ShouldBe`, `ShouldSatisfyAllConditions`, `Should.Throw`, `Should.ThrowAsync`).
 - **NSubstitute 5.3** — mocking (unit-test connectors, mock `IPingenConnectionHandler`).
 - **WireMock.Net 1.7** — in-process HTTP stub server (integration tests only).
+- **Bogus 35.5** — realistic test data generation (Integration and E2E tests).
 - **coverlet.collector 8.0** — coverage collection.
 - **NUnit.Analyzers 4.12** — static analysis for NUnit patterns.
 
@@ -252,6 +253,6 @@ If a task is scoped narrowly, an AI agent should start here:
 | Typed Included wrapper | `src/PingenApiNet.Abstractions/Models/Api/Embedded/DataResults/IncludedCollection.cs` |
 | Base data model | `src/PingenApiNet.Abstractions/Models/Base/Data.cs` |
 | Unit test HTTP-handler stub | `tests/PingenApiNet.UnitTests/Helpers/MockHttpMessageHandler.cs` |
-| Integration test base + stub helper | `tests/PingenApiNet.Tests.Integration/IntegrationTestBase.cs`, `tests/PingenApiNet.Tests.Integration/Helpers/JsonApiStubHelper.cs` |
-| E2E test base | `tests/PingenApiNet.Tests.E2E/TestBase.cs` |
+| Integration test base + stub helpers | `tests/PingenApiNet.Tests.Integration/IntegrationTestBase.cs`, `tests/PingenApiNet.Tests.Integration/Helpers/` (`JsonApiStubHelper`, `PingenResponseFactory`, `WireMockExtensions`) |
+| E2E test base | `tests/PingenApiNet.Tests.E2E/E2eTestBase.cs` |
 | CI pipeline | `.github/workflows/main.yml` |
