@@ -33,7 +33,7 @@ namespace PingenApiNet.Tests.E2E.Tests;
 /// <summary>
 ///
 /// </summary>
-public class TestLetters : TestBase
+public class TestLetters : E2eTestBase
 {
     /// <summary>
     ///

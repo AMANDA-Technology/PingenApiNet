@@ -35,7 +35,7 @@ namespace PingenApiNet.Tests.E2E.Tests;
 /// <summary>
 ///
 /// </summary>
-public class DistributionGetDeliveryProducts : TestBase
+public class DistributionGetDeliveryProducts : E2eTestBase
 {
     /// <summary>
     ///

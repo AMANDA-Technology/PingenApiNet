@@ -12,7 +12,7 @@ using PingenApiNet.Abstractions.Models.Letters;
 
 namespace PingenApiNet.Tests.E2E.Tests;
 
-public class RateLimit : TestBase
+public class RateLimit : E2eTestBase
 {
     private static readonly ApiPagingRequest ApiPagingRequest = new()
     {
