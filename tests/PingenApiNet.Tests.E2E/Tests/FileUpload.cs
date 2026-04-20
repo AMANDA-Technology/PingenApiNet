@@ -35,7 +35,7 @@ namespace PingenApiNet.Tests.E2E.Tests;
 /// <summary>
 ///
 /// </summary>
-public class TestGetFileUploadData : TestBase
+public class TestGetFileUploadData : E2eTestBase
 {
     /// <summary>
     ///
