@@ -11,7 +11,7 @@ namespace PingenApiNet.Tests.Integration.Helpers;
 internal static class PingenResponseFactory
 {
     private const string DefaultOrganisationId = "test-org-id-001";
-    private static readonly Faker Faker = new();
+    private static readonly Faker _faker = new();
 
     // ── Letters ─────────────────────────────────────────────────────────────
 
@@ -125,7 +125,7 @@ internal static class PingenResponseFactory
             new
             {
                 url,
-                url_signature = Faker.Random.AlphaNumeric(64),
+                url_signature = _faker.Random.AlphaNumeric(64),
                 expires_at = DateTimeOffset.UtcNow.AddMinutes(30).ToString("o")
             });
     }
@@ -179,45 +179,45 @@ internal static class PingenResponseFactory
 
     private static object LetterAttributes() => new
     {
-        status = Faker.PickRandom("valid", "invalid", "pending"),
-        file_original_name = Faker.System.FileName("pdf"),
-        file_pages = Faker.Random.Int(1, 10),
-        address = Faker.Address.StreetAddress(),
-        address_position = Faker.PickRandom("left", "right"),
-        country = Faker.PickRandom("CH", "DE", "AT"),
-        delivery_product = Faker.PickRandom("cheap", "priority"),
-        print_mode = Faker.PickRandom("simplex", "duplex"),
-        print_spectrum = Faker.PickRandom("grayscale", "color"),
+        status = _faker.PickRandom("valid", "invalid", "pending"),
+        file_original_name = _faker.System.FileName("pdf"),
+        file_pages = _faker.Random.Int(1, 10),
+        address = _faker.Address.StreetAddress(),
+        address_position = _faker.PickRandom("left", "right"),
+        country = _faker.PickRandom("CH", "DE", "AT"),
+        delivery_product = _faker.PickRandom("cheap", "priority"),
+        print_mode = _faker.PickRandom("simplex", "duplex"),
+        print_spectrum = _faker.PickRandom("grayscale", "color"),
         price_currency = "CHF",
-        price_value = Math.Round(Faker.Random.Double(0.5, 5.0), 2),
-        created_at = Faker.Date.Past().ToString("o"),
-        updated_at = Faker.Date.Recent(30).ToString("o")
+        price_value = Math.Round(_faker.Random.Double(0.5, 5.0), 2),
+        created_at = _faker.Date.Past().ToString("o"),
+        updated_at = _faker.Date.Recent(30).ToString("o")
     };
 
     private static object BatchAttributes() => new
     {
-        name = Faker.Commerce.ProductName(),
-        icon = Faker.PickRandom("flat", "priority"),
-        status = Faker.PickRandom("valid", "invalid", "pending"),
-        file_original_name = Faker.System.FileName("pdf"),
-        letter_count = Faker.Random.Int(1, 100),
-        address_position = Faker.PickRandom("left", "right"),
-        print_mode = Faker.PickRandom("simplex", "duplex"),
-        print_spectrum = Faker.PickRandom("grayscale", "color"),
+        name = _faker.Commerce.ProductName(),
+        icon = _faker.PickRandom("flat", "priority"),
+        status = _faker.PickRandom("valid", "invalid", "pending"),
+        file_original_name = _faker.System.FileName("pdf"),
+        letter_count = _faker.Random.Int(1, 100),
+        address_position = _faker.PickRandom("left", "right"),
+        print_mode = _faker.PickRandom("simplex", "duplex"),
+        print_spectrum = _faker.PickRandom("grayscale", "color"),
         price_currency = "CHF",
-        price_value = Math.Round(Faker.Random.Double(1.0, 50.0), 2),
-        created_at = Faker.Date.Past().ToString("o"),
-        updated_at = Faker.Date.Recent(30).ToString("o")
+        price_value = Math.Round(_faker.Random.Double(1.0, 50.0), 2),
+        created_at = _faker.Date.Past().ToString("o"),
+        updated_at = _faker.Date.Recent(30).ToString("o")
     };
 
     private static object DeliveryProductAttributes() => new
     {
-        name = $"PostAg {Faker.Commerce.ProductAdjective()}",
+        name = $"PostAg {_faker.Commerce.ProductAdjective()}",
         price_currency = "CHF",
-        price_starting_from = Math.Round(Faker.Random.Double(0.5, 5.0), 2),
-        speed = Faker.Random.Int(1, 7),
-        max_pages = Faker.Random.Int(10, 100),
-        countries = new[] { Faker.PickRandom("CH", "DE", "AT") }
+        price_starting_from = Math.Round(_faker.Random.Double(0.5, 5.0), 2),
+        speed = _faker.Random.Int(1, 7),
+        max_pages = _faker.Random.Int(10, 100),
+        countries = new[] { _faker.PickRandom("CH", "DE", "AT") }
     };
 
     private static object LetterRelationships(string organisationId) => new

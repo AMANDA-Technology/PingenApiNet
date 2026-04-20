@@ -89,7 +89,7 @@ public abstract class E2eTestBase
     /// <summary>
     ///     Create a new Pingen API client using the current configuration.
     /// </summary>
-    /// <returns>A fully-wired <see cref="PingenApiNet.PingenApiClient" />.</returns>
+    /// <returns>A fully-wired <see cref="PingenApiNet.Services.PingenApiClient" />.</returns>
     /// <exception cref="InvalidOperationException">Thrown when configuration has not been initialised.</exception>
     protected PingenApiClient CreateClient()
     {
