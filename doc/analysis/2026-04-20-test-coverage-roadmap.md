@@ -105,6 +105,10 @@
 
 ### Wave 2: Unit Tests — Core Models, Enums & Helpers
 
+**Phase 1 of 3 (Complete):** Model tests (`ApiResult`, `DataPost` / `DataPatch`, `IncludedCollection`, `ExternalRequestResult`).
+**Phase 2 of 3 (Complete):** Enum serialization tests (`BatchIconSerializationTests`, `LetterEnumSerializationTests`, `AllEnumsSerializationTests`).
+**Phase 3 of 3 (Complete):** Helper tests (`PingenAttributesPropertyHelper`, `PingenDateTimeConverter`, `PingenKeyValuePairStringObjectConverter`, `PingenSerialisationHelper`, `PingenWebhookHelper`).
+
 **Scope:** `tests/PingenApiNet.UnitTests/Tests/Models/`, `Enums/`, `Helpers/`
 
 - Enum serialization round-trips for all enum types (including hyphenated values)
