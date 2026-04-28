@@ -163,7 +163,7 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 
 - `ApiRequestQueryParameters` / `SparseFieldsets` / `IncludeHelpers` / `FieldHelpers` — paging, filtering, sorting, include and sparse-fieldset query construction; verify `*Fields` / `*Includes` constants match `[JsonPropertyName]` values.
 - `Webhooks` — offline deserialization of `Assets/webhook_sample.json`.
-- `Helpers/` — `PingenSerialisationHelper`, `PingenWebhookHelper`, `PingenAttributesPropertyHelper`, `PingenDateTimeConverter(Nullable)`, `PingenKeyValuePairStringObjectConverter`.
+- `Helpers/` — `PingenSerialisationHelper`, `PingenWebhookHelper`, `PingenAttributesPropertyHelper`, `PingenDateTimeConverter(Nullable)`, `PingenKeyValuePairStringObjectConverter` (comprehensive coverage for edge cases, nullability, missing properties, invalid formats, and nested collections).
 - `Models/` — `ApiResult`, `DataPost`/`DataPatch`, `ExternalRequestResult`, `IncludedCollection`, `PingenConfiguration`.
 - `Services/` — `PingenApiClient` facade + `PingenConnectionHandler` (OAuth token lifecycle, re-auth, rate-limit header parsing, multi-tenant token isolation regression test for #22, concurrent-login double-check regression for #27).
 - `Services/Connectors/` — per-connector unit tests using NSubstitute-mocked `IPingenConnectionHandler` (verifies endpoint path construction and error/edge-case handling for Batches, Distribution, Files, Letters, Organisations, Users, Webhooks, and the shared `ConnectorService`).
