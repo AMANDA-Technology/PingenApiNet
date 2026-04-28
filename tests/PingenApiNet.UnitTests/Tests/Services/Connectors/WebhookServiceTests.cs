@@ -1,4 +1,5 @@
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
@@ -169,6 +170,219 @@ public class WebhookServiceTests
         pages[0].First().Id.ShouldBe("webhook-page-1");
     }
 
+    /// <summary>
+    /// Verifies GetPage propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task GetPage_ApiError_ReturnsFailureResult()
+    {
+        var apiError = CreateApiError("server_error", "Service unavailable");
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<WebhookData>>(
+                "webhooks",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<WebhookData>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _webhookService.GetPage();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies GetPageResultsAsync surfaces an API failure as a <see cref="PingenApiErrorException"/>
+    /// </summary>
+    [Test]
+    public async Task GetPageResultsAsync_ApiError_ThrowsPingenApiErrorException()
+    {
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<WebhookData>>(
+                "webhooks",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<WebhookData>>
+            {
+                IsSuccess = false,
+                ApiError = CreateApiError("server_error", "boom")
+            });
+
+        await Should.ThrowAsync<PingenApiErrorException>(async () =>
+        {
+            await foreach (var _ in _webhookService.GetPageResultsAsync())
+            {
+                // consume pages
+            }
+        });
+    }
+
+    /// <summary>
+    /// Verifies Get propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task Get_ApiError_ReturnsFailureResult()
+    {
+        const string webhookId = "missing-webhook";
+        var apiError = CreateApiError("not_found", "Webhook not found");
+        _mockConnectionHandler
+            .GetAsync<SingleResult<WebhookData>>(
+                $"webhooks/{webhookId}",
+                Arg.Any<ApiRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<WebhookData>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _webhookService.Get(webhookId);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies Get with an empty ID constructs an endpoint path with a trailing slash and does not throw
+    /// </summary>
+    [Test]
+    public async Task Get_EmptyId_ConstructsTrailingSlashPath()
+    {
+        _mockConnectionHandler
+            .GetAsync<SingleResult<WebhookData>>(
+                "webhooks/",
+                Arg.Any<ApiRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<WebhookData>> { IsSuccess = true });
+
+        await _webhookService.Get(string.Empty);
+
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<WebhookData>>(
+            "webhooks/",
+            Arg.Any<ApiRequest?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies Delete propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task Delete_ApiError_ReturnsFailureResult()
+    {
+        const string webhookId = "delete-webhook";
+        var apiError = CreateApiError("conflict", "Webhook cannot be deleted");
+        _mockConnectionHandler
+            .DeleteAsync(
+                $"webhooks/{webhookId}",
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _webhookService.Delete(webhookId);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError)
+        );
+    }
+
+    /// <summary>
+    /// Verifies Delete with an empty ID constructs an endpoint path with a trailing slash and does not throw
+    /// </summary>
+    [Test]
+    public async Task Delete_EmptyId_ConstructsTrailingSlashPath()
+    {
+        _mockConnectionHandler
+            .DeleteAsync(
+                "webhooks/",
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult { IsSuccess = true });
+
+        await _webhookService.Delete(string.Empty);
+
+        await _mockConnectionHandler.Received(1).DeleteAsync(
+            "webhooks/",
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies Create propagates failure ApiResult without throwing when the API rejects the payload
+    /// </summary>
+    [Test]
+    public async Task Create_ApiError_ReturnsFailureResult()
+    {
+        var data = CreateWebhookPost();
+        var apiError = CreateApiError("unprocessable_entity", "Webhook URL is invalid");
+        _mockConnectionHandler
+            .PostAsync<SingleResult<WebhookData>, DataPost<WebhookCreate>>(
+                "webhooks",
+                Arg.Any<DataPost<WebhookCreate>>(),
+                Arg.Any<string?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<WebhookData>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _webhookService.Create(data);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies Create forwards the supplied idempotency key through to the connection handler
+    /// </summary>
+    [Test]
+    public async Task Create_WithIdempotencyKey_ForwardsKeyToConnectionHandler()
+    {
+        const string idempotencyKey = "webhook-idem-1";
+        var data = CreateWebhookPost();
+
+        _mockConnectionHandler
+            .PostAsync<SingleResult<WebhookData>, DataPost<WebhookCreate>>(
+                "webhooks",
+                Arg.Any<DataPost<WebhookCreate>>(),
+                idempotencyKey,
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<WebhookData>> { IsSuccess = true });
+
+        await _webhookService.Create(data, idempotencyKey);
+
+        await _mockConnectionHandler.Received(1).PostAsync<SingleResult<WebhookData>, DataPost<WebhookCreate>>(
+            "webhooks",
+            Arg.Any<DataPost<WebhookCreate>>(),
+            idempotencyKey,
+            Arg.Any<CancellationToken>());
+    }
+
+    private static DataPost<WebhookCreate> CreateWebhookPost() => new()
+    {
+        Type = PingenApiDataType.webhooks,
+        Attributes = new WebhookCreate
+        {
+            FileOriginalName = WebhookEventCategory.issues,
+            Url = new Uri("https://example.com/webhook"),
+            SigningKey = "test-signing-key"
+        }
+    };
+
     private static WebhookData CreateWebhookData(string id) => new()
     {
         Id = id,
@@ -176,4 +390,9 @@ public class WebhookServiceTests
         Attributes = new Webhook(WebhookEventCategory.issues, new Uri("https://example.com/webhook"), "key"),
         Relationships = new WebhookRelationships(new RelatedSingleOutput(new RelatedSingleLinks(""), new Abstractions.Models.Base.DataIdentity { Id = "", Type = PingenApiDataType.organisations }))
     };
+
+    private static ApiError CreateApiError(string code, string detail) => new(
+    [
+        new ApiErrorData(code, "Error", detail, new ApiErrorSource(string.Empty, string.Empty))
+    ]);
 }

@@ -536,9 +536,405 @@ public class PingenConnectionHandlerTests
         lastCapturedToken.ShouldBe("token-2");
     }
 
+    /// <summary>
+    /// Verifies that a freshly-issued access token whose lifetime is shorter than the 1-minute
+    /// safety buffer is treated as immediately expired by IsAuthorized() and rejected
+    /// at login with <see cref="InvalidOperationException"/> rather than being silently accepted
+    /// </summary>
+    [Test]
+    public async Task GetAsync_TokenWithLifetimeShorterThanBuffer_ThrowsInvalidOperationException()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "short-lived-token",
+            token_type = "Bearer",
+            expires_in = 30
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler(HttpStatusCode.OK, "{\"data\":[]}");
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var ex = await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await handler.GetAsync("letters", (ApiPagingRequest?)null));
+        ex.Message.ShouldContain("Invalid access token object received");
+    }
+
+    /// <summary>
+    /// Verifies that after re-authentication caused by an expired token, subsequent requests
+    /// reuse the new long-lived token without triggering further authentication round-trips
+    /// </summary>
+    [Test]
+    public async Task GetAsync_AfterReAuthentication_NewTokenIsReusedForSubsequentRequests()
+    {
+        var authCallCount = 0;
+        var identityHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            Interlocked.Increment(ref authCallCount);
+            var tokenJson = PingenSerialisationHelper.Serialize(new
+            {
+                access_token = $"token-{authCallCount}",
+                token_type = "Bearer",
+                expires_in = authCallCount == 1 ? 61 : 3600
+            });
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(tokenJson)
+            });
+        });
+
+        var capturedTokens = new List<string?>();
+        var apiHandler = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedTokens.Add(request.Headers.Authorization?.Parameter);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        // First request authenticates with token-1 (expires_in=61, just > 60s buffer)
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        // Wait for token-1 to fall inside the 1-minute buffer, forcing re-authentication
+        await Task.Delay(2000);
+
+        // Second request triggers re-authentication and obtains token-2 (expires_in=3600)
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        // Third request must reuse the already-valid token-2 — no new authentication
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        authCallCount.ShouldBe(2);
+        capturedTokens.Count.ShouldBe(3);
+        capturedTokens[0].ShouldBe("token-1");
+        capturedTokens[1].ShouldBe("token-2");
+        capturedTokens[2].ShouldBe("token-2");
+    }
+
+    /// <summary>
+    /// Verifies that GetAsync throws <see cref="OperationCanceledException"/> when invoked with
+    /// a cancellation token that is already cancelled at the time of the API call
+    /// </summary>
+    [Test]
+    public async Task GetAsync_CancelledCancellationToken_ThrowsOperationCanceledException()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, ct) =>
+        {
+            ct.ThrowIfCancellationRequested();
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        await Should.ThrowAsync<OperationCanceledException>(async () =>
+            await handler.GetAsync("letters", (ApiPagingRequest?)null, cts.Token));
+    }
+
+    /// <summary>
+    /// Verifies that GetAsync throws <see cref="OperationCanceledException"/> when the cancellation
+    /// token is cancelled while the in-flight HTTP request is awaiting a response from the server
+    /// </summary>
+    [Test]
+    public async Task GetAsync_CancellationDuringInFlightRequest_ThrowsOperationCanceledException()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        using var cts = new CancellationTokenSource();
+        var apiCallStarted = new ManualResetEventSlim(false);
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler(async (_, ct) =>
+        {
+            apiCallStarted.Set();
+            await Task.Delay(Timeout.Infinite, ct);
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            };
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var requestTask = handler.GetAsync("letters", (ApiPagingRequest?)null, cts.Token);
+
+        apiCallStarted.Wait(TimeSpan.FromSeconds(5)).ShouldBeTrue();
+        await cts.CancelAsync();
+
+        await Should.ThrowAsync<OperationCanceledException>(async () => await requestTask);
+    }
+
+    /// <summary>
+    /// Verifies that SendExternalRequestAsync throws <see cref="OperationCanceledException"/> when
+    /// invoked with a cancellation token that is already cancelled
+    /// </summary>
+    [Test]
+    public async Task SendExternalRequestAsync_CancelledCancellationToken_ThrowsOperationCanceledException()
+    {
+        var externalHandler = new MockHttpMessageHandler((_, ct) =>
+        {
+            ct.ThrowIfCancellationRequested();
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok")
+            });
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(externalHandler: externalHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://external.example.com/file.pdf");
+
+        await Should.ThrowAsync<OperationCanceledException>(async () =>
+            await handler.SendExternalRequestAsync(request, cts.Token));
+    }
+
+    /// <summary>
+    /// Verifies that 429 Too Many Requests responses with no Retry-After header still surface as
+    /// failures and expose <c>null</c> as the RetryAfter value
+    /// </summary>
+    [Test]
+    public async Task GetAsync_RateLimitExceeded_WithoutRetryAfter_HasNullRetryAfter()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+            {
+                Content = new StringContent("{\"errors\":[{\"code\":\"429\",\"title\":\"Too Many Requests\",\"detail\":\"Rate limit exceeded\",\"source\":{\"pointer\":\"\",\"parameter\":\"\"}}]}")
+            };
+            response.Headers.Add("x-ratelimit-limit", "100");
+            response.Headers.Add("x-ratelimit-remaining", "0");
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.RetryAfter.ShouldBeNull(),
+            () => result.RateLimitLimit.ShouldBe(100),
+            () => result.RateLimitRemaining.ShouldBe(0)
+        );
+    }
+
+    /// <summary>
+    /// Verifies that malformed (non-numeric) rate-limit headers are tolerated and silently
+    /// fall back to default values without throwing
+    /// </summary>
+    [Test]
+    public async Task GetAsync_MalformedRateLimitHeaders_DoesNotThrowAndUsesDefaults()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            };
+            response.Headers.Add("x-ratelimit-limit", "not-a-number");
+            response.Headers.Add("x-ratelimit-remaining", "garbage");
+            response.Headers.Add("x-ratelimit-reset", "abc");
+            response.Headers.TryAddWithoutValidation("Retry-After", "soon");
+            return Task.FromResult(response);
+        });
+
+        var config = CreateConfig();
+        var httpClients = CreateHttpClients(identityHandler, apiHandler);
+        var handler = new PingenConnectionHandler(config, httpClients);
+
+        var result = await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeTrue(),
+            () => result.RateLimitLimit.ShouldBe(0),
+            () => result.RateLimitRemaining.ShouldBe(0),
+            () => result.RateLimitReset.ShouldBeNull(),
+            () => result.RetryAfter.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies that two concurrent <see cref="PingenConnectionHandler"/> instances configured
+    /// with different organisation IDs build their request URLs against their own organisation
+    /// ID — confirming multi-tenant URL isolation under concurrency
+    /// </summary>
+    [Test]
+    public async Task ConcurrentRequests_DifferentOrganisationIds_UseDifferentUrlPaths()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "shared-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        Uri? capturedUriA = null;
+        Uri? capturedUriB = null;
+
+        var identityHandlerA = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandlerA = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedUriA = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var identityHandlerB = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandlerB = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedUriB = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var configA = CreateConfig(defaultOrganisationId: "org-A");
+        var configB = CreateConfig(defaultOrganisationId: "org-B");
+
+        var handlerA = new PingenConnectionHandler(configA, CreateHttpClients(identityHandlerA, apiHandlerA));
+        var handlerB = new PingenConnectionHandler(configB, CreateHttpClients(identityHandlerB, apiHandlerB));
+
+        await Task.WhenAll(
+            handlerA.GetAsync("letters", (ApiPagingRequest?)null),
+            handlerB.GetAsync("letters", (ApiPagingRequest?)null));
+
+        capturedUriA.ShouldNotBeNull();
+        capturedUriB.ShouldNotBeNull();
+        capturedUriA!.AbsolutePath.ShouldBe("/organisations/org-A/letters");
+        capturedUriB!.AbsolutePath.ShouldBe("/organisations/org-B/letters");
+    }
+
+    /// <summary>
+    /// Verifies that calling <see cref="PingenConnectionHandler.SetOrganisationId"/> between
+    /// requests routes subsequent calls under the new organisation ID in the URL path
+    /// </summary>
+    [Test]
+    public async Task SetOrganisationId_BetweenRequests_UsesNewOrganisationIdInUrlPath()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var capturedPaths = new List<string>();
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedPaths.Add(request.RequestUri!.AbsolutePath);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var config = CreateConfig(defaultOrganisationId: "initial-org");
+        var handler = new PingenConnectionHandler(config, CreateHttpClients(identityHandler, apiHandler));
+
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+        handler.SetOrganisationId("new-org");
+        await handler.GetAsync("letters", (ApiPagingRequest?)null);
+
+        capturedPaths.Count.ShouldBe(2);
+        capturedPaths[0].ShouldBe("/organisations/initial-org/letters");
+        capturedPaths[1].ShouldBe("/organisations/new-org/letters");
+    }
+
+    /// <summary>
+    /// Verifies that requests against endpoints in NonOrganisationEndpoints (e.g. <c>user</c>)
+    /// do not have the organisation ID injected into their URL path
+    /// </summary>
+    [Test]
+    public async Task GetAsync_NonOrganisationEndpoint_DoesNotInjectOrganisationIdInPath()
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        Uri? capturedUri = null;
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedUri = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":{}}")
+            });
+        });
+
+        var config = CreateConfig(defaultOrganisationId: "some-org");
+        var handler = new PingenConnectionHandler(config, CreateHttpClients(identityHandler, apiHandler));
+
+        await handler.GetAsync("user", (ApiRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe("/user");
+    }
+
     private static IPingenConfiguration CreateConfig(
         string baseUri = "https://api.example.com/",
-        string identityUri = "https://identity.example.com/")
+        string identityUri = "https://identity.example.com/",
+        string defaultOrganisationId = "test-org-id")
     {
         return new PingenConfiguration
         {
@@ -546,7 +942,7 @@ public class PingenConnectionHandlerTests
             IdentityUri = identityUri,
             ClientId = "test-client-id",
             ClientSecret = "test-client-secret",
-            DefaultOrganisationId = "test-org-id"
+            DefaultOrganisationId = defaultOrganisationId
         };
     }
 

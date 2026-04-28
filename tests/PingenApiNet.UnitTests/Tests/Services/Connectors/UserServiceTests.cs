@@ -1,5 +1,7 @@
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
@@ -103,6 +105,132 @@ public class UserServiceTests
         pages[0].First().Id.ShouldBe("assoc-1");
     }
 
+    /// <summary>
+    /// Verifies Get propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task Get_ApiError_ReturnsFailureResult()
+    {
+        var apiError = CreateApiError("unauthorized", "Token is invalid");
+        _mockConnectionHandler
+            .GetAsync<SingleResult<UserDataDetailed>>(
+                "user",
+                Arg.Any<ApiRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<UserDataDetailed>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _userService.Get();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies Get forwards the supplied API request through to the connection handler
+    /// </summary>
+    [Test]
+    public async Task Get_WithApiRequest_ForwardsRequestToConnectionHandler()
+    {
+        var apiRequest = new ApiRequest { Include = ["associations"] };
+
+        _mockConnectionHandler
+            .GetAsync<SingleResult<UserDataDetailed>>(
+                "user",
+                apiRequest,
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<UserDataDetailed>> { IsSuccess = true });
+
+        await _userService.Get(apiRequest);
+
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<UserDataDetailed>>(
+            "user",
+            apiRequest,
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies GetAssociationsPage propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task GetAssociationsPage_ApiError_ReturnsFailureResult()
+    {
+        var apiError = CreateApiError("server_error", "Service unavailable");
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<UserAssociationDataDetailed>>(
+                "user/associations",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<UserAssociationDataDetailed>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _userService.GetAssociationsPage();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies GetAssociationsPage forwards the supplied paging request through to the connection handler
+    /// </summary>
+    [Test]
+    public async Task GetAssociationsPage_WithPagingRequest_ForwardsRequestToConnectionHandler()
+    {
+        var pagingRequest = new ApiPagingRequest { PageNumber = 5, PageLimit = 10 };
+
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<UserAssociationDataDetailed>>(
+                "user/associations",
+                pagingRequest,
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<UserAssociationDataDetailed>> { IsSuccess = true });
+
+        await _userService.GetAssociationsPage(pagingRequest);
+
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<UserAssociationDataDetailed>>(
+            "user/associations",
+            pagingRequest,
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies GetAssociationsPageResultsAsync surfaces an API failure as a <see cref="PingenApiErrorException"/>
+    /// </summary>
+    [Test]
+    public async Task GetAssociationsPageResultsAsync_ApiError_ThrowsPingenApiErrorException()
+    {
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<UserAssociationDataDetailed>>(
+                "user/associations",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<UserAssociationDataDetailed>>
+            {
+                IsSuccess = false,
+                ApiError = CreateApiError("server_error", "boom")
+            });
+
+        await Should.ThrowAsync<PingenApiErrorException>(async () =>
+        {
+            await foreach (var _ in _userService.GetAssociationsPageResultsAsync())
+            {
+                // consume pages
+            }
+        });
+    }
+
     private static UserAssociationDataDetailed CreateUserAssociationDataDetailed(string id) => new()
     {
         Id = id,
@@ -111,4 +239,9 @@ public class UserServiceTests
         Relationships = new UserAssociationRelationships(new RelatedSingleOutput(new RelatedSingleLinks(""), new Abstractions.Models.Base.DataIdentity { Id = "", Type = PingenApiDataType.organisations })),
         Meta = new(new(new UserAssociationAbilities(PingenApiAbility.ok, PingenApiAbility.ok, PingenApiAbility.ok), new OrganisationAbilities(PingenApiAbility.ok)))
     };
+
+    private static ApiError CreateApiError(string code, string detail) => new(
+    [
+        new ApiErrorData(code, "Error", detail, new ApiErrorSource(string.Empty, string.Empty))
+    ]);
 }
