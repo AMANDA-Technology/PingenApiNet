@@ -88,7 +88,7 @@
 ### Wave 1: Unit Tests — Service Edge Cases & Error Scenarios
 
 **Phase 1 of 2 (Complete):** Batch, Distribution, Files, Letter services.
-**Phase 2 of 2 (Pending):** Organisation, User, Webhook, and `PingenConnectionHandler`.
+**Phase 2 of 2 (Complete):** Organisation, User, Webhook, and `PingenConnectionHandler`.
 
 **Scope:** `tests/PingenApiNet.UnitTests/Tests/Services/Connectors/`
 
