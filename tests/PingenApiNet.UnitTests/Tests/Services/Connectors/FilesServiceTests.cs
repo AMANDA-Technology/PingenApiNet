@@ -1,6 +1,7 @@
 using System.Net;
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Files;
 using PingenApiNet.Services.Connectors;
@@ -44,6 +45,33 @@ public class FilesServiceTests
             "file-upload",
             Arg.Any<ApiPagingRequest?>(),
             Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies GetPath propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task GetPath_ApiError_ReturnsFailureResult()
+    {
+        var apiError = CreateApiError("forbidden", "Token does not allow file upload");
+        _mockConnectionHandler
+            .GetAsync<SingleResult<FileUploadData>>(
+                "file-upload",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<FileUploadData>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _filesService.GetPath();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
     }
 
     /// <summary>
@@ -118,6 +146,29 @@ public class FilesServiceTests
     }
 
     /// <summary>
+    /// Verifies UploadFile returns failure result on 408 Request Timeout
+    /// </summary>
+    [Test]
+    public async Task UploadFile_RequestTimeout_ReturnsFailureResult()
+    {
+        var fileUploadData = CreateFileUploadData();
+        using var stream = new MemoryStream([0x25, 0x50, 0x44, 0x46]);
+
+        _mockConnectionHandler
+            .SendExternalRequestAsync(
+                Arg.Any<HttpRequestMessage>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new HttpResponseMessage(HttpStatusCode.RequestTimeout));
+
+        var result = await _filesService.UploadFile(fileUploadData, stream);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.StatusCode.ShouldBe(HttpStatusCode.RequestTimeout)
+        );
+    }
+
+    /// <summary>
     /// Verifies UploadFile sends PUT request to the correct URL
     /// </summary>
     [Test]
@@ -166,6 +217,52 @@ public class FilesServiceTests
             Arg.Any<CancellationToken>());
     }
 
+    /// <summary>
+    /// Verifies UploadFile throws <see cref="ArgumentNullException"/> when the data stream is null
+    /// </summary>
+    [Test]
+    public async Task UploadFile_NullStream_ThrowsArgumentNullException()
+    {
+        var fileUploadData = CreateFileUploadData();
+
+        await Should.ThrowAsync<ArgumentNullException>(async () =>
+            await _filesService.UploadFile(fileUploadData, null!));
+    }
+
+    /// <summary>
+    /// Verifies UploadFile throws <see cref="NullReferenceException"/> when the file upload data is null
+    /// </summary>
+    [Test]
+    public async Task UploadFile_NullFileUploadData_ThrowsNullReferenceException()
+    {
+        using var stream = new MemoryStream([0x25, 0x50, 0x44, 0x46]);
+
+        await Should.ThrowAsync<NullReferenceException>(async () =>
+            await _filesService.UploadFile(null!, stream));
+    }
+
+    /// <summary>
+    /// Verifies UploadFile does not invoke the connection handler when the data stream is null
+    /// </summary>
+    [Test]
+    public async Task UploadFile_NullStream_DoesNotInvokeConnectionHandler()
+    {
+        var fileUploadData = CreateFileUploadData();
+
+        try
+        {
+            await _filesService.UploadFile(fileUploadData, null!);
+        }
+        catch (ArgumentNullException)
+        {
+            // expected — see UploadFile_NullStream_ThrowsArgumentNullException
+        }
+
+        await _mockConnectionHandler.DidNotReceive().SendExternalRequestAsync(
+            Arg.Any<HttpRequestMessage>(),
+            Arg.Any<CancellationToken>());
+    }
+
     private static FileUploadData CreateFileUploadData(string url = "https://s3.example.com/test")
     {
         return new FileUploadData
@@ -179,4 +276,9 @@ public class FilesServiceTests
             )
         };
     }
+
+    private static ApiError CreateApiError(string code, string detail) => new(
+    [
+        new ApiErrorData(code, "Error", detail, new ApiErrorSource(string.Empty, string.Empty))
+    ]);
 }

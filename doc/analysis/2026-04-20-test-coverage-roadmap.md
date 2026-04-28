@@ -31,7 +31,7 @@
 ### Current Coverage Baseline
 | Tier | Status |
 |---|---|
-| Unit | Test classes exist for all 7 services + helpers; error/edge cases sparse |
+| Unit | Test classes exist for all 7 services + helpers; error/edge cases covered for Batch, Distribution, Files, and Letter services (Wave 1 Phase 1 complete) |
 | Integration | Test classes exist for all 7 services; cross-cutting scenarios missing |
 | E2E | Only 4 scenarios: Distribution, FileUpload, LettersGetAll, RateLimit |
 
@@ -86,6 +86,9 @@
 ---
 
 ### Wave 1: Unit Tests — Service Edge Cases & Error Scenarios
+
+**Phase 1 of 2 (Complete):** Batch, Distribution, Files, Letter services.
+**Phase 2 of 2 (Complete):** Organisation, User, Webhook, and `PingenConnectionHandler`.
 
 **Scope:** `tests/PingenApiNet.UnitTests/Tests/Services/Connectors/`
 

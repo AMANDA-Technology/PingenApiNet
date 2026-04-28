@@ -166,7 +166,7 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 - `Helpers/` — `PingenSerialisationHelper`, `PingenWebhookHelper`, `PingenAttributesPropertyHelper`, `PingenDateTimeConverter(Nullable)`, `PingenKeyValuePairStringObjectConverter`.
 - `Models/` — `ApiResult`, `DataPost`/`DataPatch`, `ExternalRequestResult`, `IncludedCollection`, `PingenConfiguration`.
 - `Services/` — `PingenApiClient` facade + `PingenConnectionHandler` (OAuth token lifecycle, re-auth, rate-limit header parsing, multi-tenant token isolation regression test for #22, concurrent-login double-check regression for #27).
-- `Services/Connectors/` — per-connector unit tests using NSubstitute-mocked `IPingenConnectionHandler` (verifies endpoint path construction for Batches, Distribution, Files, Letters, Organisations, Users, Webhooks, and the shared `ConnectorService`).
+- `Services/Connectors/` — per-connector unit tests using NSubstitute-mocked `IPingenConnectionHandler` (verifies endpoint path construction and error/edge-case handling for Batches, Distribution, Files, Letters, Organisations, Users, Webhooks, and the shared `ConnectorService`).
 - `AspNetCore/` — `PingenServiceCollection.AddPingenServices()` DI registration.
 - `Enums/` — `BatchIconSerializationTests` (hyphenated enum-member serialization).
 - `Exceptions/` — the three Pingen exception types.

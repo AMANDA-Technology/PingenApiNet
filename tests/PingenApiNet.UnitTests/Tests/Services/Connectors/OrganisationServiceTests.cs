@@ -1,5 +1,7 @@
 using PingenApiNet.Abstractions.Enums.Api;
+using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults.Embedded;
 using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
@@ -105,6 +107,131 @@ public class OrganisationServiceTests
             Arg.Any<CancellationToken>());
     }
 
+    /// <summary>
+    /// Verifies GetPage propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task GetPage_ApiError_ReturnsFailureResult()
+    {
+        var apiError = CreateApiError("server_error", "Service unavailable");
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<OrganisationData>>(
+                "organisations",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<OrganisationData>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _organisationService.GetPage();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies GetPage forwards the supplied paging request through to the connection handler
+    /// </summary>
+    [Test]
+    public async Task GetPage_WithPagingRequest_ForwardsRequestToConnectionHandler()
+    {
+        var pagingRequest = new ApiPagingRequest { PageNumber = 3, PageLimit = 25 };
+
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<OrganisationData>>(
+                "organisations",
+                pagingRequest,
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<OrganisationData>> { IsSuccess = true });
+
+        await _organisationService.GetPage(pagingRequest);
+
+        await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<OrganisationData>>(
+            "organisations",
+            pagingRequest,
+            Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// Verifies GetPageResultsAsync surfaces an API failure as a <see cref="PingenApiErrorException"/>
+    /// </summary>
+    [Test]
+    public async Task GetPageResultsAsync_ApiError_ThrowsPingenApiErrorException()
+    {
+        _mockConnectionHandler
+            .GetAsync<CollectionResult<OrganisationData>>(
+                "organisations",
+                Arg.Any<ApiPagingRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<CollectionResult<OrganisationData>>
+            {
+                IsSuccess = false,
+                ApiError = CreateApiError("server_error", "boom")
+            });
+
+        await Should.ThrowAsync<PingenApiErrorException>(async () =>
+        {
+            await foreach (var _ in _organisationService.GetPageResultsAsync())
+            {
+                // consume pages
+            }
+        });
+    }
+
+    /// <summary>
+    /// Verifies Get propagates failure ApiResult without throwing when the API returns an error
+    /// </summary>
+    [Test]
+    public async Task Get_ApiError_ReturnsFailureResult()
+    {
+        const string organisationId = "missing-org";
+        var apiError = CreateApiError("not_found", "Organisation not found");
+        _mockConnectionHandler
+            .GetAsync<SingleResult<OrganisationDataDetailed>>(
+                $"organisations/{organisationId}",
+                Arg.Any<ApiRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<OrganisationDataDetailed>>
+            {
+                IsSuccess = false,
+                ApiError = apiError
+            });
+
+        var result = await _organisationService.Get(organisationId);
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.ApiError.ShouldBe(apiError),
+            () => result.Data.ShouldBeNull()
+        );
+    }
+
+    /// <summary>
+    /// Verifies Get with an empty ID constructs an endpoint path with a trailing slash and does not throw
+    /// </summary>
+    [Test]
+    public async Task Get_EmptyId_ConstructsTrailingSlashPath()
+    {
+        _mockConnectionHandler
+            .GetAsync<SingleResult<OrganisationDataDetailed>>(
+                "organisations/",
+                Arg.Any<ApiRequest?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ApiResult<SingleResult<OrganisationDataDetailed>> { IsSuccess = true });
+
+        await _organisationService.Get(string.Empty);
+
+        await _mockConnectionHandler.Received(1).GetAsync<SingleResult<OrganisationDataDetailed>>(
+            "organisations/",
+            Arg.Any<ApiRequest?>(),
+            Arg.Any<CancellationToken>());
+    }
+
     private static OrganisationData CreateOrganisationData(string id) => new()
     {
         Id = id,
@@ -112,4 +239,9 @@ public class OrganisationServiceTests
         Attributes = new Organisation(null, null, null, null, null, null, null, null, null, null, null, null, null),
         Relationships = new OrganisationRelationships(new RelatedManyOutput(new RelatedManyLinks(new RelatedManyLinkInfo("", new RelatedManyLinkMeta(0)))))
     };
+
+    private static ApiError CreateApiError(string code, string detail) => new(
+    [
+        new ApiErrorData(code, "Error", detail, new ApiErrorSource(string.Empty, string.Empty))
+    ]);
 }
