@@ -177,6 +177,7 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 Offline in-process integration tests using **NUnit 4 + Shouldly + WireMock.Net + Bogus**. Spins up a local WireMock HTTP server per test fixture, stubs both the Pingen API and the OAuth token endpoint, and exercises a real `PingenApiClient` wired to that server. Covers request/response round-trips, JSON:API envelope shaping, auto-pagination (`InScenario` state machines), and the three-HTTP-client routing (identity / api / external-files):
 
 - `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `PingenApiClientTests`, `UserServiceTests`, `WebhookServiceTests`.
+- `CrossCutting/` — `CancellationTokenTests`, `ConcurrencyTests`, `EdgeCaseTests`, `ErrorHandlingTests`, `PaginationTests`.
 - `IntegrationTestBase.cs` — handles `[OneTimeSetUp]` WireMock startup, per-test reset, token-endpoint stub, client construction, and disposal.
 - `Helpers/JsonApiStubHelper.cs` — low-level JSON:API envelope builder.
 - `Helpers/PingenResponseFactory.cs` — centralised WireMock JSON:API response builder using Bogus for realistic test data generation.
