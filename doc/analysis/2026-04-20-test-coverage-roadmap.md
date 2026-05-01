@@ -128,7 +128,9 @@
 
 ### Wave 3: Integration Tests — Cross-cutting Concerns
 
-**Scope:** `tests/PingenApiNet.Tests.Integration/Tests/CrossCutting/` (new directory)
+**Phase 1 of 1 (Complete):** Create all 5 cross-cutting test classes.
+
+**Scope:** `tests/PingenApiNet.Tests.Integration/Tests/CrossCutting/`
 
 New test classes:
 - `CancellationTokenTests` — `CancellationToken` propagation through HTTP pipeline

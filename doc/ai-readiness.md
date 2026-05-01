@@ -106,10 +106,11 @@ dotnet test PingenApiNet.sln --collect:"XPlat Code Coverage"
 | DI (AspNetCore/PingenServiceCollectionTests.cs) | `AddPingenServices` registers all nine public interfaces. |
 | Webhooks (Webhooks.cs) | Offline deserialization of `Assets/webhook_sample.json` + `TryGetIncludedData` for Organisation / Letter / LetterEvent. |
 
-**`PingenApiNet.Tests.Integration`** (8 test files, all use real `PingenApiClient` + WireMock)
+**`PingenApiNet.Tests.Integration`** (13 test files, all use real `PingenApiClient` + WireMock)
 
 | Fixture | Coverage |
 |---|---|
+| `CrossCutting/*` | `CancellationTokenTests`, `ConcurrencyTests`, `ErrorHandlingTests`, `PaginationTests`, `EdgeCaseTests` covering API errors, auto-pagination boundaries, token cancellation, parallel requests, and JSON:API parsing edge cases. |
 | `PingenApiClientTests` | Facade-level: all connector properties are non-null; `SetOrganisationId` routes subsequent requests to the new org path. |
 | `LetterServiceTests` | `GetPage`, `GetPageResultsAsync` with two-page scenario, `Create`, `Send`, `Cancel`, `Get`, `Delete`, `Update`, `GetFileLocation` (302 + Location header), `DownloadFileContent` (external URL to WireMock), `CalculatePrice`, `GetEventsPage` + `GetEventsPageResultsAsync`, `GetIssuesPage` + `GetIssuesPageResultsAsync`. |
 | `WebhookServiceTests` | `GetPage`, paginated `GetPageResultsAsync`, `Create`, `Get`, `Delete`. |
