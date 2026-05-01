@@ -90,7 +90,7 @@ dotnet test PingenApiNet.sln --collect:"XPlat Code Coverage"
 
 ### 2.2 What IS Covered
 
-**`PingenApiNet.UnitTests`** (~240 tests across 21 test files, ~3,400 LOC)
+**`PingenApiNet.UnitTests`** (~685+ tests across 24+ test files — updated after Epic #102)
 
 | Area | Coverage |
 |---|---|
@@ -106,15 +106,15 @@ dotnet test PingenApiNet.sln --collect:"XPlat Code Coverage"
 | DI (AspNetCore/PingenServiceCollectionTests.cs) | `AddPingenServices` registers all nine public interfaces. |
 | Webhooks (Webhooks.cs) | Offline deserialization of `Assets/webhook_sample.json` + `TryGetIncludedData` for Organisation / Letter / LetterEvent. |
 
-**`PingenApiNet.Tests.Integration`** (13 test files, all use real `PingenApiClient` + WireMock)
+**`PingenApiNet.Tests.Integration`** (15 test files — updated after Epic #102)
 
 | Fixture | Coverage |
 |---|---|
-| `CrossCutting/*` | `CancellationTokenTests`, `ConcurrencyTests`, `ErrorHandlingTests`, `PaginationTests`, `EdgeCaseTests` covering API errors, auto-pagination boundaries, token cancellation, parallel requests, and JSON:API parsing edge cases. |
+| `CrossCutting/*` | `CancellationTokenTests`, `ConcurrencyTests`, `ErrorHandlingTests`, `PaginationTests`, `EdgeCaseTests` covering API errors, auto-pagination boundaries, token cancellation, parallel requests, and JSON:API parsing edge cases. `QueryStringSerializationTests` — nested And/Or filter, multi-field sort, search, page params, and sparse-fieldsets+include combined (#102/#107). `IdempotencyTests` — `Idempotency-Key` header presence and `Idempotent-Replayed` flag surfacing (#102/#107). |
 | `PingenApiClientTests` | Facade-level: all connector properties are non-null; `SetOrganisationId` routes subsequent requests to the new org path. |
 | `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `UserServiceTests`, `WebhookServiceTests` | Full per-connector round-trips: list, get, create, delete (as supported by each), including paginated `GetPage` / `GetPageResultsAsync` with multiple pages, boundary conditions, and JSON:API error parsing. `LetterServiceTests` covers complex `Create` → `Send` → `Cancel` state transitions and file location redirects. All use `PingenResponseFactory` + `Bogus`. |
 
-**`PingenApiNet.Tests.E2E`** (4 fixtures, live staging)
+**`PingenApiNet.Tests.E2E`** (13 fixtures, live staging — updated after Epic #102)
 
 | Fixture | Coverage |
 |---|---|
@@ -122,18 +122,27 @@ dotnet test PingenApiNet.sln --collect:"XPlat Code Coverage"
 | `FileUpload` | Full `Files.GetPath` → `UploadFile` → `Letters.Create` → `Letters.Get` → `Letters.Send` sequence. |
 | `DistributionGetDeliveryProducts` | Hits the undocumented `/distribution/delivery-products` endpoint. |
 | `RateLimit` | Deliberately exceeds Pingen rate limits to verify `Retry-After` handling end-to-end (parallel load). |
+| `BatchE2eTests` | Create, get, and paginated list against staging. LIFO cleanup. |
+| `OrganisationE2eTests` | List organisations, get by ID. |
+| `UserE2eTests` | List users, get by ID. |
+| `WebhookE2eTests` | Full CRUD (create → get → list → delete). LIFO cleanup. |
+| `LetterWorkflowE2eTests` | Full live scenario: upload file → create letter → poll until valid → send → cancel. LIFO cleanup. |
+| `LetterUpdateE2eTests` | Upload + create + poll + PATCH paper/print type. LIFO cleanup via `LetterCleanupHelper`. |
+| `LetterDeleteE2eTests` | Upload + create + poll + delete + verify 404. LIFO cleanup. |
+| `LetterCalculatePriceE2eTests` | `CalculatePrice` for cheap vs. PostAgB products — price comparison. |
+| `LetterIssuesE2eTests` | Parameterized for EN-GB / DE-DE / FR-FR locales; bounded auto-page. |
 
 ### 2.3 What Is NOT Covered
 
 | Gap | Impact | Notes |
 |---|---|---|
-| **`IncludedCollection.FindById<T>` with `UserAssociation` / heterogeneous-type arrays** | Low | `OfType<T>` covers the mapping logic, but `FindById` has no test specifically for resource types beyond `Organisation` and `Letter`. |
-| **`FilesService.UploadFile` stream-handling in unit tests** | Low | Integration test exists. No offline unit test for stream-disposal / large-stream semantics. |
-| **`PingenConnectionHandler` path construction for `NonOrganisationEndpoints` edge cases** | Medium | Unit tests cover auth + rate-limit + error paths but do not directly assert that `file_uploads`, `users`, and `organisations` skip the org-id prefix. The integration tests cover the happy path for these endpoints implicitly. A focused unit test would catch a future regression where someone adds a new `NonOrganisationEndpoints` entry incorrectly. |
-| **Idempotency-Key header round-trip** | Medium | `PingenConnectionHandler` sets the `Idempotency-Key` header when provided, but there is no test asserting a provided key arrives in the outbound request. `IdempotentReplayed` response-header parsing is implicitly covered by shape tests. |
-| **Filter-and-sort query string integration** | Medium | `PingenKeyValuePairStringObjectConverter` is unit-tested and `ApiPagingRequest` has serialisation tests, but there is no integration test that sends a filter+sort request to WireMock and asserts the exact query string that arrives. |
-| **`SparseFieldsets` with multiple types + `Include` combined** | Low | README example shows combining them. Offline tests cover each independently; no integration test exercises both together end-to-end. |
-| **Distribution service (undocumented endpoint)** | Low | Integration test exists with stubbed response shape. The shape itself is unverified against live Pingen — the E2E test (`DistributionGetDeliveryProducts`) is the only source of truth. |
+| **`IncludedCollection.FindById<T>` with `UserAssociation` / heterogeneous-type arrays** | Low | **Closed by #102 (#106).** `FindById<T>` tests for `UserAssociation` and heterogeneous-type arrays added to `IncludedCollectionTests`. |
+| **`FilesService.UploadFile` stream-handling in unit tests** | Low | **Closed by #102 (#106).** Offline unit tests for stream position semantics, non-disposal, and 8 MB large-stream added to `FilesServiceTests`. |
+| **`PingenConnectionHandler` path construction for `NonOrganisationEndpoints` edge cases** | Medium | **Closed by #102 (#106).** URL-matrix unit tests assert `file_uploads`, `users`, and `organisations` bypass the org-id prefix; negative cases for standard endpoints confirm the prefix is applied. |
+| **Idempotency-Key header round-trip** | Medium | **Closed by #102 (#107).** `IdempotencyTests` WireMock class verifies `Idempotency-Key` header is present on Create/Send/Cancel calls, and that `Idempotent-Replayed: true` surfaces in `ApiResult.IdempotentReplayed`. |
+| **Filter-and-sort query string integration** | Medium | **Closed by #102 (#107).** `QueryStringSerializationTests` asserts nested And/Or filter serialization, multi-field sort with comma-separated list, search param, page[number]/page[limit], and sparse fieldsets + include combined. |
+| **`SparseFieldsets` with multiple types + `Include` combined** | Low | **Closed by #102 (#107).** `QueryStringSerializationTests` test 5 exercises sparse-fieldsets and include together in a single WireMock request. |
+| **Distribution service (undocumented endpoint)** | Low | **Partially closed by #102 (#107).** HTTP 500 and malformed JSON error paths now covered by integration tests. Response shape vs. live Pingen remains unverified — the E2E test (`DistributionGetDeliveryProducts`) is still the only source of truth for shape correctness. |
 | **Webhook signing-key rotation** | Low | `PingenConfiguration.WebhookSigningKeys` is a `Dictionary<string, string>?` but there is no test or sample showing how multiple keys are used (rotation scenario). `PingenWebhookHelper.ValidateWebhook` takes a single key. |
 | **Retry / back-off strategy for transient 5xx** | Medium (product decision) | There is currently no built-in retry. Rate-limit (429) exposure is surfaced via `ApiResult.RetryAfter`, and the E2E `RateLimit` fixture validates the header. Polly or a manual retry loop is left to consumers. |
 | **Telemetry / logging** | Medium (product decision) | `PingenConnectionHandler` has no `ILogger` dependency. No request/response diagnostics. Consumers wrap with their own observability. |
@@ -166,7 +175,7 @@ Across all three tiers, the library exercises its public surface area, its OAuth
 | **Org-id prefix logic** | `src/PingenApiNet/Services/PingenConnectionHandler.cs:47, 275-296` (`NonOrganisationEndpoints`, `GetHttpRequestMessage`) | The logic is "if the path starts with any `NonOrganisationEndpoints` entry, do not prepend `organisations/{orgId}/`". Adding a new non-org-scoped endpoint without updating this array would silently attempt to hit `organisations/{orgId}/new-endpoint` and 404. Adding a new org-scoped endpoint whose path prefix happens to match an entry would wrongly skip the prefix. | When adding an endpoint, explicitly check `NonOrganisationEndpoints` membership. Add a unit test asserting the constructed URL. Prefer endpoint constants (`*Endpoints.Root`) to avoid typos. |
 | **JSON filter nested `KeyValuePair`** | `src/PingenApiNet.Abstractions/Helpers/JsonConverters/PingenKeyValuePairStringObjectConverter.cs` + `ApiPagingRequest.Filtering` | Filter keys must be JSON property names (not C# property names). Use `PingenAttributesPropertyHelper<T>.GetJsonPropertyName(...)`. Miswriting the key produces a silently-wrong filter — the API returns unfiltered results, not an error. | Always use the attribute helper for filter / sort keys. Do not hardcode strings. Prefer the existing `LetterFields.*` / `BatchFields.*` constants when possible. |
 | **File-location redirect (`302 Found` as success)** | `src/PingenApiNet/Services/PingenConnectionHandler.cs:374-418` (`GetApiResult`) | `AllowAutoRedirect = false` on `Pingen.Api` plus "`isSuccess = httpResponseMessage.IsSuccessStatusCode \|\| httpResponseMessage.StatusCode is HttpStatusCode.Found`". If Pingen ever changes the file-location response to a different 3xx (e.g., 307, 308), the library will silently treat it as an error. | Do not remove the `302` special case without auditing every endpoint. Adding a new `3xx`-returning endpoint requires extending this check. |
-| **`PingenApiDataTypeMapping` coverage** | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:109-124` | `IncludedCollection.OfType<T>()`, `FindById<T>()`, and `TryGetIncludedData<T>()` all rely on this dictionary. Adding a new resource type (new `PingenApiDataType` enum value + new attributes type) requires a corresponding mapping entry, otherwise included resources of that type are silently skipped with no warning. | Every new resource type **must** be added to `PingenApiDataTypeMapping`. Consider writing a reflection-based test that iterates `PingenApiDataType` values and asserts each is present (currently missing from the suite — see Backlog). |
+| **`PingenApiDataTypeMapping` coverage** | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:109-124` | `IncludedCollection.OfType<T>()`, `FindById<T>()`, and `TryGetIncludedData<T>()` all rely on this dictionary. Adding a new resource type (new `PingenApiDataType` enum value + new attributes type) requires a corresponding mapping entry, otherwise included resources of that type are silently skipped with no warning. | Every new resource type **must** be added to `PingenApiDataTypeMapping`. This is now enforced by `PingenApiDataTypeMappingTests` which fails if a new enum value lacks a mapping or an explicit allow-list entry. |
 | **`DistributionService` undocumented endpoint** | `src/PingenApiNet/Services/Connectors/DistributionService.cs` + `DistributionEndpoints.cs` | The `/distribution/delivery-products` endpoint is not in Pingen's public documentation. The response shape is our best guess from live observation. Pingen may change it without notice. | Do not make `Distribution` a hard dependency of new code paths. Fail gracefully. Flag any deserialisation error as a likely upstream change, not a library bug. |
 | **`LetterCreate.MetaData`** | `src/PingenApiNet.Abstractions/Models/Letters/LetterMetaData.cs` + `README.md` | Setting `MetaData` on cheap delivery products triggers address-validation failures when postcodes exceed 4 characters. Only `PostAgRegistered` / `PostAgAPlus` tolerate full metadata. | Read `CLAUDE.md` § Known Constraints #3 before adding any sample that sets `MetaData`. Do not set it for `Cheap` or `PostAgEconomy` products. |
 | **Letter-status polling timing** | README § 1 + `CLAUDE.md` § Known Constraints #5 | After `Letters.Create()`, Pingen validates the PDF asynchronously. Calling `Letters.Send()` immediately returns an error. Callers must poll `Letters.Get()` until `Status == LetterStates.Valid`. | Any new "create + send" sample or helper must include polling with a timeout. Do not assume a single `await` is enough. |
@@ -187,7 +196,7 @@ Across all three tiers, the library exercises its public surface area, its OAuth
 
 | Debt Item | Severity | Notes |
 |---|---|---|
-| `TODO` on missing API docs | Low | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiCurrency.cs:46` — `// TODO: Missing API Doc about currencies`. Currencies list may be incomplete. |
+| ~~`TODO` on missing API docs~~ | Low | **Resolved by #102 (#110).** `USD` and `GBP` were added to `PingenApiCurrency` from the Pingen OpenAPI spec, and the `// TODO` comment was removed. `AllEnumsSerializationTests` now covers all 4 currency values. |
 | `PingenApiDataTypeMapping` allocates on every access | Low | Property expression body (`=> new { ... }`) builds the dictionary per call. Should be `public static readonly Dictionary<...> PingenApiDataTypeMapping = new() { ... };`. Trivial fix. |
 | `PingenConnectionHandler.GetRequestHeaders` placeholder branch | Low | See § 3.1 last row. |
 | ADR-002 filename says "static" but status says "Accepted (instance-scoped)" | Low | The filename is preserved because README and other docs link to it; the file content now annotates this in the Status block. Acceptable. |
@@ -217,11 +226,10 @@ Improvement proposals discovered during the review. Estimated on a gut-feel S/M/
 
 | Title | Description | Complexity | Priority |
 |---|---|---|---|
-| Reflection test for `PingenApiDataTypeMapping` completeness | Enumerate `PingenApiDataType` values at test-time and assert each maps to a non-null CLR type in `PingenSerialisationHelper.PingenApiDataTypeMapping`. Catches the "forgot to add the mapping" regression that would otherwise silently skip included resources. | S | High |
 | Static-cache `PingenApiDataTypeMapping` | Convert from expression-bodied property getter to `static readonly Dictionary`. Removes per-call allocation on hot `IncludedCollection.OfType<T>` / `FindById<T>` paths. | S | Medium |
-| Integration test: filter + sort query string round-trip | Add a WireMock test that captures the outbound query string for an `ApiPagingRequest` with a nested `CollectionFilterOperator.And(Or(...))` filter, asserting the serialised filter matches the Pingen spec. | S | Medium |
-| Integration test: Idempotency-Key header round-trip | WireMock assertion that a `Letters.Create` call with an idempotency key produces an outbound `Idempotency-Key` header with the expected value, and that `Idempotent-Replayed: true` populates `ApiResult.IdempotentReplayed`. | S | Medium |
-| Unit test: `NonOrganisationEndpoints` URL construction | Directly assert `PingenConnectionHandler` builds `file_uploads`, `users`, `organisations` URLs without the `organisations/{orgId}/` prefix, and confirms all other endpoints include it. | S | Medium |
+| ~~Integration test: filter + sort query string round-trip~~ | **Done — #102 (#107).** `QueryStringSerializationTests` covers nested And/Or filter, multi-field sort, search, paging, and sparse-fieldsets+include. | S | ~~Medium~~ |
+| ~~Integration test: Idempotency-Key header round-trip~~ | **Done — #102 (#107).** `IdempotencyTests` verifies key presence and `Idempotent-Replayed` flag end-to-end via WireMock. | S | ~~Medium~~ |
+| ~~Unit test: `NonOrganisationEndpoints` URL construction~~ | **Done — #102 (#106).** URL-matrix tests in `PingenConnectionHandlerTests` assert correct prefix/no-prefix for all `NonOrganisationEndpoints` entries. | S | ~~Medium~~ |
 | `ILogger<PingenConnectionHandler>` integration | Optional `ILogger` dependency (constructor-injected). Log outbound method + URL + request-id + rate-limit-remaining at Debug. Never log bearer tokens or full response bodies. | M | Medium |
 | Runbook: adding a new connector endpoint | New doc `doc/architecture/runbooks/add-connector-endpoint.md` with a numbered checklist: (1) add model + `*Fields` + `*Includes`, (2) register in `PingenApiDataType` enum + `PingenApiDataTypeMapping`, (3) add `*Endpoints` URL constants, (4) add service method + interface entry, (5) register in `PingenServiceCollection`, (6) add unit + integration tests. | S | High |
 | Webhook signing-key rotation support | Accept multiple active keys; try each until one validates. `PingenWebhookHelper.ValidateWebhook(IReadOnlyCollection<string> signingKeys, ...)`. Useful during key rotation without downtime. | M | Low |

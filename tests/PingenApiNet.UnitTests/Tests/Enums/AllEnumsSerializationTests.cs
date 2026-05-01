@@ -304,7 +304,7 @@ public class AllEnumsSerializationTests
     public void PingenApiAbility_AllValuesAreCovered() => Enum.GetValues<PingenApiAbility>().Length.ShouldBe(3);
 
     // -------------------------------------------------------------------
-    // Section I: PingenApiCurrency (real enum, 2 values, uppercase identifiers)
+    // Section I: PingenApiCurrency (real enum, 4 values, uppercase identifiers)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -314,6 +314,8 @@ public class AllEnumsSerializationTests
     /// <param name="expectedJson">The expected JSON representation.</param>
     [TestCase(PingenApiCurrency.EUR, "\"EUR\"")]
     [TestCase(PingenApiCurrency.CHF, "\"CHF\"")]
+    [TestCase(PingenApiCurrency.USD, "\"USD\"")]
+    [TestCase(PingenApiCurrency.GBP, "\"GBP\"")]
     public void PingenApiCurrency_Serializes(PingenApiCurrency value, string expectedJson) =>
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 
@@ -324,14 +326,17 @@ public class AllEnumsSerializationTests
     /// <param name="expected">The expected enum value.</param>
     [TestCase("\"EUR\"", PingenApiCurrency.EUR)]
     [TestCase("\"CHF\"", PingenApiCurrency.CHF)]
+    [TestCase("\"USD\"", PingenApiCurrency.USD)]
+    [TestCase("\"GBP\"", PingenApiCurrency.GBP)]
     public void PingenApiCurrency_Deserializes(string json, PingenApiCurrency expected) =>
         PingenSerialisationHelper.Deserialize<PingenApiCurrency>(json).ShouldBe(expected);
 
     /// <summary>
     ///     Sentinel: fails if a new <see cref="PingenApiCurrency" /> value is added without updating the cases above.
+    ///     The four values mirror the upstream <c>OrganisationAttributes.billing_currency</c> enum (CHF, EUR, USD, GBP).
     /// </summary>
     [Test]
-    public void PingenApiCurrency_AllValuesAreCovered() => Enum.GetValues<PingenApiCurrency>().Length.ShouldBe(2);
+    public void PingenApiCurrency_AllValuesAreCovered() => Enum.GetValues<PingenApiCurrency>().Length.ShouldBe(4);
 
     // -------------------------------------------------------------------
     // Section J: PingenApiDataType (real enum, 14 values, snake_case identifiers)

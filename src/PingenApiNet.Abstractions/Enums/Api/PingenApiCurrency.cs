@@ -29,19 +29,29 @@ using System.Text.Json.Serialization;
 namespace PingenApiNet.Abstractions.Enums.Api;
 
 /// <summary>
-/// Pingen API currency
+/// Pingen API currency. Values mirror the <c>billing_currency</c> enum on
+/// <c>OrganisationAttributes</c> in the upstream Pingen v2 OpenAPI spec.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter<PingenApiCurrency>))]
 public enum PingenApiCurrency
 {
     /// <summary>
-    /// EUR
+    /// EUR (Euro)
     /// </summary>
     EUR,
 
     /// <summary>
-    /// CHF
+    /// CHF (Swiss franc)
     /// </summary>
     CHF,
-    // TODO: Missing API Doc about currencies
+
+    /// <summary>
+    /// USD (US dollar)
+    /// </summary>
+    USD,
+
+    /// <summary>
+    /// GBP (Pound sterling)
+    /// </summary>
+    GBP
 }

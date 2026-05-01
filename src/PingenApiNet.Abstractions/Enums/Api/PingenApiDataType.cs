@@ -101,7 +101,10 @@ public enum PingenApiDataType
     delivery_products,
 
     /// <summary>
-    /// Data type presets
+    /// Data type presets. Used as the JSON:API <c>type</c> discriminator on relationship
+    /// inputs (<c>LetterCreateRelationships</c>, <c>BatchCreateRelationships</c>) only.
+    /// No <c>Preset</c> attributes model is currently bound, so this value is intentionally
+    /// absent from <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c>.
     /// </summary>
     presets
 }

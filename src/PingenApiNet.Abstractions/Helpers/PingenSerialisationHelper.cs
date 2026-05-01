@@ -104,7 +104,14 @@ public static class PingenSerialisationHelper
     }
 
     /// <summary>
-    ///
+    /// Maps each JSON:API <c>type</c> discriminator (<see cref="PingenApiDataType"/>) to its
+    /// corresponding .NET attributes type. Used by <see cref="TryGetIncludedData{T}"/> to
+    /// resolve <c>included</c> resources back to a strongly-typed <see cref="Data{T}"/>.
+    /// <para>
+    /// <see cref="PingenApiDataType.presets"/> is intentionally omitted: it appears only as
+    /// the <c>type</c> on relationship inputs (e.g. <c>LetterCreateRelationships.Preset</c>)
+    /// and is not currently deserialized from API responses, so no attributes type is bound.
+    /// </para>
     /// </summary>
     public static Dictionary<PingenApiDataType, Type> PingenApiDataTypeMapping => new()
     {
