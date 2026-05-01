@@ -33,7 +33,7 @@
 |---|---|
 | Unit | Test classes exist for all 7 services + helpers; error/edge cases covered for Batch, Distribution, Files, and Letter services (Wave 1 Phase 1 complete) |
 | Integration | Test classes exist for all 7 services; cross-cutting scenarios complete (Wave 3); 100% coverage for Batch, Distribution, Files, Webhook (Wave 4 complete) |
-| E2E | Only 4 scenarios: Distribution, FileUpload, LettersGetAll, RateLimit |
+| E2E | Batch, Organisation, User, Webhook covered (Wave 6 complete); other scenarios: Distribution, FileUpload, LettersGetAll, RateLimit |
 
 ### Stack Alignment (vs CashCtrlApiNet reference)
 | Library | Status |
@@ -181,6 +181,8 @@ New test classes:
 ---
 
 ### Wave 6: E2E Tests — Services Group 1
+
+**Phase 1 of 1 (Complete):** Batch, Organisation, User, Webhook.
 
 **Scope:** `tests/PingenApiNet.Tests.E2E/` — Batch, Organisation, User, Webhook
 
