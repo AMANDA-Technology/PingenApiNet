@@ -194,7 +194,7 @@ PingenApiNet__ClientSecret
 PingenApiNet__OrganisationId
 ```
 
-E2E tests inherit from `E2eTestBase.cs` which provides a LIFO cleanup queue (`RegisterCleanup(Func<Task>)`), orphan scavenging pattern, isolation prefix (`TestPrefix`), and standard `AssertSuccess` overloads. Current fixtures: `DistributionGetDeliveryProducts`, `FileUpload`, `LettersGetAll`, `RateLimit` (the last one deliberately exceeds rate limits to validate `Retry-After` behavior — run sparingly).
+E2E tests inherit from `E2eTestBase.cs` which provides a LIFO cleanup queue (`RegisterCleanup(Func<Task>)`), orphan scavenging pattern, isolation prefix (`TestPrefix`), and standard `AssertSuccess` overloads. Current fixtures cover Batches, Distributions, Files, Letters (including `LetterWorkflowE2eTests` for full state transitions), Organisations, Users, Webhooks, and `RateLimit` (the last one deliberately exceeds rate limits to validate `Retry-After` behavior — run sparingly).
 
 ## Known Constraints and Gotchas
 
