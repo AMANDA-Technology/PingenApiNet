@@ -110,8 +110,8 @@ public sealed class IdempotencyTests : IntegrationTestBase
         await Client.Letters.Create(data, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage.Path == OrgPath("letters") && e.RequestMessage.Method == "POST");
-        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage.Headers!;
+            e.RequestMessage?.Path == OrgPath("letters") && e.RequestMessage?.Method == "POST");
+        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
     }
@@ -133,8 +133,8 @@ public sealed class IdempotencyTests : IntegrationTestBase
         await Client.Letters.Send(data, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage.Path == OrgPath($"letters/{letterId}/send") && e.RequestMessage.Method == "PATCH");
-        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage.Headers!;
+            e.RequestMessage?.Path == OrgPath($"letters/{letterId}/send") && e.RequestMessage?.Method == "PATCH");
+        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
     }
@@ -160,8 +160,8 @@ public sealed class IdempotencyTests : IntegrationTestBase
         await Client.Letters.Cancel(letterId, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage.Path == OrgPath($"letters/{letterId}/cancel") && e.RequestMessage.Method == "PATCH");
-        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage.Headers!;
+            e.RequestMessage?.Path == OrgPath($"letters/{letterId}/cancel") && e.RequestMessage?.Method == "PATCH");
+        IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
     }
@@ -215,7 +215,7 @@ public sealed class IdempotencyTests : IntegrationTestBase
         await Client.Letters.Create(data);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage.Path == OrgPath("letters") && e.RequestMessage.Method == "POST");
-        entry.RequestMessage.Headers!.ShouldNotContainKey(IdempotencyKeyHeader);
+            e.RequestMessage?.Path == OrgPath("letters") && e.RequestMessage?.Method == "POST");
+        entry.RequestMessage!.Headers!.ShouldNotContainKey(IdempotencyKeyHeader);
     }
 }

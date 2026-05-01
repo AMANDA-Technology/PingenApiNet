@@ -232,7 +232,7 @@ public sealed class DistributionServiceTests : IntegrationTestBase
 
     /// <summary>
     ///     Verifies that a non-success response whose body is valid JSON but does not match the
-    ///     <see cref="ApiError" /> envelope shape (i.e. a malformed/unexpected error payload) is
+    ///     <see cref="ApiResult.ApiError" /> envelope shape (i.e. a malformed/unexpected error payload) is
     ///     handled gracefully: the call returns an unsuccessful <see cref="ApiResult" /> without
     ///     throwing, and <see cref="ApiResult.ApiError" /> deserialises with no error entries.
     /// </summary>

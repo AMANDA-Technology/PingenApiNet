@@ -68,14 +68,14 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage.Path == OrgPath("letters"));
-        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage.Query!;
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("filter");
 
         string filterValue = query["filter"][0];
         filterValue.ShouldBe("""{"and":[{"or":[{"country":"CH"},{"country":"DE"}]},{"status":"valid"}]}""");
 
-        string rawQuery = entry.RequestMessage.RawQuery!;
+        string rawQuery = entry.RequestMessage!.RawQuery!;
         rawQuery.ShouldContain("filter=");
         HttpUtility.UrlDecode(rawQuery).ShouldContain(filterValue);
     }
@@ -102,8 +102,8 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage.Path == OrgPath("letters"));
-        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage.Query!;
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("sort");
         query["sort"][0].ShouldBe("created_at,-status");
     }
@@ -122,8 +122,8 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage.Path == OrgPath("letters"));
-        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage.Query!;
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("q");
         query["q"][0].ShouldBe(searchTerm);
     }
@@ -143,8 +143,8 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage.Path == OrgPath("letters"));
-        string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage.RawQuery!);
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage!.RawQuery!);
 
         decodedQuery.ShouldSatisfyAllConditions(
             () => decodedQuery.ShouldContain("page[number]=3"),
@@ -175,8 +175,8 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.Get(letterId, apiRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage.Path == OrgPath($"letters/{letterId}"));
-        string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage.RawQuery!);
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath($"letters/{letterId}"));
+        string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage!.RawQuery!);
 
         decodedQuery.ShouldSatisfyAllConditions(
             () => decodedQuery.ShouldContain("fields[letters]=status,file_original_name"),
