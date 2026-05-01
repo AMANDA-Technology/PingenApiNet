@@ -217,6 +217,30 @@ New/updated test fixtures inheriting `E2eTestBase`:
 
 ---
 
+### Wave 8: Test Completeness Review & Spec-Drift Fixes
+
+**Phase 1 of 1 (Complete — Epic #102, 2026-05-01):** API docs audit + targeted gap closure.
+
+**Scope:** All test projects + `src/PingenApiNet.Abstractions/Enums/`
+
+Sub-issues completed as part of Epic #102:
+
+- **#105** — API documentation gap audit. Produced `doc/analysis/2026-05-01-api-docs-gap-audit.md` comparing every Pingen v2 endpoint and model against the library. Identified coverage gaps, spec drift, and documentation updates.
+- **#106** — Unit test gap closure: 19 new unit tests across `PingenConnectionHandlerTests` (NonOrg URL matrix, idempotency round-trip with `PostAsync`/`PatchAsync`), `FilesServiceTests` (stream position semantics, non-disposal, 8 MB large stream), and `IncludedCollectionTests` (`FindById<T>` for `UserAssociation`, heterogeneous arrays, same-id different-types).
+- **#107** — Integration test refinement: 12 new integration tests. New `CrossCutting/QueryStringSerializationTests.cs` (nested And/Or filter, multi-field sort, search param, page params, sparse-fieldsets+include) and `CrossCutting/IdempotencyTests.cs` (Idempotency-Key header presence on Create/Send/Cancel, `Idempotent-Replayed` flag). Extended `DistributionServiceTests` with HTTP 500 and malformed JSON error paths.
+- **#108** — E2E expansion: 5 new E2E files. `Helpers/LetterCleanupHelper.cs` (reusable cleanup/scavenging), `Letters/LetterUpdateE2eTests.cs` (upload+draft+poll+patch paper type), `Letters/LetterDeleteE2eTests.cs` (upload+draft+delete+verify 404), `Letters/LetterCalculatePriceE2eTests.cs` (cheap vs PostAgB price comparison), `Letters/LetterIssuesE2eTests.cs` (parameterized EN-GB/DE-DE/FR-FR, bounded auto-page).
+- **#110** — Spec drift fixes: `USD` and `GBP` added to `PingenApiCurrency` from Pingen OpenAPI spec (`billing_currency` field); `presets` enum value XML doc expanded to clarify relationship-input-only nature; `PingenApiDataTypeMapping` XML doc updated to document deliberate `presets` omission. `AllEnumsSerializationTests` sentinel bumped to 4 currency values.
+- **#109** — Documentation refresh: `doc/ai-readiness.md` updated to reflect closed gaps and new test counts; `doc/analysis/2026-04-20-test-coverage-roadmap.md` updated (this section); `doc/architecture/components/pingenapi-core.md` corrected `/user/*` path; `doc/architecture/decisions/006-test-pyramid-coverage-strategy.md` added.
+
+**Acceptance Criteria:**
+- `dotnet build PingenApiNet.sln --configuration Debug` → 0 errors, 0 CS warnings
+- `dotnet test PingenApiNet.sln --filter "FullyQualifiedName!~PingenApiNet.Tests.E2E"` → all pass (~685+ unit, ~162+ integration)
+- All 7 §2.3 gap rows in `doc/ai-readiness.md` closed or annotated
+- `PingenApiCurrency` includes `CHF`, `EUR`, `USD`, `GBP`
+- ADR-006 created
+
+---
+
 ## Execution Sequence
 
 ```

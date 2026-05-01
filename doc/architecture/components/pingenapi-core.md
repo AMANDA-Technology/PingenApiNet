@@ -21,7 +21,7 @@ C4Component
         Component(connectorBase, "ConnectorService", "C# abstract class", "Base for all connector services. Provides HandleResult() (throws on error) and AutoPage() (IAsyncEnumerable pagination loop).")
         Component(letterService, "LetterService", "C# sealed class", "Connector for /letters/* endpoints: GetPage, GetPageResultsAsync, Create, Send, Cancel, Get, Delete, Update, GetFileLocation, DownloadFileContent, CalculatePrice, GetEventsPage, GetEventsPageResultsAsync, GetIssuesPage, GetIssuesPageResultsAsync.")
         Component(batchService, "BatchService", "C# sealed class", "Connector for /batches/* endpoints.")
-        Component(userService, "UserService", "C# sealed class", "Connector for /users/* endpoints.")
+        Component(userService, "UserService", "C# sealed class", "Connector for /user/* endpoints (non-org-scoped — Pingen uses singular path).")
         Component(orgService, "OrganisationService", "C# sealed class", "Connector for /organisations/* endpoints (non-org-scoped).")
         Component(webhookService, "WebhookService", "C# sealed class", "Connector for webhooks endpoints.")
         Component(filesService, "FilesService", "C# sealed class", "GetPath() to obtain pre-signed upload URL, UploadFile() to PUT stream to S3.")
