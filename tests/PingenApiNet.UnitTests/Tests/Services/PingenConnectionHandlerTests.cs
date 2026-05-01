@@ -1,6 +1,12 @@
 using System.Net;
+using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api;
+using PingenApiNet.Abstractions.Models.Api.Embedded;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
+using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.Webhooks;
+using PingenApiNet.Abstractions.Models.Webhooks.Views;
 using PingenApiNet.UnitTests.Helpers;
 
 namespace PingenApiNet.UnitTests.Tests.Services;
@@ -929,6 +935,328 @@ public class PingenConnectionHandlerTests
 
         capturedUri.ShouldNotBeNull();
         capturedUri!.AbsolutePath.ShouldBe("/user");
+    }
+
+    /// <summary>
+    /// Verifies that requests against the <c>file-upload</c> endpoint do not have the organisation ID
+    /// injected into their URL path
+    /// </summary>
+    [Test]
+    public async Task GetAsync_FileUploadEndpoint_DoesNotInjectOrganisationIdInPath()
+    {
+        Uri? capturedUri = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedUri = request.RequestUri;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{}}")
+                });
+            },
+            defaultOrganisationId: "some-org");
+
+        await handler.GetAsync("file-upload", (ApiPagingRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe("/file-upload");
+    }
+
+    /// <summary>
+    /// Verifies that requests against the <c>organisations</c> endpoint do not have the organisation ID
+    /// injected into their URL path (the path itself already addresses an organisation resource)
+    /// </summary>
+    [Test]
+    public async Task GetAsync_OrganisationsEndpoint_DoesNotInjectOrganisationIdInPath()
+    {
+        Uri? capturedUri = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedUri = request.RequestUri;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{}}")
+                });
+            },
+            defaultOrganisationId: "some-org");
+
+        await handler.GetAsync("organisations", (ApiPagingRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe("/organisations");
+    }
+
+    /// <summary>
+    /// Verifies that requests against organisation-scoped endpoints (letters, batches, webhooks)
+    /// have the organisation ID injected into their URL path
+    /// </summary>
+    [TestCase("letters", "/organisations/some-org/letters")]
+    [TestCase("batches", "/organisations/some-org/batches")]
+    [TestCase("webhooks", "/organisations/some-org/webhooks")]
+    public async Task GetAsync_OrganisationScopedEndpoint_InjectsOrganisationIdInPath(
+        string requestPath, string expectedAbsolutePath)
+    {
+        Uri? capturedUri = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedUri = request.RequestUri;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":[]}")
+                });
+            },
+            defaultOrganisationId: "some-org");
+
+        await handler.GetAsync(requestPath, (ApiPagingRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe(expectedAbsolutePath);
+    }
+
+    /// <summary>
+    /// Documents the prefix-collision risk in the <c>NonOrganisationEndpoints</c> matching logic:
+    /// because <see cref="string.StartsWith(string)"/> is non-strict, any request path beginning with
+    /// the literal <c>"user"</c> (e.g. <c>"userful-fake-endpoint"</c>) bypasses organisation prefixing.
+    /// This test pins the current behavior so that any future tightening of the match (e.g. exact
+    /// match or boundary check) is intentional and reviewed.
+    /// </summary>
+    [Test]
+    public async Task GetAsync_PathStartingWithNonOrgEndpointPrefix_DoesNotInjectOrganisationIdInPath()
+    {
+        Uri? capturedUri = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedUri = request.RequestUri;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{}}")
+                });
+            },
+            defaultOrganisationId: "some-org");
+
+        await handler.GetAsync("userful-fake-endpoint", (ApiPagingRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe("/userful-fake-endpoint");
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PostAsync{TResult,TPost}"/> attaches the
+    /// supplied idempotency key to the outgoing request as the <c>Idempotency-Key</c> header
+    /// </summary>
+    [Test]
+    public async Task PostAsync_WithIdempotencyKey_SetsIdempotencyKeyHeader()
+    {
+        const string idempotencyKey = "post-key-abc-123";
+        string? capturedIdempotencyKey = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedIdempotencyKey = request.Headers.TryGetValues(ApiHeaderNames.IdempotencyKey, out var values)
+                    ? values.First()
+                    : null;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{\"id\":\"wh-1\",\"type\":\"webhooks\",\"attributes\":{}}}")
+                });
+            });
+
+        await handler.PostAsync<SingleResult<Data<Webhook>>, DataPost<WebhookCreate>>(
+            "webhooks", CreateWebhookDataPost(), idempotencyKey);
+
+        capturedIdempotencyKey.ShouldBe(idempotencyKey);
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PostAsync{TResult,TPost}"/> omits the
+    /// <c>Idempotency-Key</c> header entirely when no idempotency key is supplied
+    /// </summary>
+    [Test]
+    public async Task PostAsync_WithoutIdempotencyKey_OmitsIdempotencyKeyHeader()
+    {
+        var hasIdempotencyKeyHeader = true;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                hasIdempotencyKeyHeader = request.Headers.Contains(ApiHeaderNames.IdempotencyKey);
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{\"id\":\"wh-1\",\"type\":\"webhooks\",\"attributes\":{}}}")
+                });
+            });
+
+        await handler.PostAsync<SingleResult<Data<Webhook>>, DataPost<WebhookCreate>>(
+            "webhooks", CreateWebhookDataPost());
+
+        hasIdempotencyKeyHeader.ShouldBeFalse();
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PatchAsync{TResult,TPatch}"/> (with body)
+    /// attaches the supplied idempotency key as the <c>Idempotency-Key</c> header
+    /// </summary>
+    [Test]
+    public async Task PatchAsync_WithBody_WithIdempotencyKey_SetsIdempotencyKeyHeader()
+    {
+        const string idempotencyKey = "patch-with-body-key-456";
+        string? capturedIdempotencyKey = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedIdempotencyKey = request.Headers.TryGetValues(ApiHeaderNames.IdempotencyKey, out var values)
+                    ? values.First()
+                    : null;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{\"id\":\"wh-1\",\"type\":\"webhooks\",\"attributes\":{}}}")
+                });
+            });
+
+        await handler.PatchAsync<SingleResult<Data<Webhook>>, DataPatch<WebhookCreate>>(
+            "webhooks/wh-1", CreateWebhookDataPatch("wh-1"), idempotencyKey);
+
+        capturedIdempotencyKey.ShouldBe(idempotencyKey);
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PatchAsync{TResult,TPatch}"/> (with body) omits
+    /// the <c>Idempotency-Key</c> header entirely when no idempotency key is supplied
+    /// </summary>
+    [Test]
+    public async Task PatchAsync_WithBody_WithoutIdempotencyKey_OmitsIdempotencyKeyHeader()
+    {
+        var hasIdempotencyKeyHeader = true;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                hasIdempotencyKeyHeader = request.Headers.Contains(ApiHeaderNames.IdempotencyKey);
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{\"id\":\"wh-1\",\"type\":\"webhooks\",\"attributes\":{}}}")
+                });
+            });
+
+        await handler.PatchAsync<SingleResult<Data<Webhook>>, DataPatch<WebhookCreate>>(
+            "webhooks/wh-1", CreateWebhookDataPatch("wh-1"));
+
+        hasIdempotencyKeyHeader.ShouldBeFalse();
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PatchAsync(string,string?,System.Threading.CancellationToken)"/>
+    /// (no body) attaches the supplied idempotency key as the <c>Idempotency-Key</c> header
+    /// </summary>
+    [Test]
+    public async Task PatchAsync_NoBody_WithIdempotencyKey_SetsIdempotencyKeyHeader()
+    {
+        const string idempotencyKey = "patch-no-body-key-789";
+        string? capturedIdempotencyKey = null;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                capturedIdempotencyKey = request.Headers.TryGetValues(ApiHeaderNames.IdempotencyKey, out var values)
+                    ? values.First()
+                    : null;
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                });
+            });
+
+        await handler.PatchAsync("letters/letter-1/cancel", idempotencyKey);
+
+        capturedIdempotencyKey.ShouldBe(idempotencyKey);
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="PingenConnectionHandler.PatchAsync(string,string?,System.Threading.CancellationToken)"/>
+    /// (no body) omits the <c>Idempotency-Key</c> header entirely when no idempotency key is supplied
+    /// </summary>
+    [Test]
+    public async Task PatchAsync_NoBody_WithoutIdempotencyKey_OmitsIdempotencyKeyHeader()
+    {
+        var hasIdempotencyKeyHeader = true;
+        var handler = CreateAuthenticatedHandler(
+            (request, _) =>
+            {
+                hasIdempotencyKeyHeader = request.Headers.Contains(ApiHeaderNames.IdempotencyKey);
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                });
+            });
+
+        await handler.PatchAsync("letters/letter-1/cancel");
+
+        hasIdempotencyKeyHeader.ShouldBeFalse();
+    }
+
+    /// <summary>
+    /// Verifies that an <c>Idempotent-Replayed: true</c> response header is parsed into
+    /// <see cref="ApiResult.IdempotentReplayed"/>
+    /// </summary>
+    [Test]
+    public async Task PostAsync_IdempotentReplayedTrueHeader_SetsIdempotentReplayedFlag()
+    {
+        var handler = CreateAuthenticatedHandler(
+            (_, _) =>
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"data\":{\"id\":\"wh-1\",\"type\":\"webhooks\",\"attributes\":{}}}")
+                };
+                response.Headers.Add(ApiHeaderNames.IdempotentReplayed, "true");
+                return Task.FromResult(response);
+            });
+
+        var result = await handler.PostAsync<SingleResult<Data<Webhook>>, DataPost<WebhookCreate>>(
+            "webhooks", CreateWebhookDataPost(), "replay-key");
+
+        result.IdempotentReplayed.ShouldBeTrue();
+    }
+
+    private static DataPost<WebhookCreate> CreateWebhookDataPost() => new()
+    {
+        Type = PingenApiDataType.webhooks,
+        Attributes = new WebhookCreate
+        {
+            FileOriginalName = WebhookEventCategory.issues,
+            Url = new Uri("https://example.com/webhook"),
+            SigningKey = "signing-key"
+        }
+    };
+
+    private static DataPatch<WebhookCreate> CreateWebhookDataPatch(string id) => new()
+    {
+        Id = id,
+        Type = PingenApiDataType.webhooks,
+        Attributes = new WebhookCreate
+        {
+            FileOriginalName = WebhookEventCategory.issues,
+            Url = new Uri("https://example.com/webhook"),
+            SigningKey = "signing-key"
+        }
+    };
+
+    private static PingenConnectionHandler CreateAuthenticatedHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> apiHandlerFunc,
+        string defaultOrganisationId = "test-org-id")
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler(apiHandlerFunc);
+
+        var config = CreateConfig(defaultOrganisationId: defaultOrganisationId);
+        return new PingenConnectionHandler(config, CreateHttpClients(identityHandler, apiHandler));
     }
 
     private static IPingenConfiguration CreateConfig(

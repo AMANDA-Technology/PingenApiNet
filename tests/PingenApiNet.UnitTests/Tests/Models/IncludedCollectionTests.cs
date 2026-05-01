@@ -24,11 +24,13 @@ SOFTWARE.
 */
 
 using System.Text.Json;
+using PingenApiNet.Abstractions.Enums.Users;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Base;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Organisations;
+using PingenApiNet.Abstractions.Models.UserAssociations;
 
 namespace PingenApiNet.UnitTests.Tests.Models;
 
@@ -503,5 +505,91 @@ public class IncludedCollectionTests
             () => orgs[0].Id.ShouldBe("org-1"),
             () => orgs[1].Id.ShouldBe("org-2")
         );
+    }
+
+    /// <summary>
+    ///     Verifies that FindById resolves a UserAssociation by id from an included array of associations
+    /// </summary>
+    [Test]
+    public void FindById_UserAssociationInIncludedArray_ReturnsItem()
+    {
+        string json = """
+                      {
+                          "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+                          "included": [
+                              { "id": "assoc-1", "type": "associations", "attributes": { "role": "owner", "status": "active" } },
+                              { "id": "assoc-2", "type": "associations", "attributes": { "role": "manager", "status": "active" } }
+                          ]
+                      }
+                      """;
+        SingleResult<Data<Letter>>? result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        Data<UserAssociation>? found = result.Included!.FindById<UserAssociation>("assoc-2");
+
+        found.ShouldNotBeNull();
+        found!.ShouldSatisfyAllConditions(
+            () => found.Id.ShouldBe("assoc-2"),
+            () => found.Attributes.Role.ShouldBe(UserRole.manager),
+            () => found.Attributes.Status.ShouldBe(UserAssociationStatus.active)
+        );
+    }
+
+    /// <summary>
+    ///     Verifies that FindById resolves the correct typed item from a heterogeneous included array
+    ///     containing multiple resource types (organisations, letters, associations)
+    /// </summary>
+    [Test]
+    public void FindById_HeterogeneousIncludedArray_ReturnsCorrectTypedItem()
+    {
+        string json = """
+                      {
+                          "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+                          "included": [
+                              { "id": "org-7", "type": "organisations", "attributes": { "name": "Acme Org" } },
+                              { "id": "letter-9", "type": "letters", "attributes": { "status": "sent" } },
+                              { "id": "assoc-3", "type": "associations", "attributes": { "role": "owner", "status": "pending" } }
+                          ]
+                      }
+                      """;
+        SingleResult<Data<Letter>>? result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        Data<Letter>? letter = result.Included!.FindById<Letter>("letter-9");
+        Data<Organisation>? org = result.Included!.FindById<Organisation>("org-7");
+        Data<UserAssociation>? assoc = result.Included!.FindById<UserAssociation>("assoc-3");
+
+        letter.ShouldNotBeNull();
+        org.ShouldNotBeNull();
+        assoc.ShouldNotBeNull();
+        letter!.Id.ShouldBe("letter-9");
+        org!.Attributes.Name.ShouldBe("Acme Org");
+        assoc!.Attributes.Role.ShouldBe(UserRole.owner);
+    }
+
+    /// <summary>
+    ///     Verifies that FindById disambiguates by type when two included items share the same id
+    ///     but belong to different resource types — each <c>FindById&lt;T&gt;</c> call returns the
+    ///     item whose type matches <typeparamref name="T"/>'s mapping
+    /// </summary>
+    [Test]
+    public void FindById_SameIdDifferentTypes_ResolvesByTypeDiscriminator()
+    {
+        string json = """
+                      {
+                          "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "valid" } },
+                          "included": [
+                              { "id": "shared-id", "type": "organisations", "attributes": { "name": "Org With Shared Id" } },
+                              { "id": "shared-id", "type": "letters", "attributes": { "status": "sent" } }
+                          ]
+                      }
+                      """;
+        SingleResult<Data<Letter>>? result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        Data<Organisation>? org = result.Included!.FindById<Organisation>("shared-id");
+        Data<Letter>? letter = result.Included!.FindById<Letter>("shared-id");
+
+        org.ShouldNotBeNull();
+        letter.ShouldNotBeNull();
+        org!.Attributes.Name.ShouldBe("Org With Shared Id");
+        letter!.Attributes.Status.ShouldBe("sent");
     }
 }
