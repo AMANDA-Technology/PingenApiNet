@@ -165,6 +165,8 @@ New test classes:
 
 ### Wave 5: Integration Tests — Services Group 2
 
+**Phase 1 of 1 (Complete):** Letter, Organisation, User services.
+
 **Scope:** `tests/PingenApiNet.Tests.Integration/Tests/` — Letter, Organisation, User
 
 - Refactor existing test classes to use `PingenResponseFactory` and `Bogus`

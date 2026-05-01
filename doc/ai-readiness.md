@@ -112,9 +112,7 @@ dotnet test PingenApiNet.sln --collect:"XPlat Code Coverage"
 |---|---|
 | `CrossCutting/*` | `CancellationTokenTests`, `ConcurrencyTests`, `ErrorHandlingTests`, `PaginationTests`, `EdgeCaseTests` covering API errors, auto-pagination boundaries, token cancellation, parallel requests, and JSON:API parsing edge cases. |
 | `PingenApiClientTests` | Facade-level: all connector properties are non-null; `SetOrganisationId` routes subsequent requests to the new org path. |
-| `LetterServiceTests` | `GetPage`, `GetPageResultsAsync` with two-page scenario, `Create`, `Send`, `Cancel`, `Get`, `Delete`, `Update`, `GetFileLocation` (302 + Location header), `DownloadFileContent` (external URL to WireMock), `CalculatePrice`, `GetEventsPage` + `GetEventsPageResultsAsync`, `GetIssuesPage` + `GetIssuesPageResultsAsync`. |
-| `WebhookServiceTests` | `GetPage`, paginated `GetPageResultsAsync`, `Create`, `Get`, `Delete`. |
-| `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `OrganisationServiceTests`, `UserServiceTests` | Per-connector round-trips: list / get / (create) / (delete) as the connector supports. |
+| `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `UserServiceTests`, `WebhookServiceTests` | Full per-connector round-trips: list, get, create, delete (as supported by each), including paginated `GetPage` / `GetPageResultsAsync` with multiple pages, boundary conditions, and JSON:API error parsing. `LetterServiceTests` covers complex `Create` → `Send` → `Cancel` state transitions and file location redirects. All use `PingenResponseFactory` + `Bogus`. |
 
 **`PingenApiNet.Tests.E2E`** (4 fixtures, live staging)
 
