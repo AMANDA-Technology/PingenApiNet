@@ -48,7 +48,7 @@ public sealed class DistributionServiceTests : IntegrationTestBase
     {
         Server.StubJsonGet(
             OrgPath("distribution/delivery-products"),
-            PingenResponseFactory.DeliveryProductCollection(3));
+            PingenResponseFactory.DeliveryProductCollection());
 
         ApiResult<CollectionResult<DeliveryProductData>> result = await Client.Distributions.GetDeliveryProductsPage();
 
@@ -203,5 +203,57 @@ public sealed class DistributionServiceTests : IntegrationTestBase
 
         exception.ApiResult.ShouldNotBeNull();
         exception.ApiResult!.IsSuccess.ShouldBeFalse();
+    }
+
+    /// <summary>
+    ///     Verifies that an HTTP 500 response with an error body produces an unsuccessful
+    ///     <see cref="ApiResult" /> whose <see cref="ApiResult.ApiError" /> is populated, rather
+    ///     than throwing through the <c>GetPage</c> raw-result code path.
+    /// </summary>
+    [Test]
+    public async Task GetDeliveryProductsPage_OnHttp500_ShouldReturnUnsuccessfulApiResultWithError()
+    {
+        Server.StubError(
+            OrgPath("distribution/delivery-products"),
+            "GET",
+            PingenResponseFactory.ErrorResponse("Internal Server Error", "Database unavailable", "500"),
+            500);
+
+        ApiResult<CollectionResult<DeliveryProductData>> result = await Client.Distributions.GetDeliveryProductsPage();
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.Data.ShouldBeNull(),
+            () => result.ApiError.ShouldNotBeNull(),
+            () => result.ApiError!.Errors.Count.ShouldBeGreaterThan(0),
+            () => result.ApiError!.Errors[0].Title.ShouldBe("Internal Server Error"),
+            () => result.ApiError!.Errors[0].Detail.ShouldBe("Database unavailable"));
+    }
+
+    /// <summary>
+    ///     Verifies that a non-success response whose body is valid JSON but does not match the
+    ///     <see cref="ApiError" /> envelope shape (i.e. a malformed/unexpected error payload) is
+    ///     handled gracefully: the call returns an unsuccessful <see cref="ApiResult" /> without
+    ///     throwing, and <see cref="ApiResult.ApiError" /> deserialises with no error entries.
+    /// </summary>
+    [Test]
+    public async Task GetDeliveryProductsPage_OnMalformedJsonError_ShouldNotThrowAndReturnUnsuccessful()
+    {
+        const string unexpectedJson = """{"unexpected_key":"unexpected_value"}""";
+
+        Server.StubError(
+            OrgPath("distribution/delivery-products"),
+            "GET",
+            unexpectedJson,
+            502);
+
+        ApiResult<CollectionResult<DeliveryProductData>> result = null!;
+        await Should.NotThrowAsync(async () => result = await Client.Distributions.GetDeliveryProductsPage());
+
+        result.ShouldSatisfyAllConditions(
+            () => result.IsSuccess.ShouldBeFalse(),
+            () => result.Data.ShouldBeNull(),
+            () => result.ApiError.ShouldNotBeNull(),
+            () => result.ApiError!.Errors.ShouldBeNull());
     }
 }
