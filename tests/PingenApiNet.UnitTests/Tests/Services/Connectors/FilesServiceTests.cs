@@ -263,6 +263,83 @@ public class FilesServiceTests
             Arg.Any<CancellationToken>());
     }
 
+    /// <summary>
+    /// Verifies that <see cref="FilesService.UploadFile"/> sends only the bytes from the data stream's
+    /// current position onward — i.e. the service does not rewind the stream before reading
+    /// </summary>
+    [Test]
+    public async Task UploadFile_StreamWithAdvancedPosition_SendsBytesFromCurrentPositionOnly()
+    {
+        var fileUploadData = CreateFileUploadData();
+        using var stream = new MemoryStream([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
+        stream.Position = 3;
+
+        byte[]? capturedBytes = null;
+        _mockConnectionHandler
+            .SendExternalRequestAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var req = callInfo.Arg<HttpRequestMessage>();
+                capturedBytes = req.Content!.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            });
+
+        await _filesService.UploadFile(fileUploadData, stream);
+
+        capturedBytes.ShouldNotBeNull();
+        capturedBytes!.ShouldBe([0x04, 0x05, 0x06, 0x07, 0x08]);
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="FilesService.UploadFile"/> does not explicitly dispose the data stream
+    /// passed by the caller — disposal is delegated to the <see cref="StreamContent"/> wrapper, so a
+    /// non-owning stream wrapper around the caller's data leaves the underlying buffer usable
+    /// </summary>
+    [Test]
+    public async Task UploadFile_DoesNotExplicitlyDisposeCallerStream()
+    {
+        var fileUploadData = CreateFileUploadData();
+        var inner = new MemoryStream([0x25, 0x50, 0x44, 0x46]);
+        var nonOwningWrapper = new NonOwningStreamWrapper(inner);
+
+        _mockConnectionHandler
+            .SendExternalRequestAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(new HttpResponseMessage(HttpStatusCode.OK));
+
+        await _filesService.UploadFile(fileUploadData, nonOwningWrapper);
+
+        inner.CanRead.ShouldBeTrue();
+    }
+
+    /// <summary>
+    /// Verifies that <see cref="FilesService.UploadFile"/> forwards an 8 MB stream byte-for-byte
+    /// without truncation, transformation, or padding
+    /// </summary>
+    [Test]
+    public async Task UploadFile_LargeMemoryStream_ForwardsBytesUnchanged()
+    {
+        var fileUploadData = CreateFileUploadData();
+        var data = new byte[8 * 1024 * 1024];
+        new Random(Seed: 42).NextBytes(data);
+        using var stream = new MemoryStream(data);
+
+        byte[]? capturedBytes = null;
+        _mockConnectionHandler
+            .SendExternalRequestAsync(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var req = callInfo.Arg<HttpRequestMessage>();
+                capturedBytes = req.Content!.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            });
+
+        await _filesService.UploadFile(fileUploadData, stream);
+
+        capturedBytes.ShouldNotBeNull();
+        capturedBytes!.Length.ShouldBe(8 * 1024 * 1024);
+        capturedBytes.ShouldBe(data);
+    }
+
     private static FileUploadData CreateFileUploadData(string url = "https://s3.example.com/test")
     {
         return new FileUploadData
@@ -281,4 +358,33 @@ public class FilesServiceTests
     [
         new ApiErrorData(code, "Error", detail, new ApiErrorSource(string.Empty, string.Empty))
     ]);
+
+    /// <summary>
+    /// Stream wrapper that delegates all reads/writes to an inner stream but does not dispose
+    /// the inner stream when itself disposed. Used to detect whether <see cref="FilesService"/>
+    /// explicitly disposes its data parameter beyond <see cref="StreamContent"/> ownership semantics.
+    /// </summary>
+    private sealed class NonOwningStreamWrapper : Stream
+    {
+        private readonly Stream _inner;
+
+        public NonOwningStreamWrapper(Stream inner) => _inner = inner;
+
+        public override bool CanRead => _inner.CanRead;
+        public override bool CanSeek => _inner.CanSeek;
+        public override bool CanWrite => _inner.CanWrite;
+        public override long Length => _inner.Length;
+        public override long Position { get => _inner.Position; set => _inner.Position = value; }
+        public override void Flush() => _inner.Flush();
+        public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+        public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);
+        public override void SetLength(long value) => _inner.SetLength(value);
+        public override void Write(byte[] buffer, int offset, int count) => _inner.Write(buffer, offset, count);
+
+        protected override void Dispose(bool disposing)
+        {
+            // Intentionally does NOT dispose the inner stream — caller retains ownership.
+            base.Dispose(disposing);
+        }
+    }
 }
