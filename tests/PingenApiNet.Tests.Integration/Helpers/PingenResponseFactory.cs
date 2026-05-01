@@ -121,7 +121,7 @@ internal static class PingenResponseFactory
 
         return JsonApiStubHelper.SingleResponse(
             id,
-            "file_upload",
+            "file_uploads",
             new
             {
                 url,
@@ -148,6 +148,48 @@ internal static class PingenResponseFactory
                 (object?)null));
 
         return JsonApiStubHelper.CollectionResponse(items, "delivery_products", currentPage, lastPage, total: count);
+    }
+
+    // ── Webhooks ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    ///     Build a JSON:API single-webhook response.
+    /// </summary>
+    /// <param name="id">Webhook ID; auto-generated when <c>null</c>.</param>
+    /// <param name="organisationId">Organisation ID; defaults to <c>test-org-id-001</c>.</param>
+    /// <returns>JSON string.</returns>
+    internal static string SingleWebhook(string? id = null, string? organisationId = null)
+    {
+        id ??= Guid.NewGuid().ToString();
+        organisationId ??= DefaultOrganisationId;
+
+        return JsonApiStubHelper.SingleResponse(
+            id,
+            "webhooks",
+            WebhookAttributes(),
+            new { organisation = JsonApiStubHelper.RelatedSingle(organisationId, "organisations") });
+    }
+
+    /// <summary>
+    ///     Build a JSON:API webhook collection response.
+    /// </summary>
+    /// <param name="count">Number of items to generate.</param>
+    /// <param name="organisationId">Organisation ID; defaults to <c>test-org-id-001</c>.</param>
+    /// <param name="currentPage">Current page number.</param>
+    /// <param name="lastPage">Last page number.</param>
+    /// <returns>JSON string.</returns>
+    internal static string WebhookCollection(int count = 3, string? organisationId = null, int currentPage = 1,
+        int lastPage = 1)
+    {
+        organisationId ??= DefaultOrganisationId;
+
+        IEnumerable<(string, object, object?, object?)> items = Enumerable.Range(0, count).Select(_ =>
+            (Guid.NewGuid().ToString(),
+                WebhookAttributes(),
+                (object?)new { organisation = JsonApiStubHelper.RelatedSingle(organisationId, "organisations") },
+                (object?)null));
+
+        return JsonApiStubHelper.CollectionResponse(items, "webhooks", currentPage, lastPage, total: count);
     }
 
     // ── Error Responses ──────────────────────────────────────────────────────
@@ -213,11 +255,19 @@ internal static class PingenResponseFactory
     private static object DeliveryProductAttributes() => new
     {
         name = $"PostAg {_faker.Commerce.ProductAdjective()}",
+        full_name = $"PostAG {_faker.Commerce.ProductName()}",
         price_currency = "CHF",
         price_starting_from = Math.Round(_faker.Random.Double(0.5, 5.0), 2),
-        speed = _faker.Random.Int(1, 7),
-        max_pages = _faker.Random.Int(10, 100),
+        delivery_time_days = new[] { _faker.Random.Int(1, 3), _faker.Random.Int(3, 7) },
+        features = new[] { _faker.PickRandom("color", "grayscale"), _faker.PickRandom("simplex", "duplex") },
         countries = new[] { _faker.PickRandom("CH", "DE", "AT") }
+    };
+
+    private static object WebhookAttributes() => new
+    {
+        event_category = _faker.PickRandom("issues", "undeliverable", "sent"),
+        url = _faker.Internet.UrlWithPath(),
+        signing_key = _faker.Random.AlphaNumeric(32)
     };
 
     private static object LetterRelationships(string organisationId) => new
