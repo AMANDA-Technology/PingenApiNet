@@ -202,6 +202,8 @@ New/updated test fixtures inheriting `E2eTestBase`:
 
 ### Wave 7: E2E Tests — Services Group 2
 
+**Phase 1 of 1 (Complete):** Letter workflow, Distribution, Files.
+
 **Scope:** `tests/PingenApiNet.Tests.E2E/` — Letter workflow, Distribution, Files
 
 - Create `LetterWorkflowE2eTests` — full live scenario: upload file → create letter → send → cancel
