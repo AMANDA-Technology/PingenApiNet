@@ -28,58 +28,67 @@ using PingenApiNet.Abstractions.Exceptions;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api;
 using PingenApiNet.Abstractions.Models.Api.Embedded;
+using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.DeliveryProducts;
 
 namespace PingenApiNet.Tests.E2E.Tests;
 
 /// <summary>
-///
+///     End-to-end tests for the Pingen distributions endpoint. Exercises the delivery-products
+///     listing — both single-page retrieval and the auto-paginated <c>IAsyncEnumerable</c> path —
+///     against the live staging API. Sorting and filtering parameters are sent and accepted by the
+///     server, but the upstream endpoint is documented to ignore them, so this fixture verifies
+///     the request shape and pagination contract rather than filter semantics.
 /// </summary>
-public class DistributionGetDeliveryProducts : E2eTestBase
+[TestFixture]
+[Category("E2e")]
+public sealed class DistributionGetDeliveryProducts : E2eTestBase
 {
     /// <summary>
-    ///
+    ///     Verifies that delivery products can be retrieved both via a single page request and via
+    ///     the auto-paginated <c>IAsyncEnumerable</c> helper. A non-empty product set across all
+    ///     pages confirms the server returned valid data and that auto-pagination terminates.
     /// </summary>
     [Test]
     public async Task GetProducts()
     {
-        // TODO: This tests the serialization of api paging request. It seems to be fine and is accepted by the pingen API, but the distribution products endpoint seems not to support sorting and filtering...
+        // The distributions/delivery-products endpoint accepts sorting and filtering parameters but
+        // does not appear to honour them. The request below verifies serialization is accepted by
+        // the API even though the server-side filter is a no-op.
         var apiPagingRequest = new ApiPagingRequest
         {
             Sorting = new Dictionary<string, CollectionSortDirection>
             {
-                [PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom)] = CollectionSortDirection.DESC
+                [PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom)] =
+                    CollectionSortDirection.DESC
             },
-            Filtering = new(
+            Filtering = new KeyValuePair<string, object>(
                 CollectionFilterOperator.And,
                 new KeyValuePair<string, object>[]
                 {
-                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceCurrency), "CHF"),
-                    new(PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product => product.PriceStartingFrom), "<=1")
+                    new(
+                        PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product =>
+                            product.PriceCurrency), "CHF"),
+                    new(
+                        PingenAttributesPropertyHelper<DeliveryProduct>.GetJsonPropertyName(product =>
+                            product.PriceStartingFrom), "<=1")
                 })
         };
 
-        // Get page
         PingenApiClient.ShouldNotBeNull();
 
-        var res = await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
-        res.ShouldNotBeNull();
-        res.ShouldSatisfyAllConditions(
-            () => res.IsSuccess.ShouldBeTrue(),
-            () => res.ApiError.ShouldBeNull(),
-            () => res.Data?.Data.ShouldNotBeNull()
-        );
+        ApiResult<CollectionResult<DeliveryProductData>> res =
+            await PingenApiClient!.Distributions.GetDeliveryProductsPage(apiPagingRequest);
+        AssertSuccess(res);
 
-        // Get all pages with filter
         var deliveryProducts = new List<DeliveryProductData>();
 
         ApiError? error = null;
         try
         {
-            await foreach (var page in PingenApiClient.Distributions.GetDeliveryProductsPageResultsAsync(apiPagingRequest))
-            {
+            await foreach (IEnumerable<DeliveryProductData> page in
+                           PingenApiClient.Distributions.GetDeliveryProductsPageResultsAsync(apiPagingRequest))
                 deliveryProducts.AddRange(page);
-            }
         }
         catch (PingenApiErrorException e)
         {
