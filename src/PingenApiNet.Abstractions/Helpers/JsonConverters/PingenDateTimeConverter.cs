@@ -46,7 +46,7 @@ public sealed class PingenDateTimeConverter : JsonConverter<DateTime>
         if (string.IsNullOrEmpty(valueString))
             return DateTime.MinValue;
 
-        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value)
+        return DateTime.TryParseExact(valueString, PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var value)
             ? value
             : DateTime.MinValue;
     }

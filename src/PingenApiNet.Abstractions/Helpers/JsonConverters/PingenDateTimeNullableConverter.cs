@@ -41,7 +41,7 @@ public sealed class PingenDateTimeNullableConverter : JsonConverter<DateTime?>
         if (string.IsNullOrEmpty(valueString))
             return null;
 
-        return DateTime.TryParseExact(valueString, PingenDateTimeConverter.PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var value)
+        return DateTime.TryParseExact(valueString, PingenDateTimeConverter.PingenDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var value)
             ? value
             : null;
     }
