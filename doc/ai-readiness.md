@@ -21,7 +21,7 @@ See also:
 
 | Artifact | Path | Usefulness for AI |
 |---|---|---|
-| Project instructions | [[../CLAUDE\|CLAUDE.md]] | **High** — names tech stack, solution layout, dependency graph, build/test commands, key conventions (records, `[JsonPropertyName]`, XML doc comments, nullable enabled), important file locations, and documented gotchas. Reading this alone is enough to orient a competent worker agent. |
+| Project instructions | [[../AGENTS\|AGENTS.md]] (with `CLAUDE.md` / `GEMINI.md` stubs) | **High** — names tech stack, solution layout, dependency graph, build/test commands, key conventions (records, `[JsonPropertyName]`, XML doc comments, nullable enabled), important file locations, and documented gotchas. Reading this alone is enough to orient a competent worker agent. |
 | C4 Level 1 context | [[architecture/context]] | **High** — actors, external systems (Pingen API, Identity, S3 storage, NuGet.org), staging vs production URIs. Mermaid `C4Context` renders in most renderers. |
 | C4 Level 2 containers | [[architecture/containers]] | **High** — the three NuGet packages + three test projects (Unit, Integration, E2E) with responsibilities, references, and a `C4Container` mermaid diagram. Now covers the WireMock.Net integration tier. |
 | C4 Level 3 components (Core) | [[architecture/components/pingenapi-core]] | **High** — component diagram + per-component narrative covering `PingenApiClient`, `PingenConnectionHandler`, `PingenHttpClients`, `ConnectorService`, and the connector services with representative endpoints. |
@@ -39,7 +39,7 @@ See also:
 
 | Gap | Impact | Suggested Remediation |
 |---|---|---|
-| No top-level `CONTRIBUTING.md` | Low — small project, conventions are implicit in `CLAUDE.md`. | Not required. |
+| No top-level `CONTRIBUTING.md` | Low — small project, conventions are implicit in `AGENTS.md`. | Not required. |
 | No versioning / release notes | Medium — CI publishes on tag, but there is no `CHANGELOG.md` capturing per-version changes. | Adopt Keep-a-Changelog; generate entries at release time. |
 | No explicit architecture **deployment** doc | Low — the library is consumed as NuGet packages; there is no runtime deployment per se. | Not required. |
 | No dedicated "how to add a new connector endpoint" runbook | Medium — adding an endpoint touches `Abstractions` (model + `*Fields` + `*Includes`), `PingenApiNet` (service + `*Endpoints`), `PingenApiNet.AspNetCore` (DI), `PingenSerialisationHelper.PingenApiDataTypeMapping`, and the three test projects. An AI agent can infer the pattern from existing endpoints, but an explicit checklist would eliminate drift. | See **Backlog** item "Runbook: adding a connector endpoint". |
@@ -48,7 +48,7 @@ See also:
 
 ### 1.3 Rating: **Ready**
 
-The documentation is complete enough for an AI agent to reason about the system, pick a task, and deliver without asking clarification questions. The C4 docs + ADRs + `CLAUDE.md` triangulate each other well. Minor drift (the superseded "static" in ADR-002 filename, some edge-case cross-references) is annotated, not hidden.
+The documentation is complete enough for an AI agent to reason about the system, pick a task, and deliver without asking clarification questions. The C4 docs + ADRs + `AGENTS.md` triangulate each other well. Minor drift (the superseded "static" in ADR-002 filename, some edge-case cross-references) is annotated, not hidden.
 
 ---
 
@@ -177,8 +177,8 @@ Across all three tiers, the library exercises its public surface area, its OAuth
 | **File-location redirect (`302 Found` as success)** | `src/PingenApiNet/Services/PingenConnectionHandler.cs:374-418` (`GetApiResult`) | `AllowAutoRedirect = false` on `Pingen.Api` plus "`isSuccess = httpResponseMessage.IsSuccessStatusCode \|\| httpResponseMessage.StatusCode is HttpStatusCode.Found`". If Pingen ever changes the file-location response to a different 3xx (e.g., 307, 308), the library will silently treat it as an error. | Do not remove the `302` special case without auditing every endpoint. Adding a new `3xx`-returning endpoint requires extending this check. |
 | **`PingenApiDataTypeMapping` coverage** | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:109-124` | `IncludedCollection.OfType<T>()`, `FindById<T>()`, and `TryGetIncludedData<T>()` all rely on this dictionary. Adding a new resource type (new `PingenApiDataType` enum value + new attributes type) requires a corresponding mapping entry, otherwise included resources of that type are silently skipped with no warning. | Every new resource type **must** be added to `PingenApiDataTypeMapping`. This is now enforced by `PingenApiDataTypeMappingTests` which fails if a new enum value lacks a mapping or an explicit allow-list entry. |
 | **`DistributionService` undocumented endpoint** | `src/PingenApiNet/Services/Connectors/DistributionService.cs` + `DistributionEndpoints.cs` | The `/distribution/delivery-products` endpoint is not in Pingen's public documentation. The response shape is our best guess from live observation. Pingen may change it without notice. | Do not make `Distribution` a hard dependency of new code paths. Fail gracefully. Flag any deserialisation error as a likely upstream change, not a library bug. |
-| **`LetterCreate.MetaData`** | `src/PingenApiNet.Abstractions/Models/Letters/LetterMetaData.cs` + `README.md` | Setting `MetaData` on cheap delivery products triggers address-validation failures when postcodes exceed 4 characters. Only `PostAgRegistered` / `PostAgAPlus` tolerate full metadata. | Read `CLAUDE.md` § Known Constraints #3 before adding any sample that sets `MetaData`. Do not set it for `Cheap` or `PostAgEconomy` products. |
-| **Letter-status polling timing** | README § 1 + `CLAUDE.md` § Known Constraints #5 | After `Letters.Create()`, Pingen validates the PDF asynchronously. Calling `Letters.Send()` immediately returns an error. Callers must poll `Letters.Get()` until `Status == LetterStates.Valid`. | Any new "create + send" sample or helper must include polling with a timeout. Do not assume a single `await` is enough. |
+| **`LetterCreate.MetaData`** | `src/PingenApiNet.Abstractions/Models/Letters/LetterMetaData.cs` + `README.md` | Setting `MetaData` on cheap delivery products triggers address-validation failures when postcodes exceed 4 characters. Only `PostAgRegistered` / `PostAgAPlus` tolerate full metadata. | Read `AGENTS.md` § Known Constraints #3 before adding any sample that sets `MetaData`. Do not set it for `Cheap` or `PostAgEconomy` products. |
+| **Letter-status polling timing** | README § 1 + `AGENTS.md` § Known Constraints #5 | After `Letters.Create()`, Pingen validates the PDF asynchronously. Calling `Letters.Send()` immediately returns an error. Callers must poll `Letters.Get()` until `Status == LetterStates.Valid`. | Any new "create + send" sample or helper must include polling with a timeout. Do not assume a single `await` is enough. |
 | **`PingenConnectionHandler.GetRequestHeaders` dead branch** | `src/PingenApiNet/Services/PingenConnectionHandler.cs:307-316` | Contains `if (apiRequest is not null) { /* nothing */ }` — a placeholder for future header logic. Harmless but misleading; suggests header handling is incomplete. | Do not delete without understanding what was intended. Likely a stub for `Accept-Language` / `User-Agent` / custom headers. |
 
 ### 3.2 Critical Business Logic Requiring Special Care
@@ -249,7 +249,7 @@ If a task is scoped narrowly, an AI agent should start here:
 
 | Purpose | Path |
 |---|---|
-| Project instructions (read this first) | [[../CLAUDE\|CLAUDE.md]] |
+| Project instructions (read this first) | [[../AGENTS\|AGENTS.md]] |
 | Public consumer entry point | `src/PingenApiNet/Interfaces/IPingenApiClient.cs` |
 | HTTP + auth core | `src/PingenApiNet/Services/PingenConnectionHandler.cs` |
 | Three-client HTTP wrapper | `src/PingenApiNet/Services/PingenHttpClients.cs` |
