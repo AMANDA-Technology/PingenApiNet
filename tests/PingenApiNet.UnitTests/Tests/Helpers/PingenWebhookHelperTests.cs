@@ -193,6 +193,7 @@ public class PingenWebhookHelperTests
     [TestCase("webhook_issues")]
     [TestCase("webhook_sent")]
     [TestCase("webhook_undeliverable")]
+    [TestCase("webhook_delivered")]
     public async Task ValidateWebhookAndGetData_AllIncludedRelationshipsResolved_ForAllEventTypes(string apiDataType)
     {
         const string signingKey = "test-signing-key";
@@ -246,6 +247,80 @@ public class PingenWebhookHelperTests
 
         webhookEventData.ShouldNotBeNull();
         webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_undeliverable);
+    }
+
+    /// <summary>
+    ///     Verifies that a webhook_delivered payload deserializes with the correct type discriminator.
+    ///     Regression test: before <c>webhook_delivered</c> was added to <see cref="PingenApiDataType" />,
+    ///     the unknown discriminator made <c>JsonStringEnumConverter</c> throw a
+    ///     <see cref="JsonException" /> inside ValidateWebhookAndGetData — after signature validation had
+    ///     already passed — so every "delivered" webhook failed and Pingen eventually dead-lettered it.
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_WebhookDeliveredType_DeserializesCorrectly()
+    {
+        const string signingKey = "test-signing-key";
+        string payload = BuildPayloadForType("webhook_delivered");
+        string signature = ComputeHmacSha256(signingKey, payload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+
+        (WebhookEventData? webhookEventData, _, _, _) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldNotBeNull();
+        webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_delivered);
+    }
+
+    /// <summary>
+    ///     Verifies that a webhook_delivered payload carrying no <c>reason</c> attribute deserializes with a
+    ///     null <see cref="WebhookEvent.Reason" />. Per the Pingen OpenAPI spec, WebhookDeliveredAttributes is
+    ///     <c>url</c> + <c>created_at</c> only (identical to WebhookSentAttributes); only the <c>issues</c> and
+    ///     <c>undeliverable</c> categories carry <c>reason</c>. This pins that the shared
+    ///     <see cref="WebhookEvent" /> model binds a delivered payload without loss.
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_WebhookDelivered_HasNoReason()
+    {
+        const string signingKey = "test-signing-key";
+        string payload = BuildPayloadForType("webhook_delivered")
+            .Replace("\"reason\": \"Printing failed\",", string.Empty);
+        string signature = ComputeHmacSha256(signingKey, payload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+
+        (WebhookEventData? webhookEventData, Data<Organisation>? organisationData, Data<Letter>? letterData,
+                Data<LetterEvent>? letterEventData) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => webhookEventData.ShouldNotBeNull(),
+            () => webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_delivered),
+            () => webhookEventData!.Attributes.Reason.ShouldBeNull(),
+            () => webhookEventData!.Attributes.CreatedAt.ShouldNotBeNull(),
+            () => organisationData.ShouldNotBeNull(),
+            () => letterData.ShouldNotBeNull(),
+            () => letterEventData.ShouldNotBeNull()
+        );
+    }
+
+    /// <summary>
+    ///     Verifies that a webhook_channel_subscriptions payload no longer throws on the type discriminator.
+    ///     The category has a different attribute surface and therefore no dedicated attributes model yet
+    ///     (it is allow-listed in <c>PingenApiDataTypeMappingTests.KnownUnmappedDataTypes</c>), but the enum
+    ///     value must exist so the JSON:API <c>type</c> deserializes rather than throwing.
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_WebhookChannelSubscriptionsType_DoesNotThrowOnDiscriminator()
+    {
+        const string signingKey = "test-signing-key";
+        string payload = BuildPayloadForType("webhook_channel_subscriptions");
+        string signature = ComputeHmacSha256(signingKey, payload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+
+        (WebhookEventData? webhookEventData, _, _, _) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldNotBeNull();
+        webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_channel_subscriptions);
     }
 
     private static string ComputeHmacSha256(string key, string data)

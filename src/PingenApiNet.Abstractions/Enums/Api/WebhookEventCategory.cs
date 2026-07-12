@@ -47,5 +47,18 @@ public enum WebhookEventCategory
     /// <summary>
     /// Event category Sent
     /// </summary>
-    sent
+    sent,
+
+    /// <summary>
+    /// Event category Delivered ("Delivered Sent Documents" in the Pingen app): events for letters
+    /// posted with delivery confirmation, e.g. registered mail. Webhook bodies carry the
+    /// <see cref="PingenApiDataType.webhook_delivered"/> type discriminator.
+    /// </summary>
+    delivered,
+
+    /// <summary>
+    /// Event category Channel subscriptions. Webhook bodies carry the
+    /// <see cref="PingenApiDataType.webhook_channel_subscriptions"/> type discriminator.
+    /// </summary>
+    channel_subscriptions
 }

@@ -317,7 +317,7 @@ public class PingenSerialisationHelperTests
     {
         Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
-        mapping.Count.ShouldBe(13);
+        mapping.Count.ShouldBe(14);
     }
 
     /// <summary>

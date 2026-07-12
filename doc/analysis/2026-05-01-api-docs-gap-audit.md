@@ -124,18 +124,35 @@ These constants drive `ApiRequest.Include`. Coverage is enforced by `IncludeHelp
 | Enum | File | Values | Status | Notes / Gaps |
 |---|---|---|---|---|
 | `PingenApiCurrency` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiCurrency.cs` | `EUR`, `CHF` | ❌ Gap (medium) | Line 46 carries `// TODO: Missing API Doc about currencies` — list is acknowledged as incomplete. The Pingen public API may accept additional currencies (typically `USD`, `GBP` as common payment currencies); add only the values Pingen actually documents to avoid divergence. Track in `#108`. |
-| `PingenApiDataType` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiDataType.cs` | 14 values: `letters`, `batches`, `organisations`, `letter_price_calculator`, `letters_events`, `users`, `associations`, `webhooks`, `file_uploads`, `webhook_issues`, `webhook_sent`, `webhook_undeliverable`, `delivery_products`, `presets` | ❌ Gap (high) | `presets` is enumerated and used in `LetterCreateRelationships.cs:56` and `BatchCreateRelationships.cs:56` to send a preset id, but no `Preset` model exists and the value is **not** registered in `PingenSerialisationHelper.PingenApiDataTypeMapping`. As a result, any Pingen response with `included.[].type == "presets"` will be **silently skipped** by `IncludedCollection.OfType<Preset>()` / `FindById<Preset>()`. The new `PingenApiDataTypeMappingTests` regression test surfaces this gap explicitly via the `KnownUnmappedDataTypes` allow-list. Track in `#106` (model + service) and `#108` (mapping wiring once `Preset` exists). |
-| `PingenApiDataTypeMapping` | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:109-124` | 13 entries | ❌ Gap (high, related) | Per-call allocation (`=> new { … }` getter) — flagged previously in `ai-readiness.md § 3.3` "allocates on every access". Trivial fix to `static readonly`. Track in `#108`. The completeness regression is now covered by `PingenApiDataTypeMappingTests` (this PR). |
+| `PingenApiDataType` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiDataType.cs` | 16 values: `letters`, `batches`, `organisations`, `letter_price_calculator`, `letters_events`, `users`, `associations`, `webhooks`, `file_uploads`, `webhook_issues`, `webhook_sent`, `webhook_undeliverable`, `webhook_delivered`, `webhook_channel_subscriptions`, `delivery_products`, `presets` | ❌ Gap (high) | `presets` is enumerated and used in `LetterCreateRelationships.cs:56` and `BatchCreateRelationships.cs:56` to send a preset id, but no `Preset` model exists and the value is **not** registered in `PingenSerialisationHelper.PingenApiDataTypeMapping`. As a result, any Pingen response with `included.[].type == "presets"` will be **silently skipped** by `IncludedCollection.OfType<Preset>()` / `FindById<Preset>()`. The new `PingenApiDataTypeMappingTests` regression test surfaces this gap explicitly via the `KnownUnmappedDataTypes` allow-list. Track in `#106` (model + service) and `#108` (mapping wiring once `Preset` exists). `webhook_channel_subscriptions` is likewise enumerated-but-unmapped — see the row below. |
+| `PingenApiDataTypeMapping` | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:109-124` | 14 entries | ❌ Gap (high, related) | Per-call allocation (`=> new { … }` getter) — flagged previously in `ai-readiness.md § 3.3` "allocates on every access". Trivial fix to `static readonly`. Track in `#108`. The completeness regression is now covered by `PingenApiDataTypeMappingTests` (this PR). |
+| `WebhookEventCategory` | `src/PingenApiNet.Abstractions/Enums/Api/WebhookEventCategory.cs` | 5 values: `issues`, `undeliverable`, `sent`, `delivered`, `channel_subscriptions` | ✅ Complete | Matches the `event_category` enum in the Pingen OpenAPI spec (`WebhookCreatePOST`) exactly, as confirmed against the live API's own validation error (`Possible values: issues, sent, undeliverable, delivered, channel_subscriptions`). `delivered` + `channel_subscriptions` were added alongside their `PingenApiDataType` discriminators. |
+| `webhook_channel_subscriptions` (unmapped) | `PingenSerialisationHelper.PingenApiDataTypeMapping` | — | ⚠️ Deliberate gap (low) | Per the spec, `WebhookChannelSubscriptionsAttributes` is `identifier`, `email`, `name`, `address`, `status`, `approved_at`, `url`, `created_at` — a **different** attribute surface from `WebhookEvent` (`reason`, `url`, `created_at`). Mapping it to `WebhookEvent` would be wrong, so no mapping is registered and the value is recorded in `KnownUnmappedDataTypes`. The enum value still exists so the JSON:API `type` discriminator **deserializes instead of throwing** (see the `webhook_delivered` regression below). A dedicated `WebhookChannelSubscription` attributes model + mapping entry is the follow-up if the category is ever consumed. |
 
 ### Reflection test coverage
 
 `tests/PingenApiNet.UnitTests/Tests/Helpers/PingenApiDataTypeMappingTests.cs` (new in this PR) asserts:
 
-1. Every `PingenApiDataType` enum value is either registered in `PingenApiDataTypeMapping` **or** explicitly listed in a `KnownUnmappedDataTypes` allow-list. The allow-list currently contains exactly `PingenApiDataType.presets` and is documented to track `#106` / `#108`.
+1. Every `PingenApiDataType` enum value is either registered in `PingenApiDataTypeMapping` **or** explicitly listed in a `KnownUnmappedDataTypes` allow-list. The allow-list contains `PingenApiDataType.presets` (tracking `#106` / `#108`) and `PingenApiDataType.webhook_channel_subscriptions` (no attributes model — see the enum table above).
 2. Every mapped CLR `Type` is non-null and implements `IAttributes` (so `IncludedCollection.OfType<T>` works).
 3. The allow-list does not drift from the enum: every entry must be a real enum value, and any value that gains a mapping must be removed from the allow-list (preventing the audit from going stale).
 
 Test confirmed RED-then-GREEN: with the allow-list emptied, the first assertion fails with `unmapped should be empty but had 1 item and was [PingenApiDataType.presets]`.
+
+### Addendum — the `webhook_delivered` outage class (an unknown `data.type` is fatal, not skippable)
+
+`IncludedCollection.OfType<T>()` is tolerant of an unknown `included[].type` (it `Enum.TryParse`s and `continue`s, so the resource is silently skipped — that is the "silent skip" gap above). **The top-level `data.type` is not.** It binds to `DataIdentity.Type`, a non-nullable `PingenApiDataType` carrying `[JsonConverter(typeof(JsonStringEnumConverter<PingenApiDataType>))]`, so an unrecognised discriminator **throws** `JsonException` out of `PingenSerialisationHelper.Deserialize<SingleResult<WebhookEventData>>` inside `PingenWebhookHelper.ValidateWebhookAndGetData` — *after* the HMAC signature has already validated.
+
+Reproduced against the published 1.2.5 with a spec-shaped `webhook_delivered` body:
+
+```
+JsonException: The JSON value could not be converted to
+PingenApiNet.Abstractions.Enums.Api.PingenApiDataType. Path: $.data.type
+```
+
+Consequence for consumers: a webhook subscription for a category whose discriminator the library does not know returns HTTP 5xx/422 for **every** delivery, Pingen retries and then permanently drops the event. This is why enumerating a new `data.type` is required even when no attributes model is bound for it (`webhook_channel_subscriptions`) — the enum value alone is what keeps deserialization from throwing.
+
+Regression coverage: `PingenWebhookHelperTests.ValidateWebhookAndGetData_WebhookDeliveredType_DeserializesCorrectly`, `…_WebhookDelivered_HasNoReason`, `…_WebhookChannelSubscriptionsType_DoesNotThrowOnDiscriminator`, plus `webhook_delivered` in the `ForAllEventTypes` matrix.
 
 ---
 

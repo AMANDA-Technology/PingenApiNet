@@ -240,7 +240,7 @@ public class AllEnumsSerializationTests
         Enum.GetValues<CollectionSortDirection>().Length.ShouldBe(2);
 
     // -------------------------------------------------------------------
-    // Section G: WebhookEventCategory (real enum, 3 values)
+    // Section G: WebhookEventCategory (real enum, 5 values)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -251,6 +251,8 @@ public class AllEnumsSerializationTests
     [TestCase(WebhookEventCategory.issues, "\"issues\"")]
     [TestCase(WebhookEventCategory.undeliverable, "\"undeliverable\"")]
     [TestCase(WebhookEventCategory.sent, "\"sent\"")]
+    [TestCase(WebhookEventCategory.delivered, "\"delivered\"")]
+    [TestCase(WebhookEventCategory.channel_subscriptions, "\"channel_subscriptions\"")]
     public void WebhookEventCategory_Serializes(WebhookEventCategory value, string expectedJson) =>
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 
@@ -262,6 +264,8 @@ public class AllEnumsSerializationTests
     [TestCase("\"issues\"", WebhookEventCategory.issues)]
     [TestCase("\"undeliverable\"", WebhookEventCategory.undeliverable)]
     [TestCase("\"sent\"", WebhookEventCategory.sent)]
+    [TestCase("\"delivered\"", WebhookEventCategory.delivered)]
+    [TestCase("\"channel_subscriptions\"", WebhookEventCategory.channel_subscriptions)]
     public void WebhookEventCategory_Deserializes(string json, WebhookEventCategory expected) =>
         PingenSerialisationHelper.Deserialize<WebhookEventCategory>(json).ShouldBe(expected);
 
@@ -269,7 +273,7 @@ public class AllEnumsSerializationTests
     ///     Sentinel: fails if a new <see cref="WebhookEventCategory" /> value is added without updating the cases above.
     /// </summary>
     [Test]
-    public void WebhookEventCategory_AllValuesAreCovered() => Enum.GetValues<WebhookEventCategory>().Length.ShouldBe(3);
+    public void WebhookEventCategory_AllValuesAreCovered() => Enum.GetValues<WebhookEventCategory>().Length.ShouldBe(5);
 
     // -------------------------------------------------------------------
     // Section H: PingenApiAbility (real enum, 3 values)
@@ -339,7 +343,7 @@ public class AllEnumsSerializationTests
     public void PingenApiCurrency_AllValuesAreCovered() => Enum.GetValues<PingenApiCurrency>().Length.ShouldBe(4);
 
     // -------------------------------------------------------------------
-    // Section J: PingenApiDataType (real enum, 14 values, snake_case identifiers)
+    // Section J: PingenApiDataType (real enum, 16 values, snake_case identifiers)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -359,6 +363,8 @@ public class AllEnumsSerializationTests
     [TestCase(PingenApiDataType.webhook_issues, "\"webhook_issues\"")]
     [TestCase(PingenApiDataType.webhook_sent, "\"webhook_sent\"")]
     [TestCase(PingenApiDataType.webhook_undeliverable, "\"webhook_undeliverable\"")]
+    [TestCase(PingenApiDataType.webhook_delivered, "\"webhook_delivered\"")]
+    [TestCase(PingenApiDataType.webhook_channel_subscriptions, "\"webhook_channel_subscriptions\"")]
     [TestCase(PingenApiDataType.delivery_products, "\"delivery_products\"")]
     [TestCase(PingenApiDataType.presets, "\"presets\"")]
     public void PingenApiDataType_Serializes(PingenApiDataType value, string expectedJson) =>
@@ -381,6 +387,8 @@ public class AllEnumsSerializationTests
     [TestCase("\"webhook_issues\"", PingenApiDataType.webhook_issues)]
     [TestCase("\"webhook_sent\"", PingenApiDataType.webhook_sent)]
     [TestCase("\"webhook_undeliverable\"", PingenApiDataType.webhook_undeliverable)]
+    [TestCase("\"webhook_delivered\"", PingenApiDataType.webhook_delivered)]
+    [TestCase("\"webhook_channel_subscriptions\"", PingenApiDataType.webhook_channel_subscriptions)]
     [TestCase("\"delivery_products\"", PingenApiDataType.delivery_products)]
     [TestCase("\"presets\"", PingenApiDataType.presets)]
     public void PingenApiDataType_Deserializes(string json, PingenApiDataType expected) =>
@@ -390,7 +398,7 @@ public class AllEnumsSerializationTests
     ///     Sentinel: fails if a new <see cref="PingenApiDataType" /> value is added without updating the cases above.
     /// </summary>
     [Test]
-    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(14);
+    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(16);
 
     // -------------------------------------------------------------------
     // Section K: CollectionFilterOperator (static class of const string, 2 constants)

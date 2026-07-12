@@ -96,6 +96,24 @@ public enum PingenApiDataType
     webhook_undeliverable,
 
     /// <summary>
+    /// Data type webhook_delivered. Sent for the <c>delivered</c> webhook event category
+    /// ("Delivered Sent Documents": letters posted with delivery confirmation, e.g. registered mail).
+    /// Its attributes are <c>url</c> + <c>created_at</c> only — identical to <c>webhook_sent</c> —
+    /// so it binds to the shared <c>WebhookEvent</c> model with a null <c>Reason</c>.
+    /// </summary>
+    webhook_delivered,
+
+    /// <summary>
+    /// Data type webhook_channel_subscriptions. Sent for the <c>channel_subscriptions</c> webhook event category.
+    /// Carries a different attribute surface (<c>identifier</c>, <c>email</c>, <c>name</c>, <c>address</c>,
+    /// <c>status</c>, <c>approved_at</c>, <c>url</c>, <c>created_at</c>), so it does NOT bind to
+    /// <c>WebhookEvent</c> and is intentionally absent from
+    /// <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c> until a dedicated attributes model exists.
+    /// The value is enumerated so the JSON:API <c>type</c> discriminator deserializes instead of throwing.
+    /// </summary>
+    webhook_channel_subscriptions,
+
+    /// <summary>
     /// Data type delivery products
     /// </summary>
     delivery_products,

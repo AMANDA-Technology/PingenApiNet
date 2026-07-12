@@ -43,7 +43,11 @@ public class PingenApiDataTypeMappingTests
     ///     and a corresponding sub-issue (#106 / #107 / #108 / #110) so the gap is not forgotten.
     ///     Adding to this allow-list is a deliberate policy decision; do not extend it without updating the audit document.
     /// </summary>
-    private static readonly HashSet<PingenApiDataType> KnownUnmappedDataTypes = [PingenApiDataType.presets];
+    private static readonly HashSet<PingenApiDataType> KnownUnmappedDataTypes =
+    [
+        PingenApiDataType.presets,
+        PingenApiDataType.webhook_channel_subscriptions
+    ];
 
     /// <summary>
     ///     Asserts every <see cref="PingenApiDataType" /> enum value is either registered in the mapping
