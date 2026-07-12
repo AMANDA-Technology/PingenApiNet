@@ -32,91 +32,80 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API data type to identify the kind of data transported in requests
 /// </summary>
+/// <remarks>
+/// The numeric values are part of the public ABI of the <c>PingenApiNet.Abstractions</c> NuGet package:
+/// C# inlines enum constants into consumer IL, so renumbering an existing member silently changes its
+/// meaning for any consumer assembly that is not recompiled. Every member therefore carries an explicit
+/// value, and new members must take the next free number — never insert into or reorder the existing ones.
+/// The wire format is unaffected either way (<see cref="JsonStringEnumConverter{TEnum}" /> serializes by name).
+/// </remarks>
 [JsonConverter(typeof(JsonStringEnumConverter<PingenApiDataType>))]
 public enum PingenApiDataType
 {
     /// <summary>
     /// Data type letters
     /// </summary>
-    letters,
+    letters = 0,
 
     /// <summary>
     /// Data type batches
     /// </summary>
-    batches,
+    batches = 1,
 
     /// <summary>
     /// Data type organisations
     /// </summary>
-    organisations,
+    organisations = 2,
 
     /// <summary>
     /// Data type letter_price_calculator
     /// </summary>
-    letter_price_calculator,
+    letter_price_calculator = 3,
 
     /// <summary>
     /// Data type letters_events
     /// </summary>
-    letters_events,
+    letters_events = 4,
 
     /// <summary>
     /// Data type users
     /// </summary>
-    users,
+    users = 5,
 
     /// <summary>
     /// Data type associations
     /// </summary>
-    associations,
+    associations = 6,
 
     /// <summary>
     /// Data type webhooks
     /// </summary>
-    webhooks,
+    webhooks = 7,
 
     /// <summary>
     /// Data type file_uploads
     /// </summary>
-    file_uploads,
+    file_uploads = 8,
 
     /// <summary>
     /// Data type webhook_issues
     /// </summary>
-    webhook_issues,
+    webhook_issues = 9,
 
     /// <summary>
     /// Data type webhook_sent
     /// </summary>
-    webhook_sent,
+    webhook_sent = 10,
 
     /// <summary>
     /// Data type webhook_undeliverable
     /// </summary>
-    webhook_undeliverable,
-
-    /// <summary>
-    /// Data type webhook_delivered. Sent for the <c>delivered</c> webhook event category
-    /// ("Delivered Sent Documents": letters posted with delivery confirmation, e.g. registered mail).
-    /// Its attributes are <c>url</c> + <c>created_at</c> only — identical to <c>webhook_sent</c> —
-    /// so it binds to the shared <c>WebhookEvent</c> model with a null <c>Reason</c>.
-    /// </summary>
-    webhook_delivered,
-
-    /// <summary>
-    /// Data type webhook_channel_subscriptions. Sent for the <c>channel_subscriptions</c> webhook event category.
-    /// Carries a different attribute surface (<c>identifier</c>, <c>email</c>, <c>name</c>, <c>address</c>,
-    /// <c>status</c>, <c>approved_at</c>, <c>url</c>, <c>created_at</c>), so it does NOT bind to
-    /// <c>WebhookEvent</c> and is intentionally absent from
-    /// <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c> until a dedicated attributes model exists.
-    /// The value is enumerated so the JSON:API <c>type</c> discriminator deserializes instead of throwing.
-    /// </summary>
-    webhook_channel_subscriptions,
+    webhook_undeliverable = 11,
 
     /// <summary>
     /// Data type delivery products
     /// </summary>
-    delivery_products,
+    delivery_products = 12,
 
     /// <summary>
     /// Data type presets. Used as the JSON:API <c>type</c> discriminator on relationship
@@ -124,5 +113,13 @@ public enum PingenApiDataType
     /// No <c>Preset</c> attributes model is currently bound, so this value is intentionally
     /// absent from <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c>.
     /// </summary>
-    presets
+    presets = 13,
+
+    /// <summary>
+    /// Data type webhook_delivered. Sent for the <c>delivered</c> webhook event category
+    /// ("Delivered Sent Documents": letters posted with delivery confirmation, e.g. registered mail).
+    /// Its attributes are <c>url</c> + <c>created_at</c> only — identical to <c>webhook_sent</c> —
+    /// so it binds to the shared <c>WebhookEvent</c> model with a null <c>Reason</c>.
+    /// </summary>
+    webhook_delivered = 14
 }

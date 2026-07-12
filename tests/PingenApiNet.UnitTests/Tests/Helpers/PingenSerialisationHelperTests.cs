@@ -331,7 +331,8 @@ public class PingenSerialisationHelperTests
         mapping.ShouldSatisfyAllConditions(
             () => mapping[PingenApiDataType.webhook_issues].ShouldBe(typeof(WebhookEvent)),
             () => mapping[PingenApiDataType.webhook_sent].ShouldBe(typeof(WebhookEvent)),
-            () => mapping[PingenApiDataType.webhook_undeliverable].ShouldBe(typeof(WebhookEvent))
+            () => mapping[PingenApiDataType.webhook_undeliverable].ShouldBe(typeof(WebhookEvent)),
+            () => mapping[PingenApiDataType.webhook_delivered].ShouldBe(typeof(WebhookEvent))
         );
     }
 
