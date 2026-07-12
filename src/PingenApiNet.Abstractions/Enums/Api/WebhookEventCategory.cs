@@ -31,21 +31,37 @@ namespace PingenApiNet.Abstractions.Enums.Api;
 /// <summary>
 /// Pingen API webhook event category
 /// </summary>
+/// <remarks>
+/// Only categories this library can bind to an attributes model are enumerated. The API additionally
+/// documents <c>channel_subscriptions</c>, whose webhook body has a different attribute surface
+/// (<c>identifier</c>, <c>email</c>, <c>name</c>, <c>address</c>, <c>status</c>, <c>approved_at</c>, …) and
+/// different relationships (<c>organisation</c> + <c>channel_ebill</c>, no <c>letter</c>). It is deliberately
+/// omitted until a dedicated <c>WebhookChannelSubscription</c> model exists — subscribing to it today would
+/// bind a body this library cannot represent. See <c>doc/analysis/2026-05-01-api-docs-gap-audit.md</c>.
+/// As with <see cref="PingenApiDataType" />, the numeric values are public ABI: append only, never insert.
+/// </remarks>
 [JsonConverter(typeof(JsonStringEnumConverter<WebhookEventCategory>))]
 public enum WebhookEventCategory
 {
     /// <summary>
     /// Event category Issues
     /// </summary>
-    issues,
+    issues = 0,
 
     /// <summary>
     /// Event category Undeliverable
     /// </summary>
-    undeliverable,
+    undeliverable = 1,
 
     /// <summary>
     /// Event category Sent
     /// </summary>
-    sent
+    sent = 2,
+
+    /// <summary>
+    /// Event category Delivered ("Delivered Sent Documents" in the Pingen app): events for letters
+    /// posted with delivery confirmation, e.g. registered mail. Webhook bodies carry the
+    /// <see cref="PingenApiDataType.webhook_delivered"/> type discriminator.
+    /// </summary>
+    delivered = 3
 }

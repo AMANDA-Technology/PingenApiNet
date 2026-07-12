@@ -20,6 +20,15 @@ public class PingenWebhookHelperTests
         File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "Assets", "webhook_sample.json"));
 
     /// <summary>
+    ///     A real <c>webhook_delivered</c> body as Pingen sends it: attributes are <c>url</c> + <c>created_at</c>
+    ///     only (no <c>reason</c>), relationships are organisation + letter + event. Kept as its own asset rather
+    ///     than derived from <see cref="SamplePayload" /> by swapping the type string, so the test exercises the
+    ///     payload shape the API actually produces.
+    /// </summary>
+    private static readonly string DeliveredPayload =
+        File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "Assets", "webhook_delivered_sample.json"));
+
+    /// <summary>
     ///     Verifies that ValidateWebhook returns true for a valid signature
     /// </summary>
     [Test]
@@ -193,6 +202,7 @@ public class PingenWebhookHelperTests
     [TestCase("webhook_issues")]
     [TestCase("webhook_sent")]
     [TestCase("webhook_undeliverable")]
+    [TestCase("webhook_delivered")]
     public async Task ValidateWebhookAndGetData_AllIncludedRelationshipsResolved_ForAllEventTypes(string apiDataType)
     {
         const string signingKey = "test-signing-key";
@@ -246,6 +256,45 @@ public class PingenWebhookHelperTests
 
         webhookEventData.ShouldNotBeNull();
         webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_undeliverable);
+    }
+
+    /// <summary>
+    ///     Verifies that a real, spec-shaped webhook_delivered payload deserializes end to end.
+    ///     Regression test for the outage this fixes: before <c>webhook_delivered</c> was added to
+    ///     <see cref="PingenApiDataType" />, the unknown discriminator made <c>JsonStringEnumConverter</c> throw a
+    ///     <see cref="JsonException" /> inside ValidateWebhookAndGetData — <em>after</em> signature validation had
+    ///     already passed — so every "delivered" webhook failed and Pingen eventually dead-lettered it.
+    ///     This uses <c>Assets/webhook_delivered_sample.json</c> (the real body shape) rather than a
+    ///     type-swapped webhook_issues body, so it also pins the attribute and relationship surface:
+    ///     per the Pingen OpenAPI spec, WebhookDeliveredAttributes is <c>url</c> + <c>created_at</c> only
+    ///     (identical to WebhookSentAttributes — only <c>issues</c> and <c>undeliverable</c> carry
+    ///     <c>reason</c>), and the relationships are organisation + letter + event. The shared
+    ///     <see cref="WebhookEvent" /> model therefore binds it without loss, with a null <c>Reason</c>.
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_WebhookDeliveredPayload_DeserializesWithoutLoss()
+    {
+        const string signingKey = "test-signing-key";
+        string signature = ComputeHmacSha256(signingKey, DeliveredPayload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(DeliveredPayload));
+
+        (WebhookEventData? webhookEventData, Data<Organisation>? organisationData, Data<Letter>? letterData,
+                Data<LetterEvent>? letterEventData) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => webhookEventData.ShouldNotBeNull(),
+            () => webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_delivered),
+            () => webhookEventData!.Attributes.Reason.ShouldBeNull(),
+            () => webhookEventData!.Attributes.Url.ShouldNotBeNull(),
+            () => webhookEventData!.Attributes.CreatedAt.ShouldNotBeNull(),
+            () => webhookEventData!.Relationships.Organisation.Data.Type.ShouldBe(PingenApiDataType.organisations),
+            () => webhookEventData!.Relationships.Letter.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Event.Data.Type.ShouldBe(PingenApiDataType.letters_events),
+            () => organisationData.ShouldNotBeNull(),
+            () => letterData.ShouldNotBeNull(),
+            () => letterEventData.ShouldNotBeNull()
+        );
     }
 
     private static string ComputeHmacSha256(string key, string data)

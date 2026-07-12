@@ -1,0 +1,109 @@
+{
+  "data": {
+    "type": "webhook_delivered",
+    "id": "9f1c6ee0-2ad1-4a1a-9f7e-1c2b3d4e5f60",
+    "attributes": {
+      "url": "https:\/\/webhook.site\/66fc5913-5d2f-40f2-b2c5-7a58f9b64d8f",
+      "created_at": "2026-06-18T14:22:41+0200"
+    },
+    "relationships": {
+      "organisation": {
+        "links": {
+          "related": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+        },
+        "data": {
+          "type": "organisations",
+          "id": "ed247161-6368-4278-abc7-32158472dc50"
+        }
+      },
+      "letter": {
+        "links": {
+          "related": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/letters\/6c0a9d1e-4f2b-42d7-8f0c-6b7a8c9d0e1f"
+        },
+        "data": {
+          "type": "letters",
+          "id": "6c0a9d1e-4f2b-42d7-8f0c-6b7a8c9d0e1f"
+        }
+      },
+      "event": {
+        "data": {
+          "type": "letters_events",
+          "id": "b3d5f7a9-1c2e-4a6b-8d0f-2e4a6c8e0a2c"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "organisations",
+      "id": "ed247161-6368-4278-abc7-32158472dc50",
+      "attributes": {
+        "name": "AMANDA Technology GmbH",
+        "status": "active",
+        "plan": "free",
+        "billing_mode": "prepaid",
+        "billing_currency": "CHF",
+        "billing_balance": 199996.35,
+        "default_country": "CH",
+        "default_address_position": "left",
+        "data_retention_addresses": 6,
+        "data_retention_pdf": 1,
+        "color": "#0758FF",
+        "created_at": "2022-11-20T20:33:23+0100",
+        "updated_at": "2026-06-18T14:22:41+0200"
+      },
+      "links": {
+        "self": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+      }
+    },
+    {
+      "type": "letters",
+      "id": "6c0a9d1e-4f2b-42d7-8f0c-6b7a8c9d0e1f",
+      "attributes": {
+        "status": "sent",
+        "file_original_name": "sample_registered.pdf",
+        "file_pages": 2,
+        "address": "herr\nmanuel gysin\nsolecht 42\n3303 jegenstorf\nschweiz",
+        "address_position": "left",
+        "country": "CH",
+        "delivery_product": "postag_registered",
+        "print_mode": "simplex",
+        "print_spectrum": "grayscale",
+        "price_currency": "CHF",
+        "price_value": 8.55,
+        "paper_types": [
+          "normal",
+          "qr"
+        ],
+        "fonts": [
+          {
+            "name": "Verdana",
+            "is_embedded": true
+          }
+        ],
+        "tracking_number": "98.34.123456.78901234",
+        "submitted_at": "2026-06-15T08:11:02+0200",
+        "created_at": "2026-06-15T08:10:44+0200",
+        "updated_at": "2026-06-18T14:22:41+0200"
+      },
+      "links": {
+        "self": "https:\/\/identity-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/letters\/6c0a9d1e-4f2b-42d7-8f0c-6b7a8c9d0e1f"
+      }
+    },
+    {
+      "type": "letters_events",
+      "id": "b3d5f7a9-1c2e-4a6b-8d0f-2e4a6c8e0a2c",
+      "attributes": {
+        "code": "delivered",
+        "name": "Delivered",
+        "producer": "Post CH AG",
+        "location": "3303 Jegenstorf",
+        "has_image": true,
+        "data": [],
+        "emitted_at": "2026-06-18T14:20:00+0200",
+        "created_at": "2026-06-18T14:22:41+0200",
+        "updated_at": "2026-06-18T14:22:41+0200"
+      }
+    }
+  ]
+}

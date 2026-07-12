@@ -127,6 +127,7 @@ public static class PingenSerialisationHelper
         [PingenApiDataType.webhook_issues] = typeof(WebhookEvent),
         [PingenApiDataType.webhook_sent] = typeof(WebhookEvent),
         [PingenApiDataType.webhook_undeliverable] = typeof(WebhookEvent),
+        [PingenApiDataType.webhook_delivered] = typeof(WebhookEvent),
         [PingenApiDataType.delivery_products] = typeof(DeliveryProduct)
     };
 

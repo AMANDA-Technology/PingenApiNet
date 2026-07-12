@@ -197,6 +197,10 @@ private async Task<(WebhookEventData WebhookEventData, Data<Organisation> Organi
 }
 ```
 
+Supported event categories are `issues`, `undeliverable`, `sent` and `delivered` (`WebhookEventCategory`). All four deliver a `WebhookEventData` carrying the organisation, letter and letter-event relationships; only `issues` and `undeliverable` populate `Reason`.
+
+> Pingen also documents a `channel_subscriptions` category. Its webhook body has a different shape (no `letter` relationship, and attributes this library does not model), so it is deliberately **not** supported — see `doc/analysis/2026-05-01-api-docs-gap-audit.md`. Do not create such a subscription for an endpoint backed by `PingenWebhookHelper`.
+
 #### 7. Using the include parameter
 
 Request related resources to be sideloaded in the response using the `Include` property on `ApiRequest` / `ApiPagingRequest`. Each resource type has a corresponding static `*Includes` class with discoverable constants.
@@ -262,6 +266,6 @@ var result = await _pingenApiClient.Letters.GetPage(new ApiPagingRequest
 | `UserAssociationFields` | `PingenApiDataType.associations` | `Role`, `Status`, `CreatedAt`, `UpdatedAt` |
 | `WebhookFields` | `PingenApiDataType.webhooks` | `EventCategory`, `Url`, `SigningKey` |
 | `LetterEventFields` | `PingenApiDataType.letters_events` | `Code`, `Name`, `Producer`, `Location`, `HasImage`, `Data`, `EmittedAt`, `CreatedAt`, `UpdatedAt` |
-| `WebhookEventFields` | `PingenApiDataType.webhook_issues` / `webhook_sent` / `webhook_undeliverable` | `Reason`, `Url`, `CreatedAt` |
+| `WebhookEventFields` | `PingenApiDataType.webhook_issues` / `webhook_sent` / `webhook_undeliverable` / `webhook_delivered` | `Reason`, `Url`, `CreatedAt` |
 | `DeliveryProductFields` | `PingenApiDataType.delivery_products` | `Countries`, `Name`, `FullName`, `DeliveryTimeDays`, `Features`, `PriceCurrency`, `PriceStartingFrom` |
 | `LetterPriceFields` | `PingenApiDataType.letter_price_calculator` | `Currency`, `Price` |

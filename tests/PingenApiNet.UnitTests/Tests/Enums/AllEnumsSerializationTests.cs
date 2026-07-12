@@ -240,7 +240,7 @@ public class AllEnumsSerializationTests
         Enum.GetValues<CollectionSortDirection>().Length.ShouldBe(2);
 
     // -------------------------------------------------------------------
-    // Section G: WebhookEventCategory (real enum, 3 values)
+    // Section G: WebhookEventCategory (real enum, 4 values)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -251,6 +251,7 @@ public class AllEnumsSerializationTests
     [TestCase(WebhookEventCategory.issues, "\"issues\"")]
     [TestCase(WebhookEventCategory.undeliverable, "\"undeliverable\"")]
     [TestCase(WebhookEventCategory.sent, "\"sent\"")]
+    [TestCase(WebhookEventCategory.delivered, "\"delivered\"")]
     public void WebhookEventCategory_Serializes(WebhookEventCategory value, string expectedJson) =>
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 
@@ -262,6 +263,7 @@ public class AllEnumsSerializationTests
     [TestCase("\"issues\"", WebhookEventCategory.issues)]
     [TestCase("\"undeliverable\"", WebhookEventCategory.undeliverable)]
     [TestCase("\"sent\"", WebhookEventCategory.sent)]
+    [TestCase("\"delivered\"", WebhookEventCategory.delivered)]
     public void WebhookEventCategory_Deserializes(string json, WebhookEventCategory expected) =>
         PingenSerialisationHelper.Deserialize<WebhookEventCategory>(json).ShouldBe(expected);
 
@@ -269,7 +271,24 @@ public class AllEnumsSerializationTests
     ///     Sentinel: fails if a new <see cref="WebhookEventCategory" /> value is added without updating the cases above.
     /// </summary>
     [Test]
-    public void WebhookEventCategory_AllValuesAreCovered() => Enum.GetValues<WebhookEventCategory>().Length.ShouldBe(3);
+    public void WebhookEventCategory_AllValuesAreCovered() => Enum.GetValues<WebhookEventCategory>().Length.ShouldBe(4);
+
+    /// <summary>
+    ///     Pins the numeric values of <see cref="WebhookEventCategory" />. They are part of the published ABI —
+    ///     C# inlines enum constants into consumer IL, so renumbering an existing member silently changes its
+    ///     meaning for any consumer assembly that is not recompiled. New members must append.
+    /// </summary>
+    [Test]
+    public void WebhookEventCategory_OrdinalsAreStable() =>
+        Enum.GetValues<WebhookEventCategory>()
+            .ToDictionary(v => v.ToString(), v => (int) v)
+            .ShouldBe(new Dictionary<string, int>
+            {
+                ["issues"] = 0,
+                ["undeliverable"] = 1,
+                ["sent"] = 2,
+                ["delivered"] = 3
+            });
 
     // -------------------------------------------------------------------
     // Section H: PingenApiAbility (real enum, 3 values)
@@ -339,7 +358,7 @@ public class AllEnumsSerializationTests
     public void PingenApiCurrency_AllValuesAreCovered() => Enum.GetValues<PingenApiCurrency>().Length.ShouldBe(4);
 
     // -------------------------------------------------------------------
-    // Section J: PingenApiDataType (real enum, 14 values, snake_case identifiers)
+    // Section J: PingenApiDataType (real enum, 15 values, snake_case identifiers)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -359,6 +378,7 @@ public class AllEnumsSerializationTests
     [TestCase(PingenApiDataType.webhook_issues, "\"webhook_issues\"")]
     [TestCase(PingenApiDataType.webhook_sent, "\"webhook_sent\"")]
     [TestCase(PingenApiDataType.webhook_undeliverable, "\"webhook_undeliverable\"")]
+    [TestCase(PingenApiDataType.webhook_delivered, "\"webhook_delivered\"")]
     [TestCase(PingenApiDataType.delivery_products, "\"delivery_products\"")]
     [TestCase(PingenApiDataType.presets, "\"presets\"")]
     public void PingenApiDataType_Serializes(PingenApiDataType value, string expectedJson) =>
@@ -381,6 +401,7 @@ public class AllEnumsSerializationTests
     [TestCase("\"webhook_issues\"", PingenApiDataType.webhook_issues)]
     [TestCase("\"webhook_sent\"", PingenApiDataType.webhook_sent)]
     [TestCase("\"webhook_undeliverable\"", PingenApiDataType.webhook_undeliverable)]
+    [TestCase("\"webhook_delivered\"", PingenApiDataType.webhook_delivered)]
     [TestCase("\"delivery_products\"", PingenApiDataType.delivery_products)]
     [TestCase("\"presets\"", PingenApiDataType.presets)]
     public void PingenApiDataType_Deserializes(string json, PingenApiDataType expected) =>
@@ -390,7 +411,37 @@ public class AllEnumsSerializationTests
     ///     Sentinel: fails if a new <see cref="PingenApiDataType" /> value is added without updating the cases above.
     /// </summary>
     [Test]
-    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(14);
+    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(15);
+
+    /// <summary>
+    ///     Pins the numeric values of <see cref="PingenApiDataType" />. They are part of the published ABI —
+    ///     C# inlines enum constants into consumer IL, so inserting a member mid-enum silently reinterprets every
+    ///     member after it for any consumer assembly that is not recompiled (e.g. a wrapper package compiled
+    ///     against an older release, or a value persisted as an int). New members must take the next free number;
+    ///     this test fails if an existing one is ever renumbered.
+    /// </summary>
+    [Test]
+    public void PingenApiDataType_OrdinalsAreStable() =>
+        Enum.GetValues<PingenApiDataType>()
+            .ToDictionary(v => v.ToString(), v => (int) v)
+            .ShouldBe(new Dictionary<string, int>
+            {
+                ["letters"] = 0,
+                ["batches"] = 1,
+                ["organisations"] = 2,
+                ["letter_price_calculator"] = 3,
+                ["letters_events"] = 4,
+                ["users"] = 5,
+                ["associations"] = 6,
+                ["webhooks"] = 7,
+                ["file_uploads"] = 8,
+                ["webhook_issues"] = 9,
+                ["webhook_sent"] = 10,
+                ["webhook_undeliverable"] = 11,
+                ["delivery_products"] = 12,
+                ["presets"] = 13,
+                ["webhook_delivered"] = 14
+            });
 
     // -------------------------------------------------------------------
     // Section K: CollectionFilterOperator (static class of const string, 2 constants)
