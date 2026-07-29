@@ -48,14 +48,14 @@ public sealed class PaginationTests : IntegrationTestBase
     public async Task GetPageResultsAsync_EmptyFirstPage_ShouldYieldNoItemsAndStopAfterOneCall()
     {
         Server.StubJsonGet(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             PingenResponseFactory.LetterCollection(0, currentPage: 1, lastPage: 1));
 
         var allItems = new List<LetterData>();
         await foreach (IEnumerable<LetterData> page in Client.Letters.GetPageResultsAsync()) allItems.AddRange(page);
 
         allItems.ShouldBeEmpty();
-        Server.VerifyCalled(OrgPath("letters"));
+        Server.VerifyCalled(OrgPath("deliveries/letters"));
     }
 
     /// <summary>
@@ -66,14 +66,14 @@ public sealed class PaginationTests : IntegrationTestBase
     public async Task GetPageResultsAsync_SinglePage_ShouldYieldAllItemsAndStopAfterOneCall()
     {
         Server.StubJsonGet(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             PingenResponseFactory.LetterCollection());
 
         var allItems = new List<LetterData>();
         await foreach (IEnumerable<LetterData> page in Client.Letters.GetPageResultsAsync()) allItems.AddRange(page);
 
         allItems.Count.ShouldBe(3);
-        Server.VerifyCalled(OrgPath("letters"));
+        Server.VerifyCalled(OrgPath("deliveries/letters"));
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public sealed class PaginationTests : IntegrationTestBase
         const string scenario = "letters-multi-page";
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WillSetStateTo("page2")
             .RespondWith(Response.Create()
@@ -96,7 +96,7 @@ public sealed class PaginationTests : IntegrationTestBase
                 .WithBody(PingenResponseFactory.LetterCollection(2, currentPage: 1, lastPage: 3)));
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WhenStateIs("page2")
             .WillSetStateTo("page3")
@@ -107,7 +107,7 @@ public sealed class PaginationTests : IntegrationTestBase
                 .WithBody(PingenResponseFactory.LetterCollection(2, currentPage: 2, lastPage: 3)));
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WhenStateIs("page3")
             .RespondWith(Response.Create()
@@ -126,7 +126,7 @@ public sealed class PaginationTests : IntegrationTestBase
 
         pageCount.ShouldBe(3);
         allItems.Count.ShouldBe(5);
-        Server.VerifyCalled(OrgPath("letters"), times: 3);
+        Server.VerifyCalled(OrgPath("deliveries/letters"), times: 3);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public sealed class PaginationTests : IntegrationTestBase
         const int perPage = 5;
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WillSetStateTo("page2")
             .RespondWith(Response.Create()
@@ -153,7 +153,7 @@ public sealed class PaginationTests : IntegrationTestBase
                     lastPage: 2)));
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WhenStateIs("page2")
             .RespondWith(Response.Create()
@@ -169,7 +169,7 @@ public sealed class PaginationTests : IntegrationTestBase
         await foreach (IEnumerable<LetterData> page in Client.Letters.GetPageResultsAsync()) allItems.AddRange(page);
 
         allItems.Count.ShouldBe(perPage * 2);
-        Server.VerifyCalled(OrgPath("letters"), times: 2);
+        Server.VerifyCalled(OrgPath("deliveries/letters"), times: 2);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public sealed class PaginationTests : IntegrationTestBase
         const string scenario = "letters-from-middle";
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WillSetStateTo("nextPage")
             .RespondWith(Response.Create()
@@ -192,7 +192,7 @@ public sealed class PaginationTests : IntegrationTestBase
                 .WithBody(PingenResponseFactory.LetterCollection(2, currentPage: 2, lastPage: 3)));
 
         Server
-            .Given(Request.Create().WithPath(OrgPath("letters")).UsingGet())
+            .Given(Request.Create().WithPath(OrgPath("deliveries/letters")).UsingGet())
             .InScenario(scenario)
             .WhenStateIs("nextPage")
             .RespondWith(Response.Create()
@@ -207,6 +207,6 @@ public sealed class PaginationTests : IntegrationTestBase
             allItems.AddRange(page);
 
         allItems.Count.ShouldBe(4);
-        Server.VerifyCalled(OrgPath("letters"), times: 2);
+        Server.VerifyCalled(OrgPath("deliveries/letters"), times: 2);
     }
 }

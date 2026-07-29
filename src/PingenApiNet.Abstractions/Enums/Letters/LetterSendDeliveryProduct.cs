@@ -28,6 +28,20 @@ namespace PingenApiNet.Abstractions.Enums.Letters;
 /// <summary>
 /// Letter delivery product to be used at Letters/Send endpoint. <see href="https://api.pingen.com/documentation#tag/letters.general/operation/letters.show">API Doc - Letter details</see>
 /// <br/>NOTE: This list is adjusted from what delivery products are available on pingen. API Doc seems to be wrong.
+/// <para>
+/// Re-verified 2026-07-29 and the note still holds. The spec constrains <c>delivery_product</c> to the five
+/// generic tiers on both <c>LetterAttributes</c> and <c>LetterSendPATCH</c>
+/// (see <see cref="LetterCreateDeliveryProduct"/>), and none of the carrier-specific ids below appear
+/// anywhere in it. The live API nonetheless <b>returns</b> them — a captured webhook body carries
+/// <c>"delivery_product": "postag_b"</c>. The values here are observed from the product, like
+/// <see cref="LetterStates"/>.
+/// </para>
+/// <para>
+/// This is why <c>Letter.DeliveryProduct</c>, <c>LetterCreate.DeliveryProduct</c> and
+/// <c>LetterSend.DeliveryProduct</c> are all plain <c>string</c> and these are <c>const string</c> helpers
+/// rather than a C# enum. Binding a strict enum here would make every response carrying a carrier id
+/// unparseable — the exact failure that took webhooks down on 2026-07-27. Do not "tighten" it.
+/// </para>
 /// </summary>
 public static class LetterSendDeliveryProduct
 {

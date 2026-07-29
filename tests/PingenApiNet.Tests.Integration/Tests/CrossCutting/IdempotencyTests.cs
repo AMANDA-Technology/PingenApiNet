@@ -103,14 +103,14 @@ public sealed class IdempotencyTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
         string idempotencyKey = Guid.NewGuid().ToString();
 
-        Server.StubJsonPost(OrgPath("letters"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPost(OrgPath("deliveries/letters"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPost<LetterCreate, LetterCreateRelationships> data = LetterCreateFaker().Generate();
 
         await Client.Letters.Create(data, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage?.Path == OrgPath("letters") && e.RequestMessage?.Method == "POST");
+            e.RequestMessage?.Path == OrgPath("deliveries/letters") && e.RequestMessage?.Method == "POST");
         IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
@@ -126,14 +126,14 @@ public sealed class IdempotencyTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
         string idempotencyKey = Guid.NewGuid().ToString();
 
-        Server.StubJsonPatch(OrgPath($"letters/{letterId}/send"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPatch(OrgPath($"deliveries/letters/{letterId}/send"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPatch<LetterSend> data = LetterSendFaker(letterId).Generate();
 
         await Client.Letters.Send(data, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage?.Path == OrgPath($"letters/{letterId}/send") && e.RequestMessage?.Method == "PATCH");
+            e.RequestMessage?.Path == OrgPath($"deliveries/letters/{letterId}/send") && e.RequestMessage?.Method == "PATCH");
         IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
@@ -151,7 +151,7 @@ public sealed class IdempotencyTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath($"letters/{letterId}/cancel"))
+                .WithPath(OrgPath($"deliveries/letters/{letterId}/cancel"))
                 .UsingPatch())
             .RespondWith(Response.Create()
                 .WithStatusCode(204)
@@ -160,7 +160,7 @@ public sealed class IdempotencyTests : IntegrationTestBase
         await Client.Letters.Cancel(letterId, idempotencyKey);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage?.Path == OrgPath($"letters/{letterId}/cancel") && e.RequestMessage?.Method == "PATCH");
+            e.RequestMessage?.Path == OrgPath($"deliveries/letters/{letterId}/cancel") && e.RequestMessage?.Method == "PATCH");
         IDictionary<string, WireMockList<string>>? headers = entry.RequestMessage!.Headers!;
         headers.ShouldContainKey(IdempotencyKeyHeader);
         headers[IdempotencyKeyHeader][0].ShouldBe(idempotencyKey);
@@ -179,7 +179,7 @@ public sealed class IdempotencyTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath("letters"))
+                .WithPath(OrgPath("deliveries/letters"))
                 .UsingPost())
             .RespondWith(Response.Create()
                 .WithStatusCode(201)
@@ -208,14 +208,14 @@ public sealed class IdempotencyTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubJsonPost(OrgPath("letters"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPost(OrgPath("deliveries/letters"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPost<LetterCreate, LetterCreateRelationships> data = LetterCreateFaker().Generate();
 
         await Client.Letters.Create(data);
 
         ILogEntry entry = Server.LogEntries.Single(e =>
-            e.RequestMessage?.Path == OrgPath("letters") && e.RequestMessage?.Method == "POST");
+            e.RequestMessage?.Path == OrgPath("deliveries/letters") && e.RequestMessage?.Method == "POST");
         entry.RequestMessage!.Headers!.ShouldNotContainKey(IdempotencyKeyHeader);
     }
 }

@@ -867,6 +867,48 @@ public class PingenConnectionHandlerTests
     }
 
     /// <summary>
+    ///     The organisation prefix is applied by testing whether the request path starts with any
+    ///     <c>NonOrganisationEndpoints</c> entry (<c>file-upload</c>, <c>user</c>, <c>organisations</c>).
+    ///     Since 2026-07-29 the letter routes live under <c>deliveries/letters</c> — the library's first
+    ///     org-scoped path with more than one segment — so this pins that a nested path is still prefixed
+    ///     rather than being mistaken for a root-level one, and that the segment separator is preserved.
+    ///     A regression here sends every letter call to an unprefixed URL and 404s the whole connector.
+    /// </summary>
+    [TestCase("deliveries/letters", "/organisations/test-org/deliveries/letters")]
+    [TestCase("deliveries/letters/events/issues", "/organisations/test-org/deliveries/letters/events/issues")]
+    [TestCase("file-upload", "/file-upload")]
+    [TestCase("user", "/user")]
+    [TestCase("organisations", "/organisations")]
+    public async Task GetAsync_NestedOrganisationScopedPath_IsPrefixedCorrectly(string requestPath, string expectedAbsolutePath)
+    {
+        var tokenJson = PingenSerialisationHelper.Serialize(new
+        {
+            access_token = "test-token",
+            token_type = "Bearer",
+            expires_in = 3600
+        });
+
+        Uri? capturedUri = null;
+        var identityHandler = new MockHttpMessageHandler(HttpStatusCode.OK, tokenJson);
+        var apiHandler = new MockHttpMessageHandler((request, _) =>
+        {
+            capturedUri = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"data\":[]}")
+            });
+        });
+
+        var handler = new PingenConnectionHandler(CreateConfig(defaultOrganisationId: "test-org"),
+            CreateHttpClients(identityHandler, apiHandler));
+
+        await handler.GetAsync(requestPath, (ApiPagingRequest?)null);
+
+        capturedUri.ShouldNotBeNull();
+        capturedUri!.AbsolutePath.ShouldBe(expectedAbsolutePath);
+    }
+
+    /// <summary>
     /// Verifies that calling <see cref="PingenConnectionHandler.SetOrganisationId"/> between
     /// requests routes subsequent calls under the new organisation ID in the URL path
     /// </summary>

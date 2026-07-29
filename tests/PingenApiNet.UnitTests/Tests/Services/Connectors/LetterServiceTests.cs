@@ -39,7 +39,7 @@ public class LetterServiceTests
     {
         _mockConnectionHandler
             .GetAsync<CollectionResult<LetterData>>(
-                "letters",
+                "deliveries/letters",
                 Arg.Any<ApiPagingRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult<CollectionResult<LetterData>> { IsSuccess = true });
@@ -47,7 +47,7 @@ public class LetterServiceTests
         await _letterService.GetPage();
 
         await _mockConnectionHandler.Received(1).GetAsync<CollectionResult<LetterData>>(
-            "letters",
+            "deliveries/letters",
             Arg.Any<ApiPagingRequest?>(),
             Arg.Any<CancellationToken>());
     }
@@ -61,7 +61,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("server_error", "Service unavailable");
         _mockConnectionHandler
             .GetAsync<CollectionResult<LetterData>>(
-                "letters",
+                "deliveries/letters",
                 Arg.Any<ApiPagingRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult<CollectionResult<LetterData>>
@@ -89,7 +89,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .GetAsync<SingleResult<LetterDataDetailed>>(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<ApiPagingRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
@@ -97,7 +97,7 @@ public class LetterServiceTests
         await _letterService.Get(letterId);
 
         await _mockConnectionHandler.Received(1).GetAsync<SingleResult<LetterDataDetailed>>(
-            $"letters/{letterId}",
+            $"deliveries/letters/{letterId}",
             Arg.Any<ApiPagingRequest?>(),
             Arg.Any<CancellationToken>());
     }
@@ -112,7 +112,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("not_found", "Letter not found");
         _mockConnectionHandler
             .GetAsync<SingleResult<LetterDataDetailed>>(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<ApiRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult<SingleResult<LetterDataDetailed>>
@@ -137,7 +137,7 @@ public class LetterServiceTests
     {
         _mockConnectionHandler
             .GetAsync<SingleResult<LetterDataDetailed>>(
-                "letters/",
+                "deliveries/letters/",
                 Arg.Any<ApiRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult<SingleResult<LetterDataDetailed>> { IsSuccess = true });
@@ -145,7 +145,7 @@ public class LetterServiceTests
         await _letterService.Get(string.Empty);
 
         await _mockConnectionHandler.Received(1).GetAsync<SingleResult<LetterDataDetailed>>(
-            "letters/",
+            "deliveries/letters/",
             Arg.Any<ApiRequest?>(),
             Arg.Any<CancellationToken>());
     }
@@ -160,14 +160,14 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .DeleteAsync(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult { IsSuccess = true });
 
         await _letterService.Delete(letterId);
 
         await _mockConnectionHandler.Received(1).DeleteAsync(
-            $"letters/{letterId}",
+            $"deliveries/letters/{letterId}",
             Arg.Any<CancellationToken>());
     }
 
@@ -181,7 +181,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("conflict", "Letter cannot be deleted in current state");
         _mockConnectionHandler
             .DeleteAsync(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult
             {
@@ -207,7 +207,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PatchAsync(
-                $"letters/{letterId}/cancel",
+                $"deliveries/letters/{letterId}/cancel",
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult { IsSuccess = true });
@@ -215,7 +215,7 @@ public class LetterServiceTests
         await _letterService.Cancel(letterId);
 
         await _mockConnectionHandler.Received(1).PatchAsync(
-            $"letters/{letterId}/cancel",
+            $"deliveries/letters/{letterId}/cancel",
             Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
     }
@@ -230,7 +230,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("conflict", "Letter cannot be cancelled in current state");
         _mockConnectionHandler
             .PatchAsync(
-                $"letters/{letterId}/cancel",
+                $"deliveries/letters/{letterId}/cancel",
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult
@@ -258,7 +258,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PatchAsync(
-                $"letters/{letterId}/cancel",
+                $"deliveries/letters/{letterId}/cancel",
                 idempotencyKey,
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult { IsSuccess = true });
@@ -266,7 +266,7 @@ public class LetterServiceTests
         await _letterService.Cancel(letterId, idempotencyKey);
 
         await _mockConnectionHandler.Received(1).PatchAsync(
-            $"letters/{letterId}/cancel",
+            $"deliveries/letters/{letterId}/cancel",
             idempotencyKey,
             Arg.Any<CancellationToken>());
     }
@@ -281,7 +281,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .GetAsync(
-                $"letters/{letterId}/file",
+                $"deliveries/letters/{letterId}/file",
                 Arg.Any<ApiPagingRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult { IsSuccess = true });
@@ -289,7 +289,7 @@ public class LetterServiceTests
         await _letterService.GetFileLocation(letterId);
 
         await _mockConnectionHandler.Received(1).GetAsync(
-            $"letters/{letterId}/file",
+            $"deliveries/letters/{letterId}/file",
             Arg.Any<ApiPagingRequest?>(),
             Arg.Any<CancellationToken>());
     }
@@ -304,7 +304,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("not_found", "Letter file not available");
         _mockConnectionHandler
             .GetAsync(
-                $"letters/{letterId}/file",
+                $"deliveries/letters/{letterId}/file",
                 Arg.Any<ApiPagingRequest?>(),
                 Arg.Any<CancellationToken>())
             .Returns(new ApiResult
@@ -331,7 +331,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
-                "letters",
+                "deliveries/letters",
                 Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -340,7 +340,7 @@ public class LetterServiceTests
         await _letterService.Create(data);
 
         await _mockConnectionHandler.Received(1).PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
-            "letters",
+            "deliveries/letters",
             Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
             Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
@@ -356,7 +356,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("unprocessable_entity", "File URL signature invalid");
         _mockConnectionHandler
             .PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
-                "letters",
+                "deliveries/letters",
                 Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -386,7 +386,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
-                "letters",
+                "deliveries/letters",
                 Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
                 idempotencyKey,
                 Arg.Any<CancellationToken>())
@@ -395,7 +395,7 @@ public class LetterServiceTests
         await _letterService.Create(data, idempotencyKey);
 
         await _mockConnectionHandler.Received(1).PostAsync<SingleResult<LetterDataDetailed>, DataPost<LetterCreate, LetterCreateRelationships>>(
-            "letters",
+            "deliveries/letters",
             Arg.Any<DataPost<LetterCreate, LetterCreateRelationships>>(),
             idempotencyKey,
             Arg.Any<CancellationToken>());
@@ -412,7 +412,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>(
-                $"letters/{letterId}/send",
+                $"deliveries/letters/{letterId}/send",
                 Arg.Any<DataPatch<LetterSend>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -421,7 +421,7 @@ public class LetterServiceTests
         await _letterService.Send(data);
 
         await _mockConnectionHandler.Received(1).PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>(
-            $"letters/{letterId}/send",
+            $"deliveries/letters/{letterId}/send",
             Arg.Any<DataPatch<LetterSend>>(),
             Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
@@ -438,7 +438,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("conflict", "Letter is not in a valid state to send");
         _mockConnectionHandler
             .PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterSend>>(
-                $"letters/{letterId}/send",
+                $"deliveries/letters/{letterId}/send",
                 Arg.Any<DataPatch<LetterSend>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -477,7 +477,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<DataPatch<LetterUpdate>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -486,7 +486,7 @@ public class LetterServiceTests
         await _letterService.Update(data);
 
         await _mockConnectionHandler.Received(1).PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>(
-            $"letters/{letterId}",
+            $"deliveries/letters/{letterId}",
             Arg.Any<DataPatch<LetterUpdate>>(),
             Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
@@ -503,7 +503,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("unprocessable_entity", "Paper type is invalid");
         _mockConnectionHandler
             .PatchAsync<SingleResult<LetterDataDetailed>, DataPatch<LetterUpdate>>(
-                $"letters/{letterId}",
+                $"deliveries/letters/{letterId}",
                 Arg.Any<DataPatch<LetterUpdate>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -541,7 +541,7 @@ public class LetterServiceTests
 
         _mockConnectionHandler
             .PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>(
-                "letters/price-calculator",
+                "deliveries/letters/price-calculator",
                 Arg.Any<DataPost<LetterPriceConfiguration>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -550,7 +550,7 @@ public class LetterServiceTests
         await _letterService.CalculatePrice(data);
 
         await _mockConnectionHandler.Received(1).PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>(
-            "letters/price-calculator",
+            "deliveries/letters/price-calculator",
             Arg.Any<DataPost<LetterPriceConfiguration>>(),
             Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
@@ -566,7 +566,7 @@ public class LetterServiceTests
         var apiError = CreateApiError("unprocessable_entity", "Country code is invalid");
         _mockConnectionHandler
             .PostAsync<SingleResult<LetterPriceData>, DataPost<LetterPriceConfiguration>>(
-                "letters/price-calculator",
+                "deliveries/letters/price-calculator",
                 Arg.Any<DataPost<LetterPriceConfiguration>>(),
                 Arg.Any<string?>(),
                 Arg.Any<CancellationToken>())
@@ -710,7 +710,7 @@ public class LetterServiceTests
     {
         const string letterId = "test-letter-id";
         const string language = "en&foo=bar";
-        var expectedPath = $"letters/{letterId}/events?language={Uri.EscapeDataString(language)}";
+        var expectedPath = $"deliveries/letters/{letterId}/events?language={Uri.EscapeDataString(language)}";
 
         _mockConnectionHandler
             .GetAsync<CollectionResult<LetterEventData>>(
@@ -735,7 +735,7 @@ public class LetterServiceTests
     {
         const string letterId = "test-letter-id";
         const string language = "en";
-        var expectedPath = $"letters/{letterId}/events?language={Uri.EscapeDataString(language)}";
+        var expectedPath = $"deliveries/letters/{letterId}/events?language={Uri.EscapeDataString(language)}";
         var apiError = CreateApiError("not_found", "Letter not found");
 
         _mockConnectionHandler
@@ -764,7 +764,7 @@ public class LetterServiceTests
     public async Task GetIssuesPage_UrlEncodesLanguageParameter()
     {
         const string language = "en&foo=bar";
-        var expectedPath = $"letters/issues?language={Uri.EscapeDataString(language)}";
+        var expectedPath = $"deliveries/letters/events/issues?language={Uri.EscapeDataString(language)}";
 
         _mockConnectionHandler
             .GetAsync<CollectionResult<LetterEventData>>(
@@ -788,7 +788,7 @@ public class LetterServiceTests
     public async Task GetIssuesPage_ApiError_ReturnsFailureResult()
     {
         const string language = "en";
-        var expectedPath = $"letters/issues?language={Uri.EscapeDataString(language)}";
+        var expectedPath = $"deliveries/letters/events/issues?language={Uri.EscapeDataString(language)}";
         var apiError = CreateApiError("server_error", "Service unavailable");
 
         _mockConnectionHandler

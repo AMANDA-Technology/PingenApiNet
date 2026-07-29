@@ -49,7 +49,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
     [Test]
     public async Task GetPage_WithNestedAndOrFilter_ShouldSerializeAsUrlEncodedJson()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(0));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(0));
 
         var apiPagingRequest = new ApiPagingRequest
         {
@@ -68,7 +68,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("deliveries/letters"));
         IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("filter");
 
@@ -87,7 +87,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
     [Test]
     public async Task GetPage_WithMultiFieldSort_ShouldSerializeAsCommaSeparatedList()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(0));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(0));
 
         var apiPagingRequest = new ApiPagingRequest
         {
@@ -102,7 +102,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("deliveries/letters"));
         IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("sort");
         query["sort"][0].ShouldBe("created_at,-status");
@@ -115,14 +115,14 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
     [Test]
     public async Task GetPage_WithSearchString_ShouldSerializeAsQParameter()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(0));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(0));
 
         const string searchTerm = "important-customer";
         var apiPagingRequest = new ApiPagingRequest { Searching = searchTerm };
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("deliveries/letters"));
         IDictionary<string, WireMockList<string>>? query = entry.RequestMessage!.Query!;
         query.ShouldContainKey("q");
         query["q"][0].ShouldBe(searchTerm);
@@ -137,13 +137,13 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
     [Test]
     public async Task GetPage_WithPageNumberAndLimit_ShouldSerializePageParameters()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(0));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(0));
 
         var apiPagingRequest = new ApiPagingRequest { PageNumber = 3, PageLimit = 50 };
 
         await Client.Letters.GetPage(apiPagingRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("letters"));
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath("deliveries/letters"));
         string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage!.RawQuery!);
 
         decodedQuery.ShouldSatisfyAllConditions(
@@ -160,7 +160,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
     public async Task Get_WithSparseFieldsetsAndInclude_ShouldSerializeBothParameters()
     {
         string letterId = Guid.NewGuid().ToString();
-        Server.StubJsonGet(OrgPath($"letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonGet(OrgPath($"deliveries/letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
 
         var apiRequest = new ApiRequest
         {
@@ -175,7 +175,7 @@ public sealed class QueryStringSerializationTests : IntegrationTestBase
 
         await Client.Letters.Get(letterId, apiRequest);
 
-        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath($"letters/{letterId}"));
+        ILogEntry entry = Server.LogEntries.Single(e => e.RequestMessage?.Path == OrgPath($"deliveries/letters/{letterId}"));
         string decodedQuery = HttpUtility.UrlDecode(entry.RequestMessage!.RawQuery!);
 
         decodedQuery.ShouldSatisfyAllConditions(

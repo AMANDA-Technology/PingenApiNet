@@ -252,9 +252,9 @@ Every model, enum, field-constant set and endpoint in the client was re-checked 
 - **Relationships** — `Batch`, `Webhook`, `Organisation` and `User` match exactly. `WebhookEventRelationships` and `LetterEventRelationships` are deliberate supersets carrying both the legacy and the deliverable-generalised shape; see the addendum above.
 - **`PingenApiLanguage`** was missing `es-ES` (the spec's `language` enum lists six locales, the client had five). Added.
 
-Two findings recorded rather than changed:
+One finding acted on, one recorded:
 
-**1. Letter endpoints are on undocumented legacy paths.** `LettersEndpoints.Root` is `letters`, so the client calls `organisations/{org}/letters/…`. The spec documents `organisations/{org}/deliveries/letters/…` and does *not* document the short form — and the API's own webhook `links.related` values use the `deliveries/` form. Every other connector (batches, webhooks, user, organisations, file-upload) is on its documented path; letters is the only divergence, and `deliveries/` is the container the emails and ebills channels also live under, so it most likely arrived with the deliverable rollout.
+**1. Letter endpoints moved onto their documented paths.** `LettersEndpoints.Root` was `letters`, so the client called `organisations/{org}/letters/…`. The spec documents `organisations/{org}/deliveries/letters/…` and does *not* document the short form — and the API's own webhook `links.related` values use the `deliveries/` form. Every other connector (batches, webhooks, user, organisations, file-upload) was already on its documented path; letters was the sole divergence, and `deliveries/` is the container the emails and ebills channels also live under, so it most likely arrived with the deliverable rollout.
 
 Both families are live, verified by unauthenticated probe against production (401 = route exists behind auth, 405 = exists but wrong method, 404 = no such route; a control request to a nonsense path returns 404, so the signal is real):
 
@@ -267,7 +267,13 @@ Both families are live, verified by unauthenticated probe against production (40
 | `file`, `events` | 401 | 401 |
 | issues (`letters/issues` vs `deliveries/letters/events/issues`) | 401 | 401 |
 
-Nothing is broken today. But this is the same shape of exposure as the `letter` relationship: working, undocumented, and removable without notice. Switching the constants is a one-line change per route; **verifying that the documented paths return identical payloads is not**, and doing it blind inside a production hotfix would put letter dispatch at risk to fix a latent problem. It needs its own change, gated on a full E2E run against staging.
+`Issues` is **not** a plain prefix change: the documented route is `deliveries/letters/events/issues`, one of four event-category collections (`issues`, `sent`, `undeliverable`, `delivered`), where the old path was `letters/issues`. The payload binds unchanged — `LetterIssueAttributes` is field-for-field identical to `LetterEventEloquentAttributes` (as are the `Sent`, `Undeliverable` and `Delivered` variants), so `CollectionResult<LetterEventData>` still fits. The `language` query parameter exists on the documented route with the same `en-GB` default.
+
+`deliveries/letters` is the library's first org-scoped path with more than one segment, which touches the `NonOrganisationEndpoints` prefix logic flagged in `ai-readiness.md`. It does not prefix-match any entry (`file-upload`, `user`, `organisations`), and `PingenConnectionHandlerTests.GetAsync_NestedOrganisationScopedPath_IsPrefixedCorrectly` now pins that in both directions.
+
+Coverage is real rather than nominal: reverting `Root` to the legacy value fails **55 integration and 25 unit tests**, because the connector tests assert exact request paths and the WireMock stubs match on full URL.
+
+**Caveat — this is the one part of the PR not backed by a live call.** Route existence is probe-verified and payload shape is spec-verified, but no request has been made against these paths with real credentials from this branch. `dotnet test tests/PingenApiNet.Tests.E2E` against staging is the gate before release; it exercises the full letter lifecycle including send and cancel.
 
 **2. `FileUpload` and `LetterFont` declare non-nullable `string` constructor parameters**, against the convention that every attributes-model parameter is nullable so sparse fieldsets bind cleanly. `RespectNullableAnnotations` is unset, so a response omitting those fields binds `null` into a non-nullable property with no error. Both are spec-required fields on responses the client only ever reads whole, so the risk is theoretical — but it is the same latent-NRE mechanism described in the 2026-07-12 addendum.
 
