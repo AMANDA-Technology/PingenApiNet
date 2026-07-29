@@ -25,6 +25,7 @@ SOFTWARE.
 using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.LetterEvents;
 
 namespace PingenApiNet.UnitTests.Tests.Helpers;
 
@@ -38,12 +39,29 @@ namespace PingenApiNet.UnitTests.Tests.Helpers;
 public class PingenApiDataTypeMappingTests
 {
     /// <summary>
-    ///     Enum values that are intentionally absent from <see cref="PingenSerialisationHelper.PingenApiDataTypeMapping" />
-    ///     pending follow-up work. Each entry must be tracked in <c>doc/analysis/2026-05-01-api-docs-gap-audit.md</c>
-    ///     and a corresponding sub-issue (#106 / #107 / #108 / #110) so the gap is not forgotten.
-    ///     Adding to this allow-list is a deliberate policy decision; do not extend it without updating the audit document.
+    ///     Enum values that are intentionally absent from <see cref="PingenSerialisationHelper.PingenApiDataTypeMapping" />.
+    ///     Each entry must be tracked in <c>doc/analysis/2026-05-01-api-docs-gap-audit.md</c> so the decision is not
+    ///     forgotten. Adding to this allow-list is a deliberate policy decision; do not extend it without updating
+    ///     the audit document.
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <see cref="PingenApiDataType.presets" /> — pending follow-up work (#106 model + service,
+    ///             #108 mapping wiring): the value is only ever sent on relationship inputs, and no <c>Preset</c>
+    ///             attributes type exists to bind a response to yet.
+    ///         </item>
+    ///         <item>
+    ///             <see cref="PingenApiDataType.deliverables_events" /> — <b>permanently unmapped by design</b>, not
+    ///             a gap. Since 2026-07-27 Pingen puts the same delivery event into <c>included</c> twice, typed
+    ///             <c>letters_events</c> and <c>deliverables_events</c> with one shared id. Mapping both to
+    ///             <see cref="LetterEvent" /> would give <c>IncludedCollection.OfType&lt;LetterEvent&gt;()</c> two
+    ///             matches and make <see cref="PingenSerialisationHelper.TryGetIncludedData{T}" /> throw — the
+    ///             behaviour pinned by <c>PingenSerialisationHelperTests.TryGetIncludedData_MultipleMatches_Throws</c>
+    ///             — re-breaking every webhook. Do not "close" this entry by adding a mapping.
+    ///         </item>
+    ///     </list>
     /// </summary>
-    private static readonly HashSet<PingenApiDataType> KnownUnmappedDataTypes = [PingenApiDataType.presets];
+    private static readonly HashSet<PingenApiDataType> KnownUnmappedDataTypes =
+        [PingenApiDataType.presets, PingenApiDataType.deliverables_events];
 
     /// <summary>
     ///     Asserts every <see cref="PingenApiDataType" /> enum value is either registered in the mapping

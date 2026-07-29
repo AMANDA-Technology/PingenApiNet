@@ -1,0 +1,127 @@
+{
+  "data": {
+    "type": "webhook_sent",
+    "id": "ec435b3b-c823-489e-8000-379522a86fe7",
+    "attributes": {
+      "url": "https:\/\/webhook.site\/66fc5913-5d2f-40f2-b2c5-7a58f9b64d8f",
+      "created_at": "2026-07-29T11:23:11+0200"
+    },
+    "relationships": {
+      "organisation": {
+        "links": {
+          "related": "https:\/\/api-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+        },
+        "data": {
+          "type": "organisations",
+          "id": "ed247161-6368-4278-abc7-32158472dc50"
+        }
+      },
+      "deliverable": {
+        "links": {
+          "related": "https:\/\/api-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/deliveries\/letters\/b413792a-4a6f-4634-a868-9bd4c529f20a"
+        },
+        "data": {
+          "type": "letters",
+          "id": "b413792a-4a6f-4634-a868-9bd4c529f20a"
+        }
+      },
+      "event": {
+        "data": {
+          "type": "deliverables_events",
+          "id": "068a5ac1-0348-435a-8282-ea11306e7b1a"
+        }
+      },
+      "letter": {
+        "links": {
+          "related": "https:\/\/api-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/deliveries\/letters\/b413792a-4a6f-4634-a868-9bd4c529f20a"
+        },
+        "data": {
+          "type": "letters",
+          "id": "b413792a-4a6f-4634-a868-9bd4c529f20a"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "organisations",
+      "id": "ed247161-6368-4278-abc7-32158472dc50",
+      "attributes": {
+        "name": "AMANDA Technology GmbH",
+        "status": "active",
+        "plan": "free",
+        "billing_mode": "prepaid",
+        "billing_currency": "CHF",
+        "billing_balance": 198853.1,
+        "default_country": "CH",
+        "default_address_position": "left",
+        "data_retention_addresses": 18,
+        "data_retention_pdf": 12,
+        "color": "#0758FF",
+        "created_at": "2022-11-20T20:33:23+0100",
+        "updated_at": "2026-07-29T11:21:09+0200"
+      },
+      "links": {
+        "self": "https:\/\/api-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50"
+      }
+    },
+    {
+      "type": "letters",
+      "id": "b413792a-4a6f-4634-a868-9bd4c529f20a",
+      "attributes": {
+        "status": "sent",
+        "file_original_name": "invoice.pdf",
+        "file_pages": 1,
+        "address": "max muster\nmusterstrasse 1\n8000 zuerich\nschweiz",
+        "address_position": "left",
+        "country": "CH",
+        "delivery_product": "postag_b",
+        "print_mode": "simplex",
+        "print_spectrum": "color",
+        "price_currency": "CHF",
+        "price_value": 1.68,
+        "paper_types": [
+          "qr"
+        ],
+        "source": "api",
+        "tracking_number": null,
+        "submitted_at": "2026-07-29T11:21:09+0200",
+        "created_at": "2026-07-29T11:21:03+0200",
+        "updated_at": "2026-07-29T11:21:09+0200"
+      },
+      "links": {
+        "self": "https:\/\/api-staging.pingen.com\/organisations\/ed247161-6368-4278-abc7-32158472dc50\/deliveries\/letters\/b413792a-4a6f-4634-a868-9bd4c529f20a"
+      }
+    },
+    {
+      "type": "deliverables_events",
+      "id": "068a5ac1-0348-435a-8282-ea11306e7b1a",
+      "attributes": {
+        "code": "transferred_to_distributor",
+        "name": "Handed to distributor",
+        "producer": "Printcenter",
+        "location": "",
+        "has_image": false,
+        "data": [],
+        "emitted_at": "2026-07-29T11:21:09+0200",
+        "created_at": "2026-07-29T11:21:09+0200",
+        "updated_at": "2026-07-29T11:21:09+0200"
+      }
+    },
+    {
+      "type": "letters_events",
+      "id": "068a5ac1-0348-435a-8282-ea11306e7b1a",
+      "attributes": {
+        "code": "transferred_to_distributor",
+        "name": "Handed to distributor",
+        "producer": "Printcenter",
+        "location": "",
+        "has_image": false,
+        "data": [],
+        "emitted_at": "2026-07-29T11:21:09+0200",
+        "created_at": "2026-07-29T11:21:09+0200",
+        "updated_at": "2026-07-29T11:21:09+0200"
+      }
+    }
+  ]
+}

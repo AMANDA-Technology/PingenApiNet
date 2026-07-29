@@ -112,6 +112,14 @@ public static class PingenSerialisationHelper
     /// the <c>type</c> on relationship inputs (e.g. <c>LetterCreateRelationships.Preset</c>)
     /// and is not currently deserialized from API responses, so no attributes type is bound.
     /// </para>
+    /// <para>
+    /// <see cref="PingenApiDataType.deliverables_events"/> is intentionally omitted as well, for the
+    /// opposite reason: since 2026-07-27 Pingen includes the very same delivery event <b>twice</b> in
+    /// <c>included</c> — once typed <c>letters_events</c> and once typed <c>deliverables_events</c>, sharing
+    /// one id. Mapping both to <see cref="LetterEvent"/> would make <see cref="TryGetIncludedData{T}"/>'s
+    /// <c>SingleOrDefault()</c> throw on two matches. <see cref="PingenApiDataType.letters_events"/> stays
+    /// the single binding; see the enum member's remarks for the full rationale.
+    /// </para>
     /// </summary>
     public static Dictionary<PingenApiDataType, Type> PingenApiDataTypeMapping => new()
     {

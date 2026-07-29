@@ -6,6 +6,7 @@ using PingenApiNet.Abstractions.Enums.Api;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.LetterEvents;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
@@ -345,6 +346,23 @@ public class PingenSerialisationHelperTests
         Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
         mapping.ContainsKey(PingenApiDataType.presets).ShouldBeFalse();
+    }
+
+    /// <summary>
+    ///     Verifies that the deliverables_events enum value is deliberately not mapped to a CLR type.
+    ///     Since 2026-07-27 Pingen includes one delivery event twice — typed <c>letters_events</c> and
+    ///     <c>deliverables_events</c>, sharing an id — so mapping this value to <see cref="LetterEvent" />
+    ///     as well would give <c>OfType&lt;LetterEvent&gt;()</c> two matches and make
+    ///     <see cref="PingenSerialisationHelper.TryGetIncludedData{T}" /> throw (see
+    ///     <see cref="TryGetIncludedData_MultipleMatches_Throws" />), re-breaking every webhook delivery.
+    ///     This is a permanent design decision, not an open gap.
+    /// </summary>
+    [Test]
+    public void PingenApiDataTypeMapping_DeliverablesEventsNotMapped()
+    {
+        Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
+
+        mapping.ContainsKey(PingenApiDataType.deliverables_events).ShouldBeFalse();
     }
 
     /// <summary>

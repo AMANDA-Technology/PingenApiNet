@@ -121,5 +121,31 @@ public enum PingenApiDataType
     /// Its attributes are <c>url</c> + <c>created_at</c> only — identical to <c>webhook_sent</c> —
     /// so it binds to the shared <c>WebhookEvent</c> model with a null <c>Reason</c>.
     /// </summary>
-    webhook_delivered = 14
+    webhook_delivered = 14,
+
+    /// <summary>
+    /// Data type deliverables_events. Pingen's generalised name for a delivery event, introduced when the
+    /// API grew a "deliverable" abstraction over letters, emails and ebills. Rolled out unannounced on
+    /// <b>2026-07-27</b>: the webhook body's <c>data.relationships.event.data.type</c> changed from
+    /// <see cref="letters_events"/> to this value for <i>every</i> event category.
+    /// <para>
+    /// That relationship binds to a non-nullable <see cref="PingenApiDataType"/>, so a library that does not
+    /// know the value throws <c>JsonException</c> out of <c>PingenWebhookHelper.ValidateWebhookAndGetData</c>
+    /// — <b>after</b> the HMAC signature has validated — and the consumer answers 4xx/5xx to every delivery
+    /// until Pingen dead-letters the event. Enumerating it is the fix; see
+    /// <c>doc/analysis/2026-05-01-api-docs-gap-audit.md</c> § Addendum (2026-07-29).
+    /// </para>
+    /// <para>
+    /// Pingen kept the legacy shape alongside the new one: the body still carries a <c>letter</c>
+    /// relationship (next to the new <c>deliverable</c>) and <c>included</c> now contains the <b>same event
+    /// twice</b> — once typed <c>letters_events</c> and once typed <c>deliverables_events</c>, sharing one id.
+    /// That duplication is why this value is deliberately absent from
+    /// <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c>: mapping it to <c>LetterEvent</c> as well
+    /// would make <c>IncludedCollection.OfType&lt;LetterEvent&gt;()</c> yield two resources, which is exactly
+    /// enough for <c>PingenSerialisationHelper.TryGetIncludedData</c>'s <c>SingleOrDefault()</c> to throw and
+    /// re-break the very webhooks this value repairs. The <see cref="letters_events"/> entry stays the single
+    /// binding for the event's attributes; revisit only if Pingen drops the legacy include.
+    /// </para>
+    /// </summary>
+    deliverables_events = 15
 }
