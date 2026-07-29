@@ -1,6 +1,7 @@
 # PingenApiNet
 
 Unofficial API client implementation for the Pingen v2 API. See [API Doc](https://api.pingen.com/documentation). (used version 2.0.0)
+> NOTE: Pingen does not appear to ever change the API version; no change log is provided and breaking changes are not announced in advance. Consequently, this client library is kept up to date on a best-effort basis. Some new features (e.g. email, e-bill) have not yet been implemented. Issues or pull requests are welcome if required.
 
 With a special thanks to Pingen GmbH for the handy Online Postal Service for sending letters digitally. See [Pingen website](https://www.pingen.ch/).
 
