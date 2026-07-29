@@ -28,6 +28,7 @@ using PingenApiNet.Abstractions.Enums.Users;
 using PingenApiNet.Abstractions.Helpers;
 using PingenApiNet.Abstractions.Models.Api.Embedded.DataResults;
 using PingenApiNet.Abstractions.Models.Base;
+using PingenApiNet.Abstractions.Models.LetterEvents;
 using PingenApiNet.Abstractions.Models.Letters;
 using PingenApiNet.Abstractions.Models.Organisations;
 using PingenApiNet.Abstractions.Models.UserAssociations;
@@ -208,6 +209,71 @@ public class IncludedCollectionTests
         letters.Count.ShouldBe(2);
         letters[0].Id.ShouldBe("letter-2");
         letters[1].Id.ShouldBe("letter-3");
+    }
+
+    /// <summary>
+    ///     Two <c>type</c> discriminators can map to the same attributes type — <c>letters_events</c> and
+    ///     <c>deliverables_events</c> both map to <c>LetterEvent</c> since Pingen's 2026-07-27 rename. During
+    ///     the transition Pingen emits the same event once under each, sharing one id, so <c>OfType</c> must
+    ///     collapse them: without that, <c>TryGetIncludedData</c>'s <c>SingleOrDefault()</c> throws and every
+    ///     webhook delivery fails.
+    ///     <para>
+    ///     Note this collapse is cross-discriminator only — see
+    ///     <see cref="OfType_DuplicateEntries_ReturnsAllInsertionOrder" /> for the same-discriminator case,
+    ///     which is left untouched.
+    ///     </para>
+    /// </summary>
+    [Test]
+    public void OfType_SameResourceUnderTwoDiscriminators_CollapsesToOne()
+    {
+        string json = """
+                      {
+                          "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "sent" } },
+                          "included": [
+                              { "id": "event-1", "type": "deliverables_events", "attributes": { "code": "transferred_to_distributor" } },
+                              { "id": "event-1", "type": "letters_events", "attributes": { "code": "transferred_to_distributor" } }
+                          ]
+                      }
+                      """;
+        SingleResult<Data<Letter>>? result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var events = result.Included!.OfType<LetterEvent>().ToList();
+
+        events.ShouldSatisfyAllConditions(
+            () => events.Count.ShouldBe(1),
+            () => events[0].Id.ShouldBe("event-1"),
+            () => events[0].Attributes.Code.ShouldBe("transferred_to_distributor"),
+            () => PingenSerialisationHelper.TryGetIncludedData(result, out Data<LetterEvent>? single).ShouldBeTrue()
+        );
+    }
+
+    /// <summary>
+    ///     De-duplication is by resource id, not by attributes type: two genuinely different resources that
+    ///     happen to share an attributes type must both still be returned. This is the counterweight to
+    ///     <see cref="OfType_SameResourceUnderTwoDiscriminators_CollapsesToOne" /> — the collapse must not
+    ///     quietly swallow distinct events on a collection response.
+    /// </summary>
+    [Test]
+    public void OfType_DistinctResourcesUnderTwoDiscriminators_ReturnsBoth()
+    {
+        string json = """
+                      {
+                          "data": { "id": "letter-1", "type": "letters", "attributes": { "status": "sent" } },
+                          "included": [
+                              { "id": "event-1", "type": "deliverables_events", "attributes": { "code": "transferred_to_distributor" } },
+                              { "id": "event-2", "type": "letters_events", "attributes": { "code": "sent" } }
+                          ]
+                      }
+                      """;
+        SingleResult<Data<Letter>>? result = PingenSerialisationHelper.Deserialize<SingleResult<Data<Letter>>>(json)!;
+
+        var events = result.Included!.OfType<LetterEvent>().ToList();
+
+        events.ShouldSatisfyAllConditions(
+            () => events.Count.ShouldBe(2),
+            () => events[0].Id.ShouldBe("event-1"),
+            () => events[1].Id.ShouldBe("event-2")
+        );
     }
 
     /// <summary>

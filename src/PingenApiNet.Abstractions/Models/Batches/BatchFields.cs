@@ -47,6 +47,21 @@ public static class BatchFields
     /// <summary>Number of letters in this batch</summary>
     public const string LetterCount = "letter_count";
 
+    /// <summary>
+    /// Number of deliverables in this batch. Added by the 2026-07-27 deliverable rollout as the
+    /// channel-agnostic counterpart to <see cref="LetterCount"/>; equal to it for postal batches.
+    /// </summary>
+    public const string DeliverableCount = "deliverable_count";
+
+    /// <summary>
+    /// Delivery channel of this batch — one of <see cref="Enums.Batches.BatchChannelTypes"/>.
+    /// Added by the 2026-07-27 deliverable rollout.
+    /// </summary>
+    public const string ChannelType = "channel_type";
+
+    /// <summary>Where the batch came from — one of <see cref="Enums.Batches.BatchSources"/></summary>
+    public const string Source = "source";
+
     /// <summary>Address position for letters in this batch</summary>
     public const string AddressPosition = "address_position";
 

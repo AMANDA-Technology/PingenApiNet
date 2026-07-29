@@ -318,7 +318,7 @@ public class PingenSerialisationHelperTests
     {
         Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
-        mapping.Count.ShouldBe(14);
+        mapping.Count.ShouldBe(15);
     }
 
     /// <summary>
@@ -349,20 +349,39 @@ public class PingenSerialisationHelperTests
     }
 
     /// <summary>
-    ///     Verifies that the deliverables_events enum value is deliberately not mapped to a CLR type.
-    ///     Since 2026-07-27 Pingen includes one delivery event twice — typed <c>letters_events</c> and
-    ///     <c>deliverables_events</c>, sharing an id — so mapping this value to <see cref="LetterEvent" />
-    ///     as well would give <c>OfType&lt;LetterEvent&gt;()</c> two matches and make
-    ///     <see cref="PingenSerialisationHelper.TryGetIncludedData{T}" /> throw (see
-    ///     <see cref="TryGetIncludedData_MultipleMatches_Throws" />), re-breaking every webhook delivery.
-    ///     This is a permanent design decision, not an open gap.
+    ///     Both delivery-event discriminators must map to <see cref="LetterEvent" />. Pingen renamed
+    ///     <c>letters_events</c> to <c>deliverables_events</c> on 2026-07-27 and currently sends both; the
+    ///     spec's <c>LetterEventEloquentAttributes</c> and <c>DeliverableEventLuceneAttributes</c> are
+    ///     field-for-field identical, so one CLR type backs both. Dropping either entry breaks event
+    ///     resolution on the day Pingen stops sending the other — the duplicate they produce meanwhile is
+    ///     collapsed by <c>IncludedCollection.OfType&lt;T&gt;()</c>, not avoided by leaving one unmapped.
     /// </summary>
     [Test]
-    public void PingenApiDataTypeMapping_DeliverablesEventsNotMapped()
+    public void PingenApiDataTypeMapping_BothEventDiscriminatorsMapToLetterEvent()
     {
         Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
 
-        mapping.ContainsKey(PingenApiDataType.deliverables_events).ShouldBeFalse();
+        mapping.ShouldSatisfyAllConditions(
+            () => mapping[PingenApiDataType.letters_events].ShouldBe(typeof(LetterEvent)),
+            () => mapping[PingenApiDataType.deliverables_events].ShouldBe(typeof(LetterEvent))
+        );
+    }
+
+    /// <summary>
+    ///     The <c>emails</c> and <c>ebills</c> discriminators are enumerated so the <c>deliverable</c>
+    ///     relationship binds for every deliverable kind, but neither channel is modelled by this library
+    ///     (issue #125). They must stay unmapped: an <c>included</c> resource of either type is skipped
+    ///     rather than mis-bound to a model that does not fit it.
+    /// </summary>
+    [Test]
+    public void PingenApiDataTypeMapping_OtherDeliverableKindsNotMapped()
+    {
+        Dictionary<PingenApiDataType, Type> mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
+
+        mapping.ShouldSatisfyAllConditions(
+            () => mapping.ContainsKey(PingenApiDataType.emails).ShouldBeFalse(),
+            () => mapping.ContainsKey(PingenApiDataType.ebills).ShouldBeFalse()
+        );
     }
 
     /// <summary>

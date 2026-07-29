@@ -37,4 +37,11 @@ public static class LetterEventIncludes
     /// Include the letter associated with this event.
     /// </summary>
     public const string Letter = "letter";
+
+    /// <summary>
+    /// Include the deliverable associated with this event. Pingen's generalised name for the letter, email or
+    /// ebill an event belongs to, introduced with the 2026-07-27 deliverable rollout. Use this once the
+    /// letter-events endpoint returns the deliverable-shaped payload; until then <see cref="Letter"/> applies.
+    /// </summary>
+    public const string Deliverable = "deliverable";
 }

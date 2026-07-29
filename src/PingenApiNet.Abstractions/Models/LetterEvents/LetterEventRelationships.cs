@@ -30,9 +30,22 @@ using PingenApiNet.Abstractions.Models.Api.Embedded.Relations;
 namespace PingenApiNet.Abstractions.Models.LetterEvents;
 
 /// <summary>
-/// Letter event relationships
+/// Letter event relationships.
+/// <para>
+/// The letter-events endpoint (<c>GET .../deliveries/letters/{letterId}/events</c>) still returns a
+/// <c>letter</c> relationship, which is what the spec documents for <c>LetterEventEloquentGETListItem</c>.
+/// Its deliverable-generalised counterpart, <c>DeliverableEventLuceneGETListItem</c> — already used by the
+/// emails and ebills event endpoints — declares <c>deliverable</c> instead. Both are modelled and both are
+/// nullable so this record survives the letter endpoint being switched over the way the webhook body was on
+/// 2026-07-27. Prefer <see cref="Deliverable"/> and fall back to <see cref="Letter"/>.
+/// </para>
 /// </summary>
-/// <param name="Letter"></param>
+/// <param name="Letter">The letter this event belongs to. Null once Pingen switches this endpoint over.</param>
+/// <param name="Deliverable">
+/// The deliverable this event belongs to (<c>letters</c>, <c>emails</c> or <c>ebills</c>).
+/// Null while the endpoint still returns the letter-shaped payload.
+/// </param>
 public sealed record LetterEventRelationships(
-    [property: JsonPropertyName("letter")] RelatedSingleOutput Letter
+    [property: JsonPropertyName("letter")] RelatedSingleOutput? Letter,
+    [property: JsonPropertyName("deliverable")] RelatedSingleOutput? Deliverable = null
 ) : IRelationships;

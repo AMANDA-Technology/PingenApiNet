@@ -25,17 +25,25 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 using PingenApiNet.Abstractions.Interfaces.Data;
+using PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents.Embedded;
 
 namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
 
 /// <summary>
-/// Webhook event
+/// Webhook event. Shared by all four event categories (<c>issues</c>, <c>sent</c>, <c>undeliverable</c>,
+/// <c>delivered</c>), whose attribute surfaces are supersets of one another — hence every property being
+/// nullable rather than one record per category.
 /// </summary>
-/// <param name="Reason"></param>
+/// <param name="Reason">Why the item failed. Sent on <c>issues</c> and <c>undeliverable</c> only.</param>
 /// <param name="Url"></param>
 /// <param name="CreatedAt"></param>
+/// <param name="CorrectedAddress">
+/// The address Pingen worked out for an undeliverable item. Sent on <c>undeliverable</c> only, where the
+/// spec marks it required; null for every other category.
+/// </param>
 public sealed record WebhookEvent(
     [property: JsonPropertyName(WebhookEventFields.Reason)] string? Reason,
     [property: JsonPropertyName(WebhookEventFields.Url)] Uri? Url,
-    [property: JsonPropertyName(WebhookEventFields.CreatedAt)] DateTime? CreatedAt
+    [property: JsonPropertyName(WebhookEventFields.CreatedAt)] DateTime? CreatedAt,
+    [property: JsonPropertyName(WebhookEventFields.CorrectedAddress)] WebhookEventCorrectedAddress? CorrectedAddress = null
 ) : IAttributes;

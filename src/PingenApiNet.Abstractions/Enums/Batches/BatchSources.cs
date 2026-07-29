@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,28 +23,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
+namespace PingenApiNet.Abstractions.Enums.Batches;
 
 /// <summary>
-/// Available sparse fieldset field names for the WebhookEvent resource.
-/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
-/// to request only specific attributes in the response.
-/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
+/// Sources a batch can originate from, i.e. the values of <c>Batch.Source</c>.
+/// <br/>Documented by the API as the <c>source</c> enum on <c>BatchAttributes</c>.
+/// <para>
+/// Bound as a plain <c>string</c> on the model rather than a C# enum — see
+/// <see cref="Letters.LetterSources"/> for why.
+/// </para>
 /// </summary>
-public static class WebhookEventFields
+public static class BatchSources
 {
-    /// <summary>Reason for this webhook event (e.g. failure reason)</summary>
-    public const string Reason = "reason";
+    /// <summary>
+    /// Created through the Pingen web application.
+    /// </summary>
+    public const string App = "app";
 
     /// <summary>
-    /// The address Pingen worked out for an undeliverable item. Spec-required on
-    /// <c>WebhookDeliverableUndeliverableAttributes</c>, absent on every other event category.
+    /// Created through the API — what this library produces.
     /// </summary>
-    public const string CorrectedAddress = "corrected_address";
-
-    /// <summary>Target URL the webhook was sent to</summary>
-    public const string Url = "url";
-
-    /// <summary>Timestamp when the webhook event was created</summary>
-    public const string CreatedAt = "created_at";
+    public const string Api = "api";
 }

@@ -358,7 +358,7 @@ public class AllEnumsSerializationTests
     public void PingenApiCurrency_AllValuesAreCovered() => Enum.GetValues<PingenApiCurrency>().Length.ShouldBe(4);
 
     // -------------------------------------------------------------------
-    // Section J: PingenApiDataType (real enum, 16 values, snake_case identifiers)
+    // Section J: PingenApiDataType (real enum, 18 values, snake_case identifiers)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -382,6 +382,8 @@ public class AllEnumsSerializationTests
     [TestCase(PingenApiDataType.delivery_products, "\"delivery_products\"")]
     [TestCase(PingenApiDataType.presets, "\"presets\"")]
     [TestCase(PingenApiDataType.deliverables_events, "\"deliverables_events\"")]
+    [TestCase(PingenApiDataType.emails, "\"emails\"")]
+    [TestCase(PingenApiDataType.ebills, "\"ebills\"")]
     public void PingenApiDataType_Serializes(PingenApiDataType value, string expectedJson) =>
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 
@@ -406,6 +408,8 @@ public class AllEnumsSerializationTests
     [TestCase("\"delivery_products\"", PingenApiDataType.delivery_products)]
     [TestCase("\"presets\"", PingenApiDataType.presets)]
     [TestCase("\"deliverables_events\"", PingenApiDataType.deliverables_events)]
+    [TestCase("\"emails\"", PingenApiDataType.emails)]
+    [TestCase("\"ebills\"", PingenApiDataType.ebills)]
     public void PingenApiDataType_Deserializes(string json, PingenApiDataType expected) =>
         PingenSerialisationHelper.Deserialize<PingenApiDataType>(json).ShouldBe(expected);
 
@@ -413,7 +417,7 @@ public class AllEnumsSerializationTests
     ///     Sentinel: fails if a new <see cref="PingenApiDataType" /> value is added without updating the cases above.
     /// </summary>
     [Test]
-    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(16);
+    public void PingenApiDataType_AllValuesAreCovered() => Enum.GetValues<PingenApiDataType>().Length.ShouldBe(18);
 
     /// <summary>
     ///     Pins the numeric values of <see cref="PingenApiDataType" />. They are part of the published ABI —
@@ -443,7 +447,9 @@ public class AllEnumsSerializationTests
                 ["delivery_products"] = 12,
                 ["presets"] = 13,
                 ["webhook_delivered"] = 14,
-                ["deliverables_events"] = 15
+                ["deliverables_events"] = 15,
+                ["emails"] = 16,
+                ["ebills"] = 17
             });
 
     // -------------------------------------------------------------------

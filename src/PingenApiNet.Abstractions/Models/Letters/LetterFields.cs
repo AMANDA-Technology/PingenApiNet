@@ -75,6 +75,9 @@ public static class LetterFields
     /// <summary>Tracking number assigned to the letter</summary>
     public const string TrackingNumber = "tracking_number";
 
+    /// <summary>Where the letter came from — one of <see cref="Enums.Letters.LetterSources"/></summary>
+    public const string Source = "source";
+
     /// <summary>Timestamp when the letter was submitted for sending</summary>
     public const string SubmittedAt = "submitted_at";
 

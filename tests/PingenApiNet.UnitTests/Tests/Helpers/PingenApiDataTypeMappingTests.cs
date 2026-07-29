@@ -50,18 +50,21 @@ public class PingenApiDataTypeMappingTests
     ///             attributes type exists to bind a response to yet.
     ///         </item>
     ///         <item>
-    ///             <see cref="PingenApiDataType.deliverables_events" /> — <b>permanently unmapped by design</b>, not
-    ///             a gap. Since 2026-07-27 Pingen puts the same delivery event into <c>included</c> twice, typed
-    ///             <c>letters_events</c> and <c>deliverables_events</c> with one shared id. Mapping both to
-    ///             <see cref="LetterEvent" /> would give <c>IncludedCollection.OfType&lt;LetterEvent&gt;()</c> two
-    ///             matches and make <see cref="PingenSerialisationHelper.TryGetIncludedData{T}" /> throw — the
-    ///             behaviour pinned by <c>PingenSerialisationHelperTests.TryGetIncludedData_MultipleMatches_Throws</c>
-    ///             — re-breaking every webhook. Do not "close" this entry by adding a mapping.
+    ///             <see cref="PingenApiDataType.emails" /> and <see cref="PingenApiDataType.ebills" /> — enumerated
+    ///             so the <c>deliverable</c> relationship introduced on 2026-07-27 binds for every deliverable kind
+    ///             (<c>letters</c> | <c>emails</c> | <c>ebills</c>), but neither delivery channel is modelled by this
+    ///             library, so there is no attributes type to bind an <c>included</c> resource of those types to.
+    ///             Tracked in issue #125; close these entries only together with the channel models.
     ///         </item>
     ///     </list>
+    ///     <para>
+    ///     Note that <see cref="PingenApiDataType.deliverables_events" /> is <b>not</b> on this list: it maps to
+    ///     <see cref="LetterEvent" /> alongside <see cref="PingenApiDataType.letters_events" />, and the duplicate
+    ///     Pingen currently emits under both types is collapsed by <c>IncludedCollection.OfType&lt;T&gt;()</c>.
+    ///     </para>
     /// </summary>
     private static readonly HashSet<PingenApiDataType> KnownUnmappedDataTypes =
-        [PingenApiDataType.presets, PingenApiDataType.deliverables_events];
+        [PingenApiDataType.presets, PingenApiDataType.emails, PingenApiDataType.ebills];
 
     /// <summary>
     ///     Asserts every <see cref="PingenApiDataType" /> enum value is either registered in the mapping
