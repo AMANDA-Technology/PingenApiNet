@@ -661,6 +661,7 @@ public class LetterServiceTests
         _mockConnectionHandler
             .SendExternalRequestAsync(
                 Arg.Is<HttpRequestMessage>(r =>
+                    r != null &&
                     r.Method == HttpMethod.Get &&
                     r.RequestUri == fileUrl),
                 Arg.Any<CancellationToken>())
@@ -673,6 +674,7 @@ public class LetterServiceTests
 
         await _mockConnectionHandler.Received(1).SendExternalRequestAsync(
             Arg.Is<HttpRequestMessage>(r =>
+                r != null &&
                 r.Method == HttpMethod.Get &&
                 r.RequestUri == fileUrl),
             Arg.Any<CancellationToken>());
