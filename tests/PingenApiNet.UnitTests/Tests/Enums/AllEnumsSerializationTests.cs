@@ -478,7 +478,7 @@ public class AllEnumsSerializationTests
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 
     // -------------------------------------------------------------------
-    // Section L: PingenApiLanguage (static class of const string, 5 constants)
+    // Section L: PingenApiLanguage (static class of const string, 6 constants)
     // -------------------------------------------------------------------
 
     /// <summary>
@@ -492,6 +492,7 @@ public class AllEnumsSerializationTests
     [TestCase("de-CH", PingenApiLanguage.DeCH)]
     [TestCase("nl-NL", PingenApiLanguage.NlNL)]
     [TestCase("fr-FR", PingenApiLanguage.FrFR)]
+    [TestCase("es-ES", PingenApiLanguage.EsES)]
     public void PingenApiLanguage_HasExpectedConstantValue(string expected, string actual) => actual.ShouldBe(expected);
 
     /// <summary>
@@ -504,6 +505,7 @@ public class AllEnumsSerializationTests
     [TestCase(PingenApiLanguage.DeCH, "\"de-CH\"")]
     [TestCase(PingenApiLanguage.NlNL, "\"nl-NL\"")]
     [TestCase(PingenApiLanguage.FrFR, "\"fr-FR\"")]
+    [TestCase(PingenApiLanguage.EsES, "\"es-ES\"")]
     public void PingenApiLanguage_SerializesAsJsonString(string value, string expectedJson) =>
         PingenSerialisationHelper.Serialize(value).ShouldBe(expectedJson);
 }
