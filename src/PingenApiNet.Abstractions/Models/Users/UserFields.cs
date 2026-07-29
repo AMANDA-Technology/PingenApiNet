@@ -48,6 +48,12 @@ public static class UserFields
     /// <summary>User's preferred language code</summary>
     public const string Language = "language";
 
+    /// <summary>Product edition the user is on</summary>
+    public const string Edition = "edition";
+
+    /// <summary>Feature flags enabled for the user</summary>
+    public const string Flags = "flags";
+
     /// <summary>Timestamp when the user was created</summary>
     public const string CreatedAt = "created_at";
 

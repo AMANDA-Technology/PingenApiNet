@@ -56,4 +56,10 @@ public static class PingenApiLanguage
     /// Language fr-FR
     /// </summary>
     public const string FrFR = "fr-FR";
+
+    /// <summary>
+    /// Language es-ES. Documented by the API (the <c>language</c> enum on <c>UserAttributes</c> lists six
+    /// locales) but missing here until 2026-07-29.
+    /// </summary>
+    public const string EsES = "es-ES";
 }

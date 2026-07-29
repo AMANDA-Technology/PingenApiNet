@@ -29,6 +29,32 @@ public class PingenWebhookHelperTests
         File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "Assets", "webhook_delivered_sample.json"));
 
     /// <summary>
+    ///     A real webhook body in the shape Pingen has sent since <b>2026-07-27</b>, when it generalised
+    ///     "letter" to "deliverable" (letter | email | ebill). Captured verbatim from
+    ///     <c>GET /organisations/{org}/webhooks/{id}/requests</c> and only anonymised. Three differences
+    ///     against <see cref="SamplePayload" />, all present at once:
+    ///     <list type="number">
+    ///         <item><c>data.relationships.event.data.type</c> is <c>deliverables_events</c>, not <c>letters_events</c>;</item>
+    ///         <item>a new <c>deliverable</c> relationship sits alongside the retained <c>letter</c> one;</item>
+    ///         <item><c>included</c> carries the same event <b>twice</b>, once under each type, sharing one id.</item>
+    ///     </list>
+    /// </summary>
+    private static readonly string DeliverablesEventPayload =
+        File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "Assets", "webhook_sent_deliverables_sample.json"));
+
+    /// <summary>
+    ///     The end state of the 2026-07-27 rollout, <b>constructed from the spec rather than captured</b>:
+    ///     <c>WebhookDeliverableUndeliverableGET</c> declares <c>organisation</c> + <c>deliverable</c> +
+    ///     <c>event</c> as its required relationships and no longer declares <c>letter</c> at all, so this body
+    ///     drops the legacy relationship and the duplicated <c>letters_events</c> include with it. Pingen has
+    ///     not sent this shape yet — it is what the published contract already describes, and what the library
+    ///     must survive being switched to without notice. Also carries <c>corrected_address</c>, spec-required
+    ///     on this category and previously dropped on the floor.
+    /// </summary>
+    private static readonly string DeliverableOnlyPayload =
+        File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "Assets", "webhook_undeliverable_deliverable_only_sample.json"));
+
+    /// <summary>
     ///     Verifies that ValidateWebhook returns true for a valid signature
     /// </summary>
     [Test]
@@ -289,11 +315,101 @@ public class PingenWebhookHelperTests
             () => webhookEventData!.Attributes.Url.ShouldNotBeNull(),
             () => webhookEventData!.Attributes.CreatedAt.ShouldNotBeNull(),
             () => webhookEventData!.Relationships.Organisation.Data.Type.ShouldBe(PingenApiDataType.organisations),
-            () => webhookEventData!.Relationships.Letter.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Letter.ShouldNotBeNull(),
+            () => webhookEventData!.Relationships.Letter!.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Deliverable.ShouldBeNull(),
             () => webhookEventData!.Relationships.Event.Data.Type.ShouldBe(PingenApiDataType.letters_events),
             () => organisationData.ShouldNotBeNull(),
             () => letterData.ShouldNotBeNull(),
             () => letterEventData.ShouldNotBeNull()
+        );
+    }
+
+    /// <summary>
+    ///     Regression test for the 2026-07-27 outage: Pingen switched the webhook body's
+    ///     <c>data.relationships.event.data.type</c> from <c>letters_events</c> to <c>deliverables_events</c>
+    ///     for every event category, without notice. That relationship binds to a non-nullable
+    ///     <see cref="PingenApiDataType" />, so the unknown discriminator threw
+    ///     <see cref="JsonException" /> out of ValidateWebhookAndGetData — <em>after</em> the HMAC signature
+    ///     had already validated — and every consumer answered 4xx/5xx until Pingen dead-lettered the event.
+    ///     Same failure class as the earlier <c>webhook_delivered</c> outage, one level deeper in the body.
+    ///     <para>
+    ///     The assertions on the resolved included resources are the load-bearing half. Pingen emits the
+    ///     <b>same</b> event in <c>included</c> twice (typed <c>letters_events</c> and
+    ///     <c>deliverables_events</c>, sharing an id) and both discriminators map to
+    ///     <see cref="LetterEvent" />, so this test fails if <c>IncludedCollection.OfType&lt;T&gt;()</c> ever
+    ///     stops collapsing matches by resource id — two matches make
+    ///     <c>TryGetIncludedData</c>'s <c>SingleOrDefault()</c> throw, re-breaking every webhook.
+    ///     </para>
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_DeliverablesEventRelationship_DeserializesAndResolvesSingleEvent()
+    {
+        const string signingKey = "test-signing-key";
+        string signature = ComputeHmacSha256(signingKey, DeliverablesEventPayload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(DeliverablesEventPayload));
+
+        (WebhookEventData? webhookEventData, Data<Organisation>? organisationData, Data<Letter>? letterData,
+                Data<LetterEvent>? letterEventData) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => webhookEventData.ShouldNotBeNull(),
+            () => webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_sent),
+            () => webhookEventData!.Relationships.Organisation.Data.Type.ShouldBe(PingenApiDataType.organisations),
+            () => webhookEventData!.Relationships.Letter.ShouldNotBeNull(),
+            () => webhookEventData!.Relationships.Letter!.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Deliverable.ShouldNotBeNull(),
+            () => webhookEventData!.Relationships.Deliverable!.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Deliverable!.Data.Id.ShouldBe(webhookEventData!.Relationships.Letter!.Data.Id),
+            () => webhookEventData!.Relationships.Event.Data.Type.ShouldBe(PingenApiDataType.deliverables_events),
+            () => organisationData.ShouldNotBeNull(),
+            () => letterData.ShouldNotBeNull(),
+            () => letterEventData.ShouldNotBeNull(),
+            () => letterEventData!.Attributes.Code.ShouldBe("transferred_to_distributor")
+        );
+    }
+
+    /// <summary>
+    ///     Forward-compatibility pin for the end state of the 2026-07-27 rollout: the body Pingen's own spec
+    ///     describes today, where the legacy shape is gone. <c>WebhookDeliverable*GET</c> declares
+    ///     <c>organisation</c> + <c>deliverable</c> + <c>event</c> as the required relationships and no longer
+    ///     lists <c>letter</c> at all, so the wire is expected to drop it — and with it the duplicated
+    ///     <c>letters_events</c> copy in <c>included</c>.
+    ///     <para>
+    ///     Everything the library exposes must still resolve from that body alone: the event include is found
+    ///     via <c>deliverables_events</c> (not the legacy type), and the letter include via the
+    ///     <c>deliverable</c> relationship's <c>letters</c> resource. If this test regresses, the library will
+    ///     start returning a silently null letter event the day Pingen finishes the migration — a quieter and
+    ///     worse failure than the <see cref="JsonException" /> that started the outage, because it surfaces as
+    ///     a <see cref="NullReferenceException" /> in consumer code rather than at the parse boundary.
+    ///     </para>
+    /// </summary>
+    [Test]
+    public async Task ValidateWebhookAndGetData_LegacyLetterShapeDropped_StillResolvesEverything()
+    {
+        const string signingKey = "test-signing-key";
+        string signature = ComputeHmacSha256(signingKey, DeliverableOnlyPayload);
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(DeliverableOnlyPayload));
+
+        (WebhookEventData? webhookEventData, Data<Organisation>? organisationData, Data<Letter>? letterData,
+                Data<LetterEvent>? letterEventData) =
+            await PingenWebhookHelper.ValidateWebhookAndGetData(signingKey, signature, stream);
+
+        webhookEventData.ShouldSatisfyAllConditions(
+            () => webhookEventData.ShouldNotBeNull(),
+            () => webhookEventData!.Type.ShouldBe(PingenApiDataType.webhook_undeliverable),
+            () => webhookEventData!.Relationships.Letter.ShouldBeNull(),
+            () => webhookEventData!.Relationships.Deliverable.ShouldNotBeNull(),
+            () => webhookEventData!.Relationships.Deliverable!.Data.Type.ShouldBe(PingenApiDataType.letters),
+            () => webhookEventData!.Relationships.Event.Data.Type.ShouldBe(PingenApiDataType.deliverables_events),
+            () => organisationData.ShouldNotBeNull(),
+            () => letterData.ShouldNotBeNull(),
+            () => letterEventData.ShouldNotBeNull(),
+            () => letterEventData!.Attributes.Code.ShouldBe("undeliverable"),
+            () => webhookEventData!.Attributes.CorrectedAddress.ShouldNotBeNull(),
+            () => webhookEventData!.Attributes.CorrectedAddress!.Zip.ShouldBe("8051"),
+            () => webhookEventData!.Attributes.CorrectedAddress!.Number.ShouldBe("50A")
         );
     }
 

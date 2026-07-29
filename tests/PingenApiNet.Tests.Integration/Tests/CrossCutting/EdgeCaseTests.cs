@@ -189,7 +189,7 @@ public sealed class EdgeCaseTests : IntegrationTestBase
             }
         });
 
-        Server.StubJsonGet(OrgPath("letters"), body);
+        Server.StubJsonGet(OrgPath("deliveries/letters"), body);
 
         ApiResult<CollectionResult<LetterData>> result = await Client.Letters.GetPage();
 

@@ -123,16 +123,16 @@ These constants drive `ApiRequest.Include`. Coverage is enforced by `IncludeHelp
 
 | Enum | File | Values | Status | Notes / Gaps |
 |---|---|---|---|---|
-| `PingenApiCurrency` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiCurrency.cs` | `EUR`, `CHF` | ❌ Gap (medium) | Line 46 carries `// TODO: Missing API Doc about currencies` — list is acknowledged as incomplete. The Pingen public API may accept additional currencies (typically `USD`, `GBP` as common payment currencies); add only the values Pingen actually documents to avoid divergence. Track in `#108`. |
-| `PingenApiDataType` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiDataType.cs` | 15 values: `letters`, `batches`, `organisations`, `letter_price_calculator`, `letters_events`, `users`, `associations`, `webhooks`, `file_uploads`, `webhook_issues`, `webhook_sent`, `webhook_undeliverable`, `delivery_products`, `presets`, `webhook_delivered` | ❌ Gap (high) | `presets` is enumerated and used in `LetterCreateRelationships.cs:56` and `BatchCreateRelationships.cs:56` to send a preset id, but no `Preset` model exists and the value is **not** registered in `PingenSerialisationHelper.PingenApiDataTypeMapping`. As a result, any Pingen response with `included.[].type == "presets"` will be **silently skipped** by `IncludedCollection.OfType<Preset>()` / `FindById<Preset>()`. The `PingenApiDataTypeMappingTests` regression test surfaces this gap explicitly via the `KnownUnmappedDataTypes` allow-list. Track in `#106` (model + service) and `#108` (mapping wiring once `Preset` exists). `webhook_channel_subscriptions` is **not** enumerated — see the addendum. Members carry explicit numeric values and are append-only (public ABI). |
-| `PingenApiDataTypeMapping` | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:116-132` | 14 entries | ❌ Gap (high, related) | Per-call allocation (`=> new { … }` getter) — flagged previously in `ai-readiness.md § 3.3` "allocates on every access". Trivial fix to `static readonly`. Track in `#108`. The completeness regression is covered by `PingenApiDataTypeMappingTests`. |
+| `PingenApiCurrency` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiCurrency.cs` | `EUR`, `CHF`, `USD`, `GBP` | ✅ Resolved (re-verified 2026-07-29) | This row was stale. The enum carries four values and the TODO it referenced is gone; the set matches the spec's `billing_currency` enum on `OrganisationAttributes` (`CHF`, `EUR`, `USD`, `GBP`) exactly. Note `price_currency` on letters and batches is an unconstrained `string` in the spec, so it is bound as `string?` — do not "tighten" it to this enum. |
+| `PingenApiDataType` | `src/PingenApiNet.Abstractions/Enums/Api/PingenApiDataType.cs` | 18 values: `letters`, `batches`, `organisations`, `letter_price_calculator`, `letters_events`, `users`, `associations`, `webhooks`, `file_uploads`, `webhook_issues`, `webhook_sent`, `webhook_undeliverable`, `delivery_products`, `presets`, `webhook_delivered`, `deliverables_events`, `emails`, `ebills` | ❌ Gap (high) | `presets` is enumerated and used in `LetterCreateRelationships.cs:56` and `BatchCreateRelationships.cs:56` to send a preset id, but no `Preset` model exists and the value is **not** registered in `PingenSerialisationHelper.PingenApiDataTypeMapping`. As a result, any Pingen response with `included.[].type == "presets"` will be **silently skipped** by `IncludedCollection.OfType<Preset>()` / `FindById<Preset>()`. The `PingenApiDataTypeMappingTests` regression test surfaces this gap explicitly via the `KnownUnmappedDataTypes` allow-list. Track in `#106` (model + service) and `#108` (mapping wiring once `Preset` exists). `webhook_channel_subscriptions` is **not** enumerated — see the addendum. `deliverables_events` is enumerated **and** mapped to `LetterEvent` alongside `letters_events`; `emails` / `ebills` are enumerated but unmapped until those channels are modelled — see the 2026-07-29 addendum. Members carry explicit numeric values and are append-only (public ABI). |
+| `PingenApiDataTypeMapping` | `src/PingenApiNet.Abstractions/Helpers/PingenSerialisationHelper.cs:116-132` | 15 entries | ❌ Gap (high, related) | Per-call allocation (`=> new { … }` getter) — flagged previously in `ai-readiness.md § 3.3` "allocates on every access". Trivial fix to `static readonly`. Track in `#108`. The completeness regression is covered by `PingenApiDataTypeMappingTests`. |
 | `WebhookEventCategory` | `src/PingenApiNet.Abstractions/Enums/Api/WebhookEventCategory.cs` | 4 values: `issues`, `undeliverable`, `sent`, `delivered` | ⚠️ Deliberately incomplete (1 of 5) | The spec's `event_category` enum (`WebhookCreatePOST`) has five values, confirmed by the live API's own validation error: `Possible values: issues, sent, undeliverable, delivered, channel_subscriptions`. `delivered` is added here because its webhook body binds losslessly to the existing `WebhookEvent` model. `channel_subscriptions` is **omitted on purpose** — the library cannot yet represent its body, and enumerating the category would let a consumer subscribe to events it would then silently mis-parse. See the addendum. |
 
 ### Reflection test coverage
 
 `tests/PingenApiNet.UnitTests/Tests/Helpers/PingenApiDataTypeMappingTests.cs` asserts:
 
-1. Every `PingenApiDataType` enum value is either registered in `PingenApiDataTypeMapping` **or** explicitly listed in a `KnownUnmappedDataTypes` allow-list. The allow-list contains exactly `PingenApiDataType.presets` (tracking `#106` / `#108`).
+1. Every `PingenApiDataType` enum value is either registered in `PingenApiDataTypeMapping` **or** explicitly listed in a `KnownUnmappedDataTypes` allow-list. The allow-list contains `PingenApiDataType.presets` (tracking `#106` / `#108`) and `PingenApiDataType.emails` / `PingenApiDataType.ebills` (tracking `#125` — enumerated so the `deliverable` relationship binds, unmapped until the email and ebill channels are modelled).
 2. Every mapped CLR `Type` is non-null and implements `IAttributes` (so `IncludedCollection.OfType<T>` works).
 3. The allow-list does not drift from the enum: every entry must be a real enum value, and any value that gains a mapping must be removed from the allow-list (preventing the audit from going stale).
 
@@ -170,6 +170,113 @@ Follow-up (needs a tracking issue): add `WebhookChannelSubscription : IAttribute
 
 Regression coverage: `PingenWebhookHelperTests.ValidateWebhookAndGetData_WebhookDeliveredPayload_DeserializesWithoutLoss` (against `Assets/webhook_delivered_sample.json`, the real body shape — attributes `url` + `created_at`, no `reason`), plus `webhook_delivered` in the `ForAllEventTypes` matrix and the `webhook_delivered → WebhookEvent` assertion in `PingenSerialisationHelperTests.PingenApiDataTypeMapping_AllWebhookCategoriesMapToWebhookEvent`.
 
+### Addendum (2026-07-29) — the deliverable rollout: outage fix + full spec re-alignment
+
+On **2026-07-27** Pingen rolled out a "deliverable" abstraction over letters, emails and ebills (the spec's `Webhook*GET` schemas were renamed `WebhookDeliverable*GET`, and `LetterEventRelatedSingleOutput` became `DeliverableEventLuceneRelatedSingleOutput`). The wire consequence, unannounced and with no version gate:
+
+```
+data.relationships.event.data.type:  "letters_events"  →  "deliverables_events"
+```
+
+for **every** event category. `RelatedSingleOutput.Data.Type` is the same non-nullable `PingenApiDataType` as the top-level discriminator, so the addendum above applies verbatim one level deeper — `JsonException` after the HMAC has validated, the consumer answers 4xx/5xx, Pingen dead-letters the event after 7 attempts over ~7 h and mails the organisation a "Webhook Zustellung Fehlgeschlagen" digest:
+
+```
+JsonException: The JSON value could not be converted to
+PingenApiNet.Abstractions.Enums.Api.PingenApiDataType.
+Path: $.data.relationships.event.data.type
+```
+
+Observed in production on 1.2.5 and reproduced on 1.3.0-rc-1: last successful delivery 2026-07-27 13:42 CEST, first failure 17:02 CEST, then 100 % failure (626 deliveries in the following 48 h on one consumer alone). Both the `sent` and `undeliverable` categories were affected; the fix is `deliverables_events = 15`.
+
+**Pingen kept the legacy shape alongside the new one**, which is what makes the fix a one-liner *and* sets the trap:
+
+| | before 2026-07-27 | after |
+|---|---|---|
+| `relationships.letter` | present | **still present** (unchanged) |
+| `relationships.deliverable` | — | added (`data.type` = `letters`) |
+| `relationships.event.data.type` | `letters_events` | **`deliverables_events`** ← the only breaking change |
+| `included[]` event resource | one, typed `letters_events` | **two**, typed `letters_events` *and* `deliverables_events`, sharing one id |
+
+Both the legacy relationship and the legacy include survived the rollout, which is what kept the blast radius to a single unknown discriminator. **They are not part of the contract any more, though**: `WebhookDeliverableSentGET` and its three siblings declare `required: [organisation, deliverable, event]` and no longer list `letter` as a property at all. The wire is running ahead of the spec in one direction and behind it in the other, so the library is fixed for both shapes rather than for the one currently on the wire.
+
+### What this PR changes
+
+**Discriminators.** `deliverables_events = 15`, plus `emails = 16` and `ebills = 17` — the latter two because `DeliverableRelatedSingleOutput.data.type` is `enum: [letters, emails, ebills]`, so binding the new `deliverable` relationship without them would reproduce this outage verbatim for any organisation that sends on those channels.
+
+**Event resolution.** `deliverables_events` maps to `LetterEvent` *alongside* `letters_events` — the spec's `DeliverableEventLuceneAttributes` and `LetterEventEloquentAttributes` are field-for-field identical, so one CLR type backs both. The duplicate that produces meanwhile is handled where it belongs, in `IncludedCollection.OfType<T>()`, which now collapses a resource appearing under two *different* discriminators with one shared id. The collapse is deliberately narrow: repeats under the *same* discriminator are still returned in full (`OfType_DuplicateEntries_ReturnsAllInsertionOrder` pins that), because those are malformed API responses rather than migration artefacts.
+
+The alternative — enumerating `deliverables_events` but leaving it unmapped, so `letters_events` stays the single binding — was rejected. It works only for as long as Pingen keeps sending the legacy copy, and it fails *silently* when that stops: `TryGetIncludedData` returns `false`, the letter event comes back `null`, and consumers get an `NullReferenceException` somewhere downstream instead of an error at the parse boundary. Verified by sabotage: removing the mapping entry fails `ValidateWebhookAndGetData_LegacyLetterShapeDropped_StillResolvesEverything`.
+
+**Relationships.** `WebhookEventRelationships` gains a nullable `Deliverable` and `Letter` becomes nullable; `LetterEventRelationships` gets the same treatment, because `DeliverableEventLuceneGETListItem` — already backing the emails and ebills event endpoints — declares `deliverable` where `LetterEventEloquentGETListItem` declares `letter`. Both new parameters are appended with `= null` defaults, so existing positional construction still compiles. Prefer `Deliverable`, fall back to `Letter`.
+
+**Attributes that changed with the rollout.** `BatchAttributes` gained `channel_type` (`post` | `ebill` | `email`) and `deliverable_count`, the channel-agnostic counterpart to `letter_count`. Both were being dropped on the floor.
+
+**Attributes that were already being dropped** (pre-dating the rollout, previously tracked as non-urgent in #125, closed here so the client is aligned end-to-end): `WebhookEvent.corrected_address` — spec-required on every `undeliverable` webhook and the most damaging of the set, since it is the address Pingen worked out for a failed delivery — plus `Letter.source`, `Batch.source`, `Organisation.{edition, flags, missing_credits, limits_monthly_letters_count, limits_monthly_emails_count, limits_monthly_ebills_count}` and `User.{edition, flags}`.
+
+New string-constant classes `LetterSources`, `BatchSources` and `BatchChannelTypes` accompany the `source` / `channel_type` fields. They are `const string` sets rather than C# enums **on purpose**: a strictly-bound enum turns an unannounced new value into an unparseable response, which is the failure this whole addendum is about. `Letter.Status` already follows that pattern.
+
+Every attributes model in the library now matches its spec schema exactly. The only intentional divergence is `WebhookEvent`, which is a superset: one model backs all four event categories, so `reason` and `corrected_address` are present-but-null on the categories that do not send them.
+
+### Scope check — the polling path
+
+`GET /organisations/{org}/deliveries/letters/{letterId}/events` returns `data[].type == "letters_events"` live, and the spec agrees: it resolves to `LetterEventEloquentGETList`, whose items are typed `letters_events`. (An earlier draft of this addendum claimed the spec had already flipped that endpoint to `deliverables_events` — it has not. The `deliverables_events` examples belong to `DeliverableEventLucene*` and to the emails/ebills event endpoints.) Enumerating the value and mapping both discriminators covers the flip in advance either way.
+
+### Regression coverage
+
+| Test | Asset | Pins |
+|---|---|---|
+| `ValidateWebhookAndGetData_DeliverablesEventRelationship_DeserializesAndResolvesSingleEvent` | `webhook_sent_deliverables_sample.json` — verbatim anonymised capture from `GET /organisations/{org}/webhooks/{id}/requests` | today's wire shape: new discriminator, both relationships, duplicated include |
+| `ValidateWebhookAndGetData_LegacyLetterShapeDropped_StillResolvesEverything` | `webhook_undeliverable_deliverable_only_sample.json` — **constructed from the spec, not captured** | the end state: no `letter`, no legacy include, `corrected_address` present |
+| `OfType_SameResourceUnderTwoDiscriminators_CollapsesToOne` / `OfType_DistinctResourcesUnderTwoDiscriminators_ReturnsBoth` | inline | the collapse, and that it does not swallow genuinely distinct events |
+
+Verified RED-then-GREEN on all three failure modes:
+
+| Sabotage | Result |
+|---|---|
+| Make the discriminator unknown (simulates the pre-fix library) | `JsonException … Path: $.data.relationships.event.data.type` — the exact production error |
+| Drop `deliverables_events` from the mapping | `LegacyLetterShapeDropped` fails — the silent-null future outage |
+| Remove the cross-discriminator collapse | `InvalidOperationException: Sequence contains more than one element` on today's shape |
+
+### Still open
+
+`channel_subscriptions` remains unenumerated in `WebhookEventCategory`, and `webhook_channel_subscriptions` unenumerated in `PingenApiDataType`, for the reason given in the 2026-07-12 addendum: its body has a different attribute surface and different relationships (`organisation` + `channel_ebill`, no `deliverable`, no `event`), so it needs its own model rather than a discriminator entry. A webhook of that category created through the Pingen web app will still fail to deserialize. Tracked in #125.
+
+
+### Addendum (2026-07-29b) — full re-verification against the live spec
+
+Every model, enum, field-constant set and endpoint in the client was re-checked property-by-property against `https://api.pingen.com/documentation/swagger-docs` (fetched twice, byte-identical). Results:
+
+- **Attributes models** — all thirteen match their spec schema exactly, names and types. The single intentional divergence is `WebhookEvent`, a superset: one model backs all four event categories, so `reason` and `corrected_address` are present-but-null on the categories that do not send them.
+- **`*Fields` constants** — all seven sets are exact (`LetterFields` 18/18, `BatchFields` 16/16, `OrganisationFields` 19/19, `UserFields` 9/9, `UserAssociationFields` 4/4, `WebhookFields` 3/3, `LetterEventFields` 9/9).
+- **Strictly-bound enums** — `LetterAddressPosition`, `LetterPrintMode`, `LetterPrintSpectrum`, `UserRole`, `UserAssociationStatus`, `BatchIcon` (all 16), `PingenApiCurrency` and `LetterCreateDeliveryProduct` match their spec enums exactly. These are the highest-risk category: an undocumented new value in any of them is fatal the same way `deliverables_events` was.
+- **Relationships** — `Batch`, `Webhook`, `Organisation` and `User` match exactly. `WebhookEventRelationships` and `LetterEventRelationships` are deliberate supersets carrying both the legacy and the deliverable-generalised shape; see the addendum above.
+- **`PingenApiLanguage`** was missing `es-ES` (the spec's `language` enum lists six locales, the client had five). Added.
+
+One finding acted on, one recorded:
+
+**1. Letter endpoints moved onto their documented paths.** `LettersEndpoints.Root` was `letters`, so the client called `organisations/{org}/letters/…`. The spec documents `organisations/{org}/deliveries/letters/…` and does *not* document the short form — and the API's own webhook `links.related` values use the `deliveries/` form. Every other connector (batches, webhooks, user, organisations, file-upload) was already on its documented path; letters was the sole divergence, and `deliveries/` is the container the emails and ebills channels also live under, so it most likely arrived with the deliverable rollout.
+
+Both families are live, verified by unauthenticated probe against production (401 = route exists behind auth, 405 = exists but wrong method, 404 = no such route; a control request to a nonsense path returns 404, so the signal is real):
+
+| route | `letters/…` | `deliveries/letters/…` |
+|---|---|---|
+| collection / create | 401 | 401 |
+| `price-calculator` | 401 | 401 |
+| single | 401 | 401 |
+| `send`, `cancel` (PATCH) | 405 | 405 |
+| `file`, `events` | 401 | 401 |
+| issues (`letters/issues` vs `deliveries/letters/events/issues`) | 401 | 401 |
+
+`Issues` is **not** a plain prefix change: the documented route is `deliveries/letters/events/issues`, one of four event-category collections (`issues`, `sent`, `undeliverable`, `delivered`), where the old path was `letters/issues`. The payload binds unchanged — `LetterIssueAttributes` is field-for-field identical to `LetterEventEloquentAttributes` (as are the `Sent`, `Undeliverable` and `Delivered` variants), so `CollectionResult<LetterEventData>` still fits. The `language` query parameter exists on the documented route with the same `en-GB` default.
+
+`deliveries/letters` is the library's first org-scoped path with more than one segment, which touches the `NonOrganisationEndpoints` prefix logic flagged in `ai-readiness.md`. It does not prefix-match any entry (`file-upload`, `user`, `organisations`), and `PingenConnectionHandlerTests.GetAsync_NestedOrganisationScopedPath_IsPrefixedCorrectly` now pins that in both directions.
+
+Coverage is real rather than nominal: reverting `Root` to the legacy value fails **55 integration and 25 unit tests**, because the connector tests assert exact request paths and the WireMock stubs match on full URL.
+
+**Caveat — this is the one part of the PR not backed by a live call.** Route existence is probe-verified and payload shape is spec-verified, but no request has been made against these paths with real credentials from this branch. `dotnet test tests/PingenApiNet.Tests.E2E` against staging is the gate before release; it exercises the full letter lifecycle including send and cancel.
+
+**2. `FileUpload` and `LetterFont` declare non-nullable `string` constructor parameters**, against the convention that every attributes-model parameter is nullable so sparse fieldsets bind cleanly. `RespectNullableAnnotations` is unset, so a response omitting those fields binds `null` into a non-nullable property with no error. Both are spec-required fields on responses the client only ever reads whole, so the risk is theoretical — but it is the same latent-NRE mechanism described in the 2026-07-12 addendum.
+
 ---
 
 ## 5. Sub-issue handoff lists
@@ -195,7 +302,7 @@ These are concrete, actionable items grouped for follow-up sub-issues. Issue num
 
 ### Handoff to `#108` — Enum completeness & mapping wiring
 
-- **`PingenApiCurrency`**: resolve the line-46 TODO by adding only the currencies Pingen documents. If documentation is silent, leave as-is and update the comment to point at this audit document.
+- ~~**`PingenApiCurrency`**: resolve the line-46 TODO~~ — done; re-verified against the live spec on 2026-07-29, all four values match `billing_currency`.
 - **`PingenApiDataTypeMapping` static-cache**: convert from expression-bodied property getter (`=> new { … }`) to `public static readonly Dictionary<PingenApiDataType, Type>`. Trivial perf win flagged in `ai-readiness.md § 3.3`.
 - **Add `Preset` attributes record + `[PingenApiDataType.presets] = typeof(Preset)`** in `PingenSerialisationHelper.PingenApiDataTypeMapping`. Once added, **delete** the `PingenApiDataType.presets` entry from `KnownUnmappedDataTypes` in `PingenApiDataTypeMappingTests` — the third test (`KnownUnmappedDataTypes_StaysConsistentWithEnumAndMapping`) is the watchdog that ensures this cleanup is not forgotten.
 

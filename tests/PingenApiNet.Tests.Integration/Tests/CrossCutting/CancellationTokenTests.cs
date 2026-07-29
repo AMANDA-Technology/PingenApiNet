@@ -60,7 +60,7 @@ public sealed class CancellationTokenTests : IntegrationTestBase
     [Test]
     public async Task GetPageResultsAsync_WithCancelledToken_ShouldThrowAndNotSendRequest()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection());
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection());
 
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
@@ -74,7 +74,7 @@ public sealed class CancellationTokenTests : IntegrationTestBase
             }
         });
 
-        Server.VerifyNotCalled(OrgPath("letters"));
+        Server.VerifyNotCalled(OrgPath("deliveries/letters"));
     }
 
     /// <summary>

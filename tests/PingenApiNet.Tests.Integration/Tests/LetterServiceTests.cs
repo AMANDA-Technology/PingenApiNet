@@ -128,7 +128,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     [Test]
     public async Task GetPage_ShouldReturnLetters()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection());
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection());
 
         ApiResult<CollectionResult<LetterData>> result = await Client.Letters.GetPage();
 
@@ -145,7 +145,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     [Test]
     public async Task GetPage_ShouldReturnEmptyWhenNoLetters()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(0));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(0));
 
         ApiResult<CollectionResult<LetterData>> result = await Client.Letters.GetPage();
 
@@ -162,7 +162,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetPage_ShouldExposePaginationMeta_ForMultiPageResponse()
     {
         Server.StubJsonGet(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             PingenResponseFactory.LetterCollection(5, currentPage: 2, lastPage: 3));
 
         ApiResult<CollectionResult<LetterData>> result = await Client.Letters.GetPage();
@@ -185,7 +185,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetPage_OnApiError_ShouldReturnUnsuccessfulApiResult(int statusCode)
     {
         Server.StubError(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             "GET",
             PingenResponseFactory.ErrorResponse(status: statusCode.ToString()),
             statusCode);
@@ -209,7 +209,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath("letters"))
+                .WithPath(OrgPath("deliveries/letters"))
                 .UsingGet())
             .InScenario("letters-paging")
             .WillSetStateTo("page2")
@@ -221,7 +221,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath("letters"))
+                .WithPath(OrgPath("deliveries/letters"))
                 .UsingGet())
             .InScenario("letters-paging")
             .WhenStateIs("page2")
@@ -244,7 +244,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     [Test]
     public async Task GetPageResultsAsync_ShouldYieldSinglePage_WhenOnlyOneExists()
     {
-        Server.StubJsonGet(OrgPath("letters"), PingenResponseFactory.LetterCollection(2));
+        Server.StubJsonGet(OrgPath("deliveries/letters"), PingenResponseFactory.LetterCollection(2));
 
         var allItems = new List<string>();
         await foreach (IEnumerable<LetterData> page in Client.Letters.GetPageResultsAsync())
@@ -261,7 +261,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetPageResultsAsync_OnApiError_ShouldThrowPingenApiErrorException()
     {
         Server.StubError(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             "GET",
             PingenResponseFactory.ErrorResponse("Server Error", "Service unavailable", "500"),
             500);
@@ -288,7 +288,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubJsonGet(OrgPath($"letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonGet(OrgPath($"deliveries/letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
 
         ApiResult<SingleResult<LetterDataDetailed>> result = await Client.Letters.Get(letterId);
 
@@ -308,7 +308,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}"),
+            OrgPath($"deliveries/letters/{letterId}"),
             "GET",
             PingenResponseFactory.ErrorResponse("Not Found", "The letter does not exist.", "404"),
             404);
@@ -332,7 +332,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubJsonPost(OrgPath("letters"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPost(OrgPath("deliveries/letters"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPost<LetterCreate, LetterCreateRelationships>? data = LetterCreateFaker().Generate();
 
@@ -352,7 +352,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task Create_ShouldReturnErrorWhenValidationFails()
     {
         Server.StubError(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             "POST",
             PingenResponseFactory.ErrorResponse("Validation Failed", "FileUrl is required."));
 
@@ -377,7 +377,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubJsonPatch(OrgPath($"letters/{letterId}/send"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPatch(OrgPath($"deliveries/letters/{letterId}/send"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPatch<LetterSend>? data = LetterSendFaker(letterId).Generate();
 
@@ -398,7 +398,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/send"),
+            OrgPath($"deliveries/letters/{letterId}/send"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Conflict", "Letter has already been sent."));
 
@@ -422,7 +422,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/send"),
+            OrgPath($"deliveries/letters/{letterId}/send"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Not Found", "The letter does not exist.", "404"),
             404);
@@ -450,7 +450,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath($"letters/{letterId}/cancel"))
+                .WithPath(OrgPath($"deliveries/letters/{letterId}/cancel"))
                 .UsingPatch())
             .RespondWith(Response.Create()
                 .WithStatusCode(204)
@@ -470,7 +470,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/cancel"),
+            OrgPath($"deliveries/letters/{letterId}/cancel"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Conflict", "Letter has already been cancelled."));
 
@@ -491,7 +491,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/cancel"),
+            OrgPath($"deliveries/letters/{letterId}/cancel"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Not Found", "The letter does not exist.", "404"),
             404);
@@ -514,7 +514,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubDelete(OrgPath($"letters/{letterId}"));
+        Server.StubDelete(OrgPath($"deliveries/letters/{letterId}"));
 
         ApiResult result = await Client.Letters.Delete(letterId);
 
@@ -530,7 +530,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}"),
+            OrgPath($"deliveries/letters/{letterId}"),
             "DELETE",
             PingenResponseFactory.ErrorResponse("Not Found", "The letter does not exist.", "404"),
             404);
@@ -553,7 +553,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         string letterId = Guid.NewGuid().ToString();
 
-        Server.StubJsonPatch(OrgPath($"letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
+        Server.StubJsonPatch(OrgPath($"deliveries/letters/{letterId}"), PingenResponseFactory.SingleLetter(letterId));
 
         DataPatch<LetterUpdate>? data = LetterUpdateFaker(letterId).Generate();
 
@@ -574,7 +574,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}"),
+            OrgPath($"deliveries/letters/{letterId}"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Validation Failed", "PaperTypes contains an invalid value."));
 
@@ -598,7 +598,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}"),
+            OrgPath($"deliveries/letters/{letterId}"),
             "PATCH",
             PingenResponseFactory.ErrorResponse("Not Found", "The letter does not exist.", "404"),
             404);
@@ -627,7 +627,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath($"letters/{letterId}/file"))
+                .WithPath(OrgPath($"deliveries/letters/{letterId}/file"))
                 .UsingGet())
             .RespondWith(Response.Create()
                 .WithStatusCode(302)
@@ -651,7 +651,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/file"),
+            OrgPath($"deliveries/letters/{letterId}/file"),
             "GET",
             PingenResponseFactory.ErrorResponse("Not Found", "Letter file is not ready yet.", "404"),
             404);
@@ -738,7 +738,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string priceId = Guid.NewGuid().ToString();
 
         Server.StubJsonPost(
-            OrgPath("letters/price-calculator"),
+            OrgPath("deliveries/letters/price-calculator"),
             PingenResponseFactory.SingleLetterPriceCalculator(priceId, 2.75m),
             200);
 
@@ -761,7 +761,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task CalculatePrice_ShouldReturnErrorWhenValidationFails()
     {
         Server.StubError(
-            OrgPath("letters/price-calculator"),
+            OrgPath("deliveries/letters/price-calculator"),
             "POST",
             PingenResponseFactory.ErrorResponse("Validation Failed", "Country is required."));
 
@@ -787,7 +787,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubJsonGet(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             PingenResponseFactory.LetterEventCollection(letterId: letterId));
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetEventsPage(letterId, "en-GB");
@@ -808,7 +808,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubJsonGet(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             PingenResponseFactory.LetterEventCollection(0, letterId));
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetEventsPage(letterId, "en-GB");
@@ -828,7 +828,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubJsonGet(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             PingenResponseFactory.LetterEventCollection(4, letterId, 1, 3));
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetEventsPage(letterId, "en-GB");
@@ -848,7 +848,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             "GET",
             PingenResponseFactory.ErrorResponse("Server Error", "Service unavailable", "500"),
             500);
@@ -873,7 +873,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath($"letters/{letterId}/events"))
+                .WithPath(OrgPath($"deliveries/letters/{letterId}/events"))
                 .UsingGet())
             .InScenario("letter-events-paging")
             .WillSetStateTo("page2")
@@ -885,7 +885,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath($"letters/{letterId}/events"))
+                .WithPath(OrgPath($"deliveries/letters/{letterId}/events"))
                 .UsingGet())
             .InScenario("letter-events-paging")
             .WhenStateIs("page2")
@@ -911,7 +911,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubJsonGet(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             PingenResponseFactory.LetterEventCollection(2, letterId));
 
         var allItems = new List<string>();
@@ -931,7 +931,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
         string letterId = Guid.NewGuid().ToString();
 
         Server.StubError(
-            OrgPath($"letters/{letterId}/events"),
+            OrgPath($"deliveries/letters/{letterId}/events"),
             "GET",
             PingenResponseFactory.ErrorResponse("Forbidden", "Access denied", "403"),
             403);
@@ -958,7 +958,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPage_ShouldReturnLetterIssues()
     {
         Server.StubJsonGet(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             PingenResponseFactory.LetterEventCollection());
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetIssuesPage("en-GB");
@@ -977,7 +977,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPage_ShouldReturnEmptyWhenNoIssues()
     {
         Server.StubJsonGet(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             PingenResponseFactory.LetterEventCollection(0));
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetIssuesPage("en-GB");
@@ -995,7 +995,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPage_ShouldExposePaginationMeta_ForMultiPageResponse()
     {
         Server.StubJsonGet(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             PingenResponseFactory.LetterEventCollection(4, currentPage: 1, lastPage: 2));
 
         ApiResult<CollectionResult<LetterEventData>> result = await Client.Letters.GetIssuesPage("en-GB");
@@ -1013,7 +1013,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPage_OnApiError_ShouldReturnUnsuccessfulApiResult()
     {
         Server.StubError(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             "GET",
             PingenResponseFactory.ErrorResponse("Server Error", "Service unavailable", "500"),
             500);
@@ -1036,7 +1036,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     {
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath("letters/issues"))
+                .WithPath(OrgPath("deliveries/letters/events/issues"))
                 .UsingGet())
             .InScenario("letter-issues-paging")
             .WillSetStateTo("page2")
@@ -1048,7 +1048,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
 
         Server
             .Given(Request.Create()
-                .WithPath(OrgPath("letters/issues"))
+                .WithPath(OrgPath("deliveries/letters/events/issues"))
                 .UsingGet())
             .InScenario("letter-issues-paging")
             .WhenStateIs("page2")
@@ -1072,7 +1072,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPageResultsAsync_ShouldYieldSinglePage_WhenOnlyOneExists()
     {
         Server.StubJsonGet(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             PingenResponseFactory.LetterEventCollection(2));
 
         var allItems = new List<string>();
@@ -1090,7 +1090,7 @@ public sealed class LetterServiceTests : IntegrationTestBase
     public async Task GetIssuesPageResultsAsync_OnApiError_ShouldThrowPingenApiErrorException()
     {
         Server.StubError(
-            OrgPath("letters/issues"),
+            OrgPath("deliveries/letters/events/issues"),
             "GET",
             PingenResponseFactory.ErrorResponse("Forbidden", "Access denied", "403"),
             403);

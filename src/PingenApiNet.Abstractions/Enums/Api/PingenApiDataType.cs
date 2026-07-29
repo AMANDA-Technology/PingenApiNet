@@ -121,5 +121,50 @@ public enum PingenApiDataType
     /// Its attributes are <c>url</c> + <c>created_at</c> only — identical to <c>webhook_sent</c> —
     /// so it binds to the shared <c>WebhookEvent</c> model with a null <c>Reason</c>.
     /// </summary>
-    webhook_delivered = 14
+    webhook_delivered = 14,
+
+    /// <summary>
+    /// Data type deliverables_events. Pingen's generalised name for a delivery event, introduced when the
+    /// API grew a "deliverable" abstraction over letters, emails and ebills. Rolled out unannounced on
+    /// <b>2026-07-27</b>: the webhook body's <c>data.relationships.event.data.type</c> changed from
+    /// <see cref="letters_events"/> to this value for <i>every</i> event category.
+    /// <para>
+    /// That relationship binds to a non-nullable <see cref="PingenApiDataType"/>, so a library that does not
+    /// know the value throws <c>JsonException</c> out of <c>PingenWebhookHelper.ValidateWebhookAndGetData</c>
+    /// — <b>after</b> the HMAC signature has validated — and the consumer answers 4xx/5xx to every delivery
+    /// until Pingen dead-letters the event. Enumerating it is the fix; see
+    /// <c>doc/analysis/2026-05-01-api-docs-gap-audit.md</c> § Addendum (2026-07-29).
+    /// </para>
+    /// <para>
+    /// It maps to <c>LetterEvent</c> alongside <see cref="letters_events"/>, because the two carry an
+    /// identical attribute surface (the spec's <c>DeliverableEventLuceneAttributes</c> and
+    /// <c>LetterEventEloquentAttributes</c> are field-for-field the same). During the transition Pingen emits
+    /// the <b>same event twice</b> in <c>included</c> — once under each type, sharing one id — which
+    /// <c>IncludedCollection.OfType&lt;T&gt;()</c> collapses by resource id so
+    /// <c>PingenSerialisationHelper.TryGetIncludedData</c> still resolves exactly one.
+    /// </para>
+    /// </summary>
+    deliverables_events = 15,
+
+    /// <summary>
+    /// Data type emails. One of the three concrete deliverable kinds Pingen's <c>deliverable</c> relationship
+    /// can point at (<c>letters</c> | <c>emails</c> | <c>ebills</c>, per the spec's
+    /// <c>DeliverableRelatedSingleOutput</c>). Enumerated so the discriminator on that relationship binds for
+    /// every deliverable kind, not just the one this library models — an unknown value there is fatal in
+    /// exactly the way <see cref="deliverables_events"/> was on 2026-07-27.
+    /// <para>
+    /// The email delivery channel itself is not implemented (no <c>Email</c> attributes model, no service), so
+    /// this value is intentionally absent from <c>PingenSerialisationHelper.PingenApiDataTypeMapping</c>:
+    /// an <c>included</c> resource of this type is skipped rather than mis-bound. Tracked in issue #125.
+    /// </para>
+    /// </summary>
+    emails = 16,
+
+    /// <summary>
+    /// Data type ebills. The third deliverable kind, alongside <see cref="letters"/> and <see cref="emails"/>.
+    /// Enumerated for the same reason as <see cref="emails"/> — to keep the <c>deliverable</c> relationship's
+    /// discriminator bindable — and intentionally unmapped for the same reason: the eBill delivery channel is
+    /// not modelled by this library. Tracked in issue #125.
+    /// </summary>
+    ebills = 17
 }

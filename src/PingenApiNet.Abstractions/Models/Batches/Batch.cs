@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System.Text.Json.Serialization;
+using PingenApiNet.Abstractions.Enums.Batches;
 using PingenApiNet.Abstractions.Enums.Letters;
 using PingenApiNet.Abstractions.Interfaces.Data;
 
@@ -44,6 +45,12 @@ namespace PingenApiNet.Abstractions.Models.Batches;
 /// <param name="SubmittedAt"></param>
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
+/// <param name="DeliverableCount">
+/// Channel-agnostic item count, added by the 2026-07-27 deliverable rollout. Equal to
+/// <paramref name="LetterCount"/> for postal batches.
+/// </param>
+/// <param name="ChannelType">Delivery channel of this batch. Any of <see cref="BatchChannelTypes"/>.</param>
+/// <param name="Source">Where the batch came from. Any of <see cref="BatchSources"/>.</param>
 public sealed record Batch(
     [property: JsonPropertyName(BatchFields.Name)] string? Name,
     [property: JsonPropertyName(BatchFields.Icon)] string? Icon,
@@ -57,5 +64,8 @@ public sealed record Batch(
     [property: JsonPropertyName(BatchFields.PriceValue)] double? PriceValue,
     [property: JsonPropertyName(BatchFields.SubmittedAt)] DateTime? SubmittedAt,
     [property: JsonPropertyName(BatchFields.CreatedAt)] DateTime? CreatedAt,
-    [property: JsonPropertyName(BatchFields.UpdatedAt)] DateTime? UpdatedAt
+    [property: JsonPropertyName(BatchFields.UpdatedAt)] DateTime? UpdatedAt,
+    [property: JsonPropertyName(BatchFields.DeliverableCount)] int? DeliverableCount = null,
+    [property: JsonPropertyName(BatchFields.ChannelType)] string? ChannelType = null,
+    [property: JsonPropertyName(BatchFields.Source)] string? Source = null
 ) : IAttributes;

@@ -58,7 +58,7 @@ public sealed class ErrorHandlingTests : IntegrationTestBase
     public async Task GetPageResultsAsync_OnApiError_ShouldThrowPingenApiErrorException(int statusCode)
     {
         Server.StubError(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             "GET",
             PingenResponseFactory.ErrorResponse(
                 $"Error {statusCode}",
@@ -86,7 +86,7 @@ public sealed class ErrorHandlingTests : IntegrationTestBase
     public async Task GetPageResultsAsync_OnApiError_ShouldParseJsonApiErrorEnvelope()
     {
         Server.StubError(
-            OrgPath("letters"),
+            OrgPath("deliveries/letters"),
             "GET",
             PingenResponseFactory.ErrorResponse(
                 "Validation failed",

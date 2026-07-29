@@ -112,6 +112,22 @@ public static class PingenSerialisationHelper
     /// the <c>type</c> on relationship inputs (e.g. <c>LetterCreateRelationships.Preset</c>)
     /// and is not currently deserialized from API responses, so no attributes type is bound.
     /// </para>
+    /// <para>
+    /// <see cref="PingenApiDataType.emails"/> and <see cref="PingenApiDataType.ebills"/> are omitted for the
+    /// same reason: they are enumerated so the <c>deliverable</c> relationship's discriminator binds for every
+    /// deliverable kind, but this library models neither channel, so there is no attributes type to bind an
+    /// <c>included</c> resource of those types to. Tracked in issue #125.
+    /// </para>
+    /// <para>
+    /// <see cref="PingenApiDataType.deliverables_events"/> and <see cref="PingenApiDataType.letters_events"/>
+    /// deliberately map to the <b>same</b> <see cref="LetterEvent"/> type — the spec's
+    /// <c>DeliverableEventLuceneAttributes</c> and <c>LetterEventEloquentAttributes</c> are field-for-field
+    /// identical. During Pingen's transition a single event is emitted under both types with one shared id;
+    /// <c>IncludedCollection.OfType&lt;T&gt;()</c> collapses matches by resource id so
+    /// <see cref="TryGetIncludedData{T}"/>'s <c>SingleOrDefault()</c> still sees exactly one. Do not "fix"
+    /// this by dropping either entry: whichever one is dropped, the resolution breaks on the day Pingen stops
+    /// sending the other.
+    /// </para>
     /// </summary>
     public static Dictionary<PingenApiDataType, Type> PingenApiDataTypeMapping => new()
     {
@@ -120,6 +136,7 @@ public static class PingenSerialisationHelper
         [PingenApiDataType.organisations] = typeof(Organisation),
         [PingenApiDataType.letter_price_calculator] = typeof(LetterPrice),
         [PingenApiDataType.letters_events] = typeof(LetterEvent),
+        [PingenApiDataType.deliverables_events] = typeof(LetterEvent),
         [PingenApiDataType.users] = typeof(User),
         [PingenApiDataType.associations] = typeof(UserAssociation),
         [PingenApiDataType.webhooks] = typeof(Webhook),

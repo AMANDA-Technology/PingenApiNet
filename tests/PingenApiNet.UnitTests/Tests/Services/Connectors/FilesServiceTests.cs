@@ -181,6 +181,7 @@ public class FilesServiceTests
         _mockConnectionHandler
             .SendExternalRequestAsync(
                 Arg.Is<HttpRequestMessage>(r =>
+                    r != null &&
                     r.Method == HttpMethod.Put &&
                     r.RequestUri!.ToString() == uploadUrl),
                 Arg.Any<CancellationToken>())
@@ -190,6 +191,7 @@ public class FilesServiceTests
 
         await _mockConnectionHandler.Received(1).SendExternalRequestAsync(
             Arg.Is<HttpRequestMessage>(r =>
+                r != null &&
                 r.Method == HttpMethod.Put &&
                 r.RequestUri!.ToString() == uploadUrl),
             Arg.Any<CancellationToken>());
@@ -206,14 +208,14 @@ public class FilesServiceTests
 
         _mockConnectionHandler
             .SendExternalRequestAsync(
-                Arg.Is<HttpRequestMessage>(r => r.Content is StreamContent),
+                Arg.Is<HttpRequestMessage>(r => r != null && r.Content is StreamContent),
                 Arg.Any<CancellationToken>())
             .Returns(new HttpResponseMessage(HttpStatusCode.OK));
 
         await _filesService.UploadFile(fileUploadData, stream);
 
         await _mockConnectionHandler.Received(1).SendExternalRequestAsync(
-            Arg.Is<HttpRequestMessage>(r => r.Content is StreamContent),
+            Arg.Is<HttpRequestMessage>(r => r != null && r.Content is StreamContent),
             Arg.Any<CancellationToken>());
     }
 
@@ -280,7 +282,7 @@ public class FilesServiceTests
             .Returns(callInfo =>
             {
                 var req = callInfo.Arg<HttpRequestMessage>();
-                capturedBytes = req.Content!.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                capturedBytes = req?.Content?.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             });
 
@@ -329,7 +331,7 @@ public class FilesServiceTests
             .Returns(callInfo =>
             {
                 var req = callInfo.Arg<HttpRequestMessage>();
-                capturedBytes = req.Content!.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                capturedBytes = req?.Content?.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             });
 

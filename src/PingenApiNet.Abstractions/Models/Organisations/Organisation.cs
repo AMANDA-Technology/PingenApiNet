@@ -44,6 +44,15 @@ namespace PingenApiNet.Abstractions.Models.Organisations;
 /// <param name="Color"></param>
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
+/// <param name="Edition">Product edition the organisation is on.</param>
+/// <param name="Flags">Feature flags enabled for the organisation.</param>
+/// <param name="MissingCredits">
+/// Credits the organisation is short of. Non-zero means prepaid sending stalls until it is topped up —
+/// worth surfacing to consumers rather than discovering it as a stuck letter.
+/// </param>
+/// <param name="LimitsMonthlyLettersCount">Monthly letter quota.</param>
+/// <param name="LimitsMonthlyEmailsCount">Monthly email quota.</param>
+/// <param name="LimitsMonthlyEbillsCount">Monthly ebill quota.</param>
 public sealed record Organisation(
     [property: JsonPropertyName(OrganisationFields.Name)] string? Name,
     [property: JsonPropertyName(OrganisationFields.Status)] string? Status,
@@ -57,5 +66,11 @@ public sealed record Organisation(
     [property: JsonPropertyName(OrganisationFields.DataRetentionPdf)] int? DataRetentionPdf,
     [property: JsonPropertyName(OrganisationFields.Color)] string? Color,
     [property: JsonPropertyName(OrganisationFields.CreatedAt)] DateTime? CreatedAt,
-    [property: JsonPropertyName(OrganisationFields.UpdatedAt)] DateTime? UpdatedAt
- ) : IAttributes;
+    [property: JsonPropertyName(OrganisationFields.UpdatedAt)] DateTime? UpdatedAt,
+    [property: JsonPropertyName(OrganisationFields.Edition)] string? Edition = null,
+    [property: JsonPropertyName(OrganisationFields.Flags)] IReadOnlyList<string>? Flags = null,
+    [property: JsonPropertyName(OrganisationFields.MissingCredits)] double? MissingCredits = null,
+    [property: JsonPropertyName(OrganisationFields.LimitsMonthlyLettersCount)] int? LimitsMonthlyLettersCount = null,
+    [property: JsonPropertyName(OrganisationFields.LimitsMonthlyEmailsCount)] int? LimitsMonthlyEmailsCount = null,
+    [property: JsonPropertyName(OrganisationFields.LimitsMonthlyEbillsCount)] int? LimitsMonthlyEbillsCount = null
+) : IAttributes;

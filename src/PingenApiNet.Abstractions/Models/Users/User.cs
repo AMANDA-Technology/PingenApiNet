@@ -38,6 +38,8 @@ namespace PingenApiNet.Abstractions.Models.Users;
 /// <param name="Language"></param>
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
+/// <param name="Edition">Product edition the user is on.</param>
+/// <param name="Flags">Feature flags enabled for the user.</param>
 public sealed record User(
     [property: JsonPropertyName(UserFields.Email)] string? Email,
     [property: JsonPropertyName(UserFields.FirstName)] string? FirstName,
@@ -45,5 +47,7 @@ public sealed record User(
     [property: JsonPropertyName(UserFields.Status)] string? Status,
     [property: JsonPropertyName(UserFields.Language)] string? Language,
     [property: JsonPropertyName(UserFields.CreatedAt)] DateTime? CreatedAt,
-    [property: JsonPropertyName(UserFields.UpdatedAt)] DateTime? UpdatedAt
+    [property: JsonPropertyName(UserFields.UpdatedAt)] DateTime? UpdatedAt,
+    [property: JsonPropertyName(UserFields.Edition)] string? Edition = null,
+    [property: JsonPropertyName(UserFields.Flags)] IReadOnlyList<string>? Flags = null
 ) : IAttributes;

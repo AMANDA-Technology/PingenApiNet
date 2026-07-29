@@ -67,7 +67,8 @@ public class FieldHelpers
             () => LetterFields.TrackingNumber.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.TrackingNumber)),
             () => LetterFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.SubmittedAt)),
             () => LetterFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.CreatedAt)),
-            () => LetterFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt))
+            () => LetterFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.UpdatedAt)),
+            () => LetterFields.Source.ShouldBe(PingenAttributesPropertyHelper<Letter>.GetJsonPropertyName(x => x.Source))
         );
     }
 
@@ -90,7 +91,10 @@ public class FieldHelpers
             () => BatchFields.PriceValue.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.PriceValue)),
             () => BatchFields.SubmittedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.SubmittedAt)),
             () => BatchFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.CreatedAt)),
-            () => BatchFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt))
+            () => BatchFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.UpdatedAt)),
+            () => BatchFields.DeliverableCount.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.DeliverableCount)),
+            () => BatchFields.ChannelType.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.ChannelType)),
+            () => BatchFields.Source.ShouldBe(PingenAttributesPropertyHelper<Batch>.GetJsonPropertyName(x => x.Source))
         );
     }
 
@@ -113,7 +117,13 @@ public class FieldHelpers
             () => OrganisationFields.DataRetentionPdf.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.DataRetentionPdf)),
             () => OrganisationFields.Color.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Color)),
             () => OrganisationFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.CreatedAt)),
-            () => OrganisationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt))
+            () => OrganisationFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.UpdatedAt)),
+            () => OrganisationFields.Edition.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Edition)),
+            () => OrganisationFields.Flags.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.Flags)),
+            () => OrganisationFields.MissingCredits.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.MissingCredits)),
+            () => OrganisationFields.LimitsMonthlyLettersCount.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.LimitsMonthlyLettersCount)),
+            () => OrganisationFields.LimitsMonthlyEmailsCount.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.LimitsMonthlyEmailsCount)),
+            () => OrganisationFields.LimitsMonthlyEbillsCount.ShouldBe(PingenAttributesPropertyHelper<Organisation>.GetJsonPropertyName(x => x.LimitsMonthlyEbillsCount))
         );
     }
 
@@ -130,7 +140,9 @@ public class FieldHelpers
             () => UserFields.Status.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Status)),
             () => UserFields.Language.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Language)),
             () => UserFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.CreatedAt)),
-            () => UserFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt))
+            () => UserFields.UpdatedAt.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.UpdatedAt)),
+            () => UserFields.Edition.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Edition)),
+            () => UserFields.Flags.ShouldBe(PingenAttributesPropertyHelper<User>.GetJsonPropertyName(x => x.Flags))
         );
     }
 
@@ -189,7 +201,8 @@ public class FieldHelpers
         "WebhookEventFields".ShouldSatisfyAllConditions(
             () => WebhookEventFields.Reason.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Reason)),
             () => WebhookEventFields.Url.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.Url)),
-            () => WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt))
+            () => WebhookEventFields.CreatedAt.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CreatedAt)),
+            () => WebhookEventFields.CorrectedAddress.ShouldBe(PingenAttributesPropertyHelper<WebhookEvent>.GetJsonPropertyName(x => x.CorrectedAddress))
         );
     }
 

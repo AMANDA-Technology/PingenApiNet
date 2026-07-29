@@ -50,6 +50,7 @@ namespace PingenApiNet.Abstractions.Models.Letters;
 /// <param name="SubmittedAt"></param>
 /// <param name="CreatedAt"></param>
 /// <param name="UpdatedAt"></param>
+/// <param name="Source">Where the letter came from. Any of <see cref="LetterSources"/>.</param>
 public sealed record Letter(
     [property: JsonPropertyName(LetterFields.Status)] string? Status,
     [property: JsonPropertyName(LetterFields.FileOriginalName)] string? FileOriginalName,
@@ -67,5 +68,6 @@ public sealed record Letter(
     [property: JsonPropertyName(LetterFields.TrackingNumber)] string? TrackingNumber,
     [property: JsonPropertyName(LetterFields.SubmittedAt)] DateTime? SubmittedAt,
     [property: JsonPropertyName(LetterFields.CreatedAt)] DateTime? CreatedAt,
-    [property: JsonPropertyName(LetterFields.UpdatedAt)] DateTime? UpdatedAt
+    [property: JsonPropertyName(LetterFields.UpdatedAt)] DateTime? UpdatedAt,
+    [property: JsonPropertyName(LetterFields.Source)] string? Source = null
 ) : IAttributes;

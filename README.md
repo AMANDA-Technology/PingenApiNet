@@ -197,7 +197,16 @@ private async Task<(WebhookEventData WebhookEventData, Data<Organisation> Organi
 }
 ```
 
-Supported event categories are `issues`, `undeliverable`, `sent` and `delivered` (`WebhookEventCategory`). All four deliver a `WebhookEventData` carrying the organisation, letter and letter-event relationships; only `issues` and `undeliverable` populate `Reason`.
+Supported event categories are `issues`, `undeliverable`, `sent` and `delivered` (`WebhookEventCategory`). All four deliver a `WebhookEventData` carrying the organisation, deliverable and event relationships; only `issues` and `undeliverable` populate `Reason`, and only `undeliverable` populates `CorrectedAddress`.
+
+> **Reading the relationships.** Pingen's 2026-07-27 rollout generalised "letter" into a *deliverable* (letter, email or ebill). `WebhookEventRelationships` therefore exposes both `Deliverable` and the legacy `Letter`, and **both are nullable** — the API's published contract no longer declares `letter`, but the wire still sends it. Read `Deliverable` first and fall back to `Letter`:
+>
+> ```c#
+> var deliverableId = webhookEventData.Relationships.Deliverable?.Data.Id
+>                     ?? webhookEventData.Relationships.Letter?.Data.Id;
+> ```
+>
+> The `letterData` element of the returned tuple is unaffected and keeps resolving for postal deliverables.
 
 > Pingen also documents a `channel_subscriptions` category. Its webhook body has a different shape (no `letter` relationship, and attributes this library does not model), so it is deliberately **not** supported — see `doc/analysis/2026-05-01-api-docs-gap-audit.md`. Do not create such a subscription for an endpoint backed by `PingenWebhookHelper`.
 

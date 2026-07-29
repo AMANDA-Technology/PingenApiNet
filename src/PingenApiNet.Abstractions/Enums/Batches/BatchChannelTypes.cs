@@ -1,4 +1,4 @@
-/*
+﻿/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,28 +23,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace PingenApiNet.Abstractions.Models.Webhooks.WebhookEvents;
+namespace PingenApiNet.Abstractions.Enums.Batches;
 
 /// <summary>
-/// Available sparse fieldset field names for the WebhookEvent resource.
-/// Pass one or more of these constants as field values in <see cref="Api.ApiRequest.SparseFieldsets"/>
-/// to request only specific attributes in the response.
-/// <see href="https://api.pingen.com/documentation#section/Advanced/Sparse-fieldsets">API Doc - Sparse fieldsets</see>
+/// Delivery channels a batch can dispatch through, i.e. the values of <c>Batch.ChannelType</c>.
+/// <br/>Added by Pingen's 2026-07-27 deliverable rollout, which generalised "letter" into a deliverable that
+/// can travel by post, ebill or email. Before that a batch was implicitly always postal.
+/// <para>
+/// Bound as a plain <c>string</c> on the model rather than a C# enum — see
+/// <see cref="Letters.LetterSources"/> for why. This library only sends postal batches
+/// (<see cref="Post"/>); the other two channels are not implemented (issue #125), so treat them as read-only
+/// information about batches created elsewhere.
+/// </para>
 /// </summary>
-public static class WebhookEventFields
+public static class BatchChannelTypes
 {
-    /// <summary>Reason for this webhook event (e.g. failure reason)</summary>
-    public const string Reason = "reason";
+    /// <summary>
+    /// Physical mail — the only channel this library can create batches for.
+    /// </summary>
+    public const string Post = "post";
 
     /// <summary>
-    /// The address Pingen worked out for an undeliverable item. Spec-required on
-    /// <c>WebhookDeliverableUndeliverableAttributes</c>, absent on every other event category.
+    /// Swiss eBill delivery. Not implemented by this library.
     /// </summary>
-    public const string CorrectedAddress = "corrected_address";
+    public const string Ebill = "ebill";
 
-    /// <summary>Target URL the webhook was sent to</summary>
-    public const string Url = "url";
-
-    /// <summary>Timestamp when the webhook event was created</summary>
-    public const string CreatedAt = "created_at";
+    /// <summary>
+    /// Email delivery. Not implemented by this library.
+    /// </summary>
+    public const string Email = "email";
 }

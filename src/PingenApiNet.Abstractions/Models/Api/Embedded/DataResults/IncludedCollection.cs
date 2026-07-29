@@ -68,12 +68,27 @@ public sealed class IncludedCollection
     /// Returns all included resources whose <c>type</c> maps to <typeparamref name="T"/>
     /// in <see cref="PingenSerialisationHelper.PingenApiDataTypeMapping"/>,
     /// deserialized as <see cref="Data{TAttributes}"/>.
+    /// <para>
+    /// When more than one <c>type</c> discriminator maps to <typeparamref name="T"/>, a single resource can
+    /// arrive once under each. Since 2026-07-27 Pingen does exactly that for delivery events, emitting one
+    /// event as both <c>letters_events</c> and <c>deliverables_events</c> with a shared <c>id</c> while it
+    /// migrates off the old name. Those <b>cross-discriminator</b> repeats are collapsed to their first
+    /// occurrence — without that, <see cref="PingenSerialisationHelper.TryGetIncludedData{T}"/>'s
+    /// <c>SingleOrDefault()</c> throws and every webhook delivery fails.
+    /// </para>
+    /// <para>
+    /// The collapse is deliberately narrow. Repeats of the same <c>id</c> under the <b>same</b> discriminator
+    /// are still returned in full: that is a genuine duplicate in the API's own response rather than an
+    /// artefact of the rename, and suppressing it would hide malformed data instead of surviving a migration.
+    /// Resources without an <c>id</c> are never suppressed.
+    /// </para>
     /// </summary>
     /// <typeparam name="T">The attributes type to filter by (must implement <see cref="IAttributes"/>).</typeparam>
     /// <returns>An enumerable of <see cref="Data{TAttributes}"/> for each matching included resource.</returns>
     public IEnumerable<Data<T>> OfType<T>() where T : IAttributes
     {
         var mapping = PingenSerialisationHelper.PingenApiDataTypeMapping;
+        var discriminatorById = new Dictionary<string, PingenApiDataType>(StringComparer.Ordinal);
 
         foreach (var element in RawItems)
         {
@@ -88,6 +103,14 @@ public sealed class IncludedCollection
 
             if (!mapping.TryGetValue(dataType, out var mappedType) || mappedType != typeof(T))
                 continue;
+
+            if (element.TryGetProperty("id", out var idProperty) && idProperty.GetString() is { } idString)
+            {
+                if (discriminatorById.TryGetValue(idString, out var seenDataType) && seenDataType != dataType)
+                    continue;
+
+                discriminatorById[idString] = dataType;
+            }
 
             var deserialized = PingenSerialisationHelper.Deserialize<Data<T>>(element.GetRawText());
             if (deserialized is not null)
