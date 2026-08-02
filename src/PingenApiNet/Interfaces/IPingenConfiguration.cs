@@ -60,6 +60,16 @@ public interface IPingenConfiguration
     /// The signing key is also stated as secret sometimes in the pingen documentation.
     /// </summary>
     public Dictionary<string, string>? WebhookSigningKeys { get; set; }
+
+    /// <summary>
+    /// Optional, additional static default request headers, e.g. to identify the calling application at the Pingen API.
+    /// Applied to the identity and the API HTTP client only, and deliberately NOT to the files HTTP client, which
+    /// targets pre signed third party storage URLs that must not receive any pre-configured header (see ADR-004).
+    /// See <see cref="PingenApiNet.Configuration.HttpClientExtension.ApplyDefaultRequestHeaders"/> for the exact
+    /// semantics: static values only, reserved header names are silently skipped, invalid entries are skipped and
+    /// nothing ever throws.
+    /// </summary>
+    public IReadOnlyDictionary<string, string>? DefaultRequestHeaders => null;
 }
 
 /// <summary>

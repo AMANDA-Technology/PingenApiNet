@@ -1,3 +1,4 @@
+using PingenApiNet.Configuration;
 using PingenApiNet.Interfaces;
 
 namespace PingenApiNet.Services;
@@ -71,12 +72,17 @@ public class PingenHttpClients(HttpClient identityClient, HttpClient apiClient, 
         };
         identityClient.DefaultRequestHeaders.Accept.Clear();
         identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
+        identityClient.ApplyDefaultRequestHeaders(configuration.DefaultRequestHeaders);
 
         var apiClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
         {
             BaseAddress = new(configuration.BaseUri)
         };
+        apiClient.ApplyDefaultRequestHeaders(configuration.DefaultRequestHeaders);
 
+        // DELIBERATE: the external client targets pre signed THIRD PARTY storage URLs, not the Pingen API. ADR-004
+        // requires it to carry no pre-configured headers, an additional header risks a signature rejection.
+        // Therefore IPingenConfiguration.DefaultRequestHeaders is NOT applied here, do not "fix" this inconsistency.
         var externalClient = new HttpClient();
 
         return new(identityClient, apiClient, externalClient);

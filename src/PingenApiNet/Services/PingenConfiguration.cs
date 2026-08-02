@@ -47,4 +47,7 @@ public sealed record PingenConfiguration : IPingenConfiguration
 
     /// <inheritdoc />
     public Dictionary<string, string>? WebhookSigningKeys { get; set; }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, string>? DefaultRequestHeaders { get; set; }
 }

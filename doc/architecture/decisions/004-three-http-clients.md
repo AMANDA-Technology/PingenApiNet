@@ -25,6 +25,14 @@ Three named `HttpClient` instances are defined in `PingenHttpClients.Names`:
 
 In the ASP.NET Core path (`PingenServiceCollection.AddPingenServices`), these are registered via `services.AddHttpClient(name, configure)` and resolved via `IHttpClientFactory`. In the standalone path (used by tests), `PingenHttpClients.Create(configuration)` constructs `HttpClient` instances directly.
 
+### Caller-supplied default request headers (added in 1.4.0)
+
+`IPingenConfiguration.DefaultRequestHeaders` lets a consumer add static headers (e.g. a caller-identification header such as `X-Amanda-Client`) to the clients this library configures. It is applied through `HttpClientExtension.ApplyDefaultRequestHeaders` at both construction sites (`PingenServiceCollection.AddPingenServices` and `PingenHttpClients.Create`) to **`Pingen.Identity` and `Pingen.Api` only**.
+
+**`Pingen.Files` is deliberately excluded.** That client talks to pre-signed third-party storage URLs, not to Pingen — this ADR requires it to carry no pre-configured headers, and an additional header risks a signature rejection by the storage provider. The exclusion is pinned by `AddPingenServices_WithDefaultRequestHeaders_DoesNotApplyToFilesClient`, `Create_WithDefaultRequestHeaders_DoesNotApplyToExternalClient` and the wire-level `ExternalFileUpload_ShouldNotSendConfiguredDefaultRequestHeader`. Do not "fix" the apparent inconsistency by applying the headers there too.
+
+The reserved header names `Authorization`, `Accept`, `Host` and `Idempotency-Key` are silently skipped, because the header collections append on a duplicate name instead of throwing — an unguarded caller entry would transmit two values and break authentication, content negotiation or idempotency. Invalid entries (blank name or value, invalid header-name token characters, control characters such as CR/LF in the value) are skipped as well, so a configured header can never turn into a failed request.
+
 ## Consequences
 
 **Good:**
