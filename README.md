@@ -175,6 +175,20 @@ services.AddPingenServices(new PingenConfiguration
 });
 ```
 
+Optionally, set `DefaultRequestHeaders` to add static headers to every request, e.g. to identify the calling application.
+```c#
+services.AddPingenServices(new PingenConfiguration
+{
+    /****/
+    DefaultRequestHeaders = new Dictionary<string, string>
+    {
+        ["X-Your-Client"] = "your-app/1.0.0 (prd)"
+    }
+});
+```
+
+Those headers are applied to the identity and the API HTTP client only, and deliberately **not** to the files HTTP client, which uploads to and downloads from pre-signed third party storage URLs that must not receive any pre-configured header (see [ADR-004](doc/architecture/decisions/004-three-http-clients.md)). Static values only, per request values belong on the `HttpRequestMessage`. The reserved names `Authorization`, `Accept`, `Host` and `Idempotency-Key` are silently skipped, as are invalid entries (blank name or value, invalid header name characters, control characters such as CR/LF in the value) — a configured header can never make a request fail. The same is available for the standalone path via `PingenHttpClients.Create(configuration)`, and as the public `HttpClient.ApplyDefaultRequestHeaders(headers)` extension for callers that construct the `HttpClient` instances themselves.
+
 #### 6. Receive Webhooks
 
 Validate webhook and extract data.

@@ -1,3 +1,4 @@
+using PingenApiNet.Configuration;
 using PingenApiNet.Services.Connectors;
 using PingenApiNet.Tests.Integration.Helpers;
 using WireMock.RequestBuilders;
@@ -30,6 +31,12 @@ public abstract class IntegrationTestBase
     private HttpClient _identityClient = null!;
     private HttpClient _apiClient = null!;
     private HttpClient _externalClient = null!;
+
+    /// <summary>
+    /// Optional, additional static default request headers to configure. Override in a fixture to exercise
+    /// <see cref="IPingenConfiguration.DefaultRequestHeaders"/>.
+    /// </summary>
+    protected virtual IReadOnlyDictionary<string, string>? DefaultRequestHeaders => null;
 
     /// <summary>
     /// Start WireMock server once per test fixture.
@@ -68,8 +75,14 @@ public abstract class IntegrationTestBase
             IdentityUri = "https://identity.test.pingen.com/",
             ClientId = "test-client-id",
             ClientSecret = "test-client-secret",
-            DefaultOrganisationId = TestOrganisationId
+            DefaultOrganisationId = TestOrganisationId,
+            DefaultRequestHeaders = DefaultRequestHeaders
         };
+
+        // Mirror the library construction sites: the identity and API clients receive the configured default request
+        // headers, the external client deliberately does not, it targets pre signed third party URLs (see ADR-004).
+        _identityClient.ApplyDefaultRequestHeaders(configuration.DefaultRequestHeaders);
+        _apiClient.ApplyDefaultRequestHeaders(configuration.DefaultRequestHeaders);
 
         var httpClients = new PingenHttpClients(_identityClient, _apiClient, _externalClient);
         var connectionHandler = new PingenConnectionHandler(configuration, httpClients);

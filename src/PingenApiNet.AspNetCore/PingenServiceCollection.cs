@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using PingenApiNet.Configuration;
 using PingenApiNet.Interfaces;
 using PingenApiNet.Interfaces.Connectors;
 using PingenApiNet.Services;
@@ -73,11 +74,16 @@ public static class PingenServiceCollection
             identityClient.BaseAddress = new(pingenConfiguration.IdentityUri);
             identityClient.DefaultRequestHeaders.Accept.Clear();
             identityClient.DefaultRequestHeaders.Accept.Add(new("application/x-www-form-urlencoded"));
+            identityClient.ApplyDefaultRequestHeaders(pingenConfiguration.DefaultRequestHeaders);
         });
         services.AddHttpClient(PingenHttpClients.Names.Api, apiClient =>
         {
             apiClient.BaseAddress = new(pingenConfiguration.BaseUri);
+            apiClient.ApplyDefaultRequestHeaders(pingenConfiguration.DefaultRequestHeaders);
         }).ConfigurePrimaryHttpMessageHandler(p => new HttpClientHandler { AllowAutoRedirect = false });
+        // DELIBERATE: the files client targets pre signed THIRD PARTY storage URLs, not the Pingen API. ADR-004
+        // requires it to carry no pre-configured headers, an additional header risks a signature rejection.
+        // Therefore IPingenConfiguration.DefaultRequestHeaders is NOT applied here, do not "fix" this inconsistency.
         services.AddHttpClient(PingenHttpClients.Names.Files);
         services.AddScoped<PingenHttpClients>(sp => new(sp.GetRequiredService<IHttpClientFactory>()));
         services.AddScoped<IPingenConnectionHandler, PingenConnectionHandler>();

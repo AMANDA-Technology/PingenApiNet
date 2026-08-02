@@ -126,7 +126,7 @@ The API HTTP client has `AllowAutoRedirect = false` because the file-location en
 - **Connector service pattern**: Each Pingen resource area (letters, batches, webhooks, etc.) has a dedicated `IXxxService` interface and `XxxService : ConnectorService` implementation. `ConnectorService` provides `HandleResult` and `AutoPage` utilities.
 - **IPingenApiClient facade**: Consumer-facing entry point that aggregates all connector services as properties (`client.Letters.Create(...)`, `client.Files.UploadFile(...)`).
 - **Auto-pagination via IAsyncEnumerable**: Collection endpoints expose both `GetPage()` (single page, raw `ApiResult`) and `GetPageResultsAsync()` (`IAsyncEnumerable<IEnumerable<TData>>`). The `AutoPage` helper in `ConnectorService` loops until `Meta.CurrentPage >= Meta.LastPage`.
-- **Three HTTP clients**: `Pingen.Identity` (token endpoint), `Pingen.Api` (all resource API calls, no auto-redirect), `Pingen.Files` (external S3 URLs, anonymous).
+- **Three HTTP clients**: `Pingen.Identity` (token endpoint), `Pingen.Api` (all resource API calls, no auto-redirect), `Pingen.Files` (external S3 URLs, anonymous). Caller-supplied `IPingenConfiguration.DefaultRequestHeaders` are applied to identity + api only — `Pingen.Files` must stay free of pre-configured headers, an extra header risks a pre-signed URL signature rejection (ADR-004).
 - **JSON:API compliance**: All request/response shapes follow the JSON:API spec used by Pingen — `type`, `id`, `attributes`, `relationships`, `included`, `links`, `meta` fields.
 
 ## API Reference
@@ -165,9 +165,10 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 - `Webhooks` — offline deserialization of `Assets/webhook_sample.json`.
 - `Helpers/` — `PingenSerialisationHelper`, `PingenWebhookHelper`, `PingenAttributesPropertyHelper`, `PingenDateTimeConverter(Nullable)`, `PingenKeyValuePairStringObjectConverter` (comprehensive coverage for edge cases, nullability, missing properties, invalid formats, and nested collections).
 - `Models/` — `ApiResult`, `DataPost`/`DataPatch`, `ExternalRequestResult`, `IncludedCollection`, `PingenConfiguration`.
-- `Services/` — `PingenApiClient` facade + `PingenConnectionHandler` (OAuth token lifecycle, re-auth, rate-limit header parsing, multi-tenant token isolation regression test for #22, concurrent-login double-check regression for #27).
+- `Services/` — `PingenApiClient` facade + `PingenConnectionHandler` (OAuth token lifecycle, re-auth, rate-limit header parsing, multi-tenant token isolation regression test for #22, concurrent-login double-check regression for #27) + `PingenHttpClients.Create` (default request headers on identity/api, never on the external files client).
+- `Configuration/` — `HttpClientExtension.ApplyDefaultRequestHeaders` contract (reserved names skipped, invalid name/value skipped, re-apply replaces instead of appends, never throws).
 - `Services/Connectors/` — per-connector unit tests using NSubstitute-mocked `IPingenConnectionHandler` (verifies endpoint path construction and error/edge-case handling for Batches, Distribution, Files, Letters, Organisations, Users, Webhooks, and the shared `ConnectorService`).
-- `AspNetCore/` — `PingenServiceCollection.AddPingenServices()` DI registration.
+- `AspNetCore/` — `PingenServiceCollection.AddPingenServices()` DI registration, incl. the `IPingenConfiguration.DefaultRequestHeaders` contract and the deliberate `Pingen.Files` exclusion (ADR-004).
 - `Enums/` — `BatchIconSerializationTests`, `LetterEnumSerializationTests`, `AllEnumsSerializationTests` (enum and string-constant serialization round-trips for every value).
 - `Exceptions/` — the three Pingen exception types.
 
@@ -177,7 +178,7 @@ Offline unit tests that require no API credentials or network access. Uses **NUn
 Offline in-process integration tests using **NUnit 4 + Shouldly + WireMock.Net + Bogus**. Spins up a local WireMock HTTP server per test fixture, stubs both the Pingen API and the OAuth token endpoint, and exercises a real `PingenApiClient` wired to that server. Covers request/response round-trips, JSON:API envelope shaping, auto-pagination (`InScenario` state machines), and the three-HTTP-client routing (identity / api / external-files):
 
 - `BatchServiceTests`, `DistributionServiceTests`, `FilesServiceTests`, `LetterServiceTests`, `OrganisationServiceTests`, `PingenApiClientTests`, `UserServiceTests`, `WebhookServiceTests`.
-- `CrossCutting/` — `CancellationTokenTests`, `ConcurrencyTests`, `EdgeCaseTests`, `ErrorHandlingTests`, `PaginationTests`.
+- `CrossCutting/` — `CancellationTokenTests`, `ConcurrencyTests`, `DefaultRequestHeadersTests`, `EdgeCaseTests`, `ErrorHandlingTests`, `IdempotencyTests`, `PaginationTests`, `QueryStringSerializationTests`.
 - `IntegrationTestBase.cs` — handles `[OneTimeSetUp]` WireMock startup, per-test reset, token-endpoint stub, client construction, and disposal.
 - `Helpers/JsonApiStubHelper.cs` — low-level JSON:API envelope builder.
 - `Helpers/PingenResponseFactory.cs` — centralised WireMock JSON:API response builder using Bogus for realistic test data generation.
